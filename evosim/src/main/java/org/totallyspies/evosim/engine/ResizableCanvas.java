@@ -11,22 +11,24 @@ public class ResizableCanvas extends StackPane {
     /**
      * The canvas in which the simulation is rendered.
      */
-    private final Canvas canvas = new Canvas();
+    private final Canvas canvas;
     /**
      * Creates a new ResizableCanvas.
      */
     public ResizableCanvas() {
+        this.canvas = new Canvas();
         this.getChildren().add(canvas);
-        canvas.widthProperty().bind(this.widthProperty());
-        canvas.heightProperty().bind(this.heightProperty());
+        this.canvas.widthProperty().bind(this.widthProperty());
+        this.canvas.heightProperty().bind(this.heightProperty());
     }
     /**
-     * Returns the graphicContext2D of the canvas.
+     * Returns the graphicsContext2D of the canvas.
      * Used to perform drawing operations on the canvas.
      *
-     * @return the graphicContext2D of the canvas.
+     * @return the graphicsContext2D of the canvas.
      */
     public GraphicsContext getGraphicsContext2D() {
-        return canvas.getGraphicsContext2D();
+        return this.canvas.getGraphicsContext2D();
     }
 }
+
