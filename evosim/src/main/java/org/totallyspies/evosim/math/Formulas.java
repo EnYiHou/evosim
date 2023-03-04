@@ -1,12 +1,12 @@
 package org.totallyspies.evosim.math;
-    
 /**
  * This class contains all the activation functions
  * used during the neural-network computation.
  */
-public class Formulas {
+public final class Formulas {
     private Formulas() {
     }
+
     /**
      * Logistic sigmoid activation function.
      * @param x input value
