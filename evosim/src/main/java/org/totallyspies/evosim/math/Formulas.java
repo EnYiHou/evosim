@@ -5,13 +5,14 @@ package org.totallyspies.evosim.math;
  * used during the neural-network computation.
  */
 public class Formulas {
-
+    private Formulas() {
+    }
     /**
      * Logistic sigmoid activation function.
      * @param x input value
      * @return activated value
      */
-    public static float logistic(float x) {
+    public static float logistic(final float x) {
         return (float) (1 / (1 + Math.exp(-x)));
     }
 
@@ -20,7 +21,7 @@ public class Formulas {
      * @param x input value
      * @return activated value
      */
-    public static float hyperbolicTangent(float x) {
+    public static float hyperbolicTangent(final float x) {
         return (float) Math.tanh(x);
     }
 
@@ -30,8 +31,8 @@ public class Formulas {
      * @param x input value
      * @return activated value
      */
-    public static float arctangent(float x) {
-        return (float)Math.atan(x);
+    public static float arctangent(final float x) {
+        return (float) Math.atan(x);
     }
 
     /**
@@ -39,7 +40,7 @@ public class Formulas {
      * @param x input value
      * @return activated value
      */
-    public static float ReLU(float x) {
+    public static float relu(final float x) {
         return Math.max(0, x);
     }
 }
