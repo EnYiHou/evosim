@@ -15,9 +15,9 @@ import org.totallyspies.evosim.utils.Rng;
  * calculated by taking the dot product of the list of Neuron values and the
  * list of weights. The final layer's values (output layer) determines what the
  * Entity's decision will be.
- * 
+ *
  * @author Matthew
- * 
+ *
  */
 public class NeuralNetwork {
 
@@ -34,11 +34,21 @@ public class NeuralNetwork {
      * the second inner list selects which neuron of that layer to look at.
      */
     private List<List<List<Double>>> weights;
-    
+
     /**
-     * The activation function randomly selected 
+     * The activation function randomly selected
      */
     private Function<Double, Double> activationFunction;
+
+    /**
+     * The upper bound used to generate random weights.
+     */
+    private final double WEIGHT_MAX = 0.99d;
+
+    /**
+     * The lower bound used to generate random weights.
+     */
+    private final double WEIGHT_MIN = -0.99d;
 
     /**
      * Creates an empty Neural Network structure.
@@ -48,44 +58,43 @@ public class NeuralNetwork {
     }
 
     /**
-     * Constructs a Neural Network with a set number of layers with specific 
+     * Constructs a Neural Network with a set number of layers with specific
      * sizes.
-     * 
+     *
      * @param sizes a list of integers representing the size of each layer. the
-     *              number of elements in the list is the number of layers. 
+     * number of elements in the list is the number of layers.
      */
-    public NeuralNetwork(List<Integer> sizes) {
+    public NeuralNetwork(final List<Integer> sizes) {
         this.neurons = new ArrayList<List<Neuron>>();
         this.weights = new ArrayList<List<List<Double>>>();
         this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(
                 Rng.RNG.nextInt(0, Formulas.ACTIVATION_FUNCTIONS.size()));
-                
+
         // populate neural network
         for (int i = 0; i < sizes.size(); i++) { // layer number
             neurons.add(new ArrayList<Neuron>());
-            for (int j = 0; j < sizes.get(i); j++)  // layer size
+            for (int j = 0; j < sizes.get(i); j++) { // layer size
                 neurons.get(i).add(new Neuron());
-            
+            }
         }
-        
+
         /*populate weights:
             within each weight layer, there are as many weight collections as 
             neurons on the output (right) side, and within each list there are 
-            as many weights as neurons on the input (left) side.*/ 
+            as many weights as neurons on the input (left) side.*/
         for (int i = 0; i < sizes.size() - 1; i++) {
             weights.add(new ArrayList<List<Double>>());
-            int outputNeuronNum = sizes.get(i+1);
+            int outputNeuronNum = sizes.get(i + 1);
             int inputNeuronNum = sizes.get(i);
-            
+
             for (int j = 0; j < outputNeuronNum; j++) {
                 weights.get(i).add(new ArrayList<Double>());
-                for (int k = 0; k < inputNeuronNum; k++) { 
+                for (int k = 0; k < inputNeuronNum; k++) {
                     weights.get(i).get(j).add(
-                            Rng.RNG.nextDouble(-0.99d, 0.99d));
+                            Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX));
                 }
             }
         }
     }
-    
-    
+
 }
