@@ -1,53 +1,60 @@
 package org.totallyspies.evosim.neuralnetwork;
 
-import org.totallyspies.evosim.utils.Rng;
+import java.util.function.Function;
 
 /**
- * A Neuron is a single node of the greater Neural Network system storing a
- * double valued bias. Each layer of the network is made up of many Neuron
- * objects.
- *
- * @author Matthew
+ * A Neuron is a single node of the greater Neural Network system storing a bias
+ * and float value. Each layer of the network is made up of many Neuron objects. 
  */
-public final class Neuron {
-
+public class Neuron {
+    /**A float value to shift the results neural network's activation.*/
+    private float bias;
+    
+    /**A float value assigned due to sensor input or computation results.*/
+    private float value;
+    
     /**
-     * A double value to shift the results neural network's activation.
-     */
-    private double bias;
-
-    /**
-     * The upper bound for generating random biases.
-     */
-    private static final double BIAS_MAX = 1d;
-
-    /**
-     * The lower bound for generating random biases.
-     */
-    private static final double BIAS_MIN = 0d;
-
-    /**
-     * Creates a Neuron with a randomly generated bias.
+     * Creates an empty Neuron.
      */
     public Neuron() {
-        this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
+        // def
     }
-
+    
     /**
-     * Creates a Neuron with a predefined bias.
-     *
-     * @param neuronBias the bias used to shift the activation function
+     * Creates an empty Neuron with a predefined bias.
+     * 
+     * @param bias  the bias used to shift the activation function
      */
-    public Neuron(final double neuronBias) {
-        this.bias = neuronBias;
+    public Neuron(float bias) {
+        this.bias = bias;
+    }
+    
+    /**
+     * Activates this Neuron's value by passing it through the selected
+     * activation function.
+     * 
+     * @param activationFunction    the networks activation function that will
+     *                              accept and return a float value
+     * @return                      the activated value  
+     */
+    public float activate(Function<Float, Float> activationFunction) {
+        return activationFunction.apply(this.value);
     }
 
-    public double getBias() {
+    public float getBias() {
         return this.bias;
     }
+    
+    public void setBias(float bias) {
+        this.bias = bias;
+    }
 
-    public void setBias(final double newBias) {
-        this.bias = newBias;
+    public float getValue() {
+        return this.value;
+    }
+
+    public void setValue(float value) {
+        this.value = value;
     }
 
 }
