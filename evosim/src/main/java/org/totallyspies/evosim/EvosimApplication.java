@@ -2,16 +2,13 @@ package org.totallyspies.evosim;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
-public class EvosimApplication extends Application {
+public final class EvosimApplication extends Application {
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(final Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/org/totallyspies/evosim/main.fxml"));
 
         Scene scene = new Scene(loader.load());
@@ -21,7 +18,11 @@ public class EvosimApplication extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
+    /**
+     * Main method of the application.
+     * @param args Command-line arguments passed to the application
+     */
+    public static void main(final String[] args) {
         launch();
     }
 }
