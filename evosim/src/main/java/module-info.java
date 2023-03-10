@@ -5,4 +5,5 @@ module org.totallyspies.evosim {
 
     opens org.totallyspies.evosim to javafx.fxml;
     exports org.totallyspies.evosim;
+    exports org.totallyspies.evosim.engine;
 }
