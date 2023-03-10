@@ -9,7 +9,9 @@ import java.io.IOException;
 public final class EvosimApplication extends Application {
     @Override
     public void start(final Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("/org/totallyspies/evosim/main.fxml"));
+        FXMLLoader loader = new FXMLLoader(
+            this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW)
+        );
 
         Scene scene = new Scene(loader.load());
         primaryStage.setScene(scene);
