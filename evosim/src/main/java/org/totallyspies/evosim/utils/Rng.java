@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @author Matthew
  */
-public class Rng {
+public final class Rng {
 
     private Rng() {
     }

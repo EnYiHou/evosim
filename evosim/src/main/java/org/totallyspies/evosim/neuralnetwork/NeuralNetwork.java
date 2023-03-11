@@ -36,21 +36,21 @@ public class NeuralNetwork {
     private List<List<List<Double>>> weights;
 
     /**
-     * The activation function randomly selected
+     * The activation function randomly selected.
      */
     private Function<Double, Double> activationFunction;
 
     /**
      * The upper bound used to generate random weights.
      */
-    private final double WEIGHT_MAX = 0.99d;
+    private static final double WEIGHT_MAX = 0.99d;
 
     /**
      * The lower bound used to generate random weights.
      */
-    private final double WEIGHT_MIN = -0.99d;
+    private static final double WEIGHT_MIN = -0.99d;
 
-    private  NeuralNetwork() {
+    private NeuralNetwork() {
     }
 
     /**
@@ -112,10 +112,12 @@ public class NeuralNetwork {
     public double[] calcNetworkDecision(final List<Double> inputs) {
         // create an array with the size of the largest neuron layer 
         int maxLayerIndex = 0;
-        for (int i = 0; i < this.neurons.size(); i++)
+        for (int i = 0; i < this.neurons.size(); i++) {
             if (this.neurons.get(i).size()
-                    > this.neurons.get(maxLayerIndex).size())
+                    > this.neurons.get(maxLayerIndex).size()) {
                 maxLayerIndex = i;
+            }
+        }
 
         double[] decision = new double[this.neurons.get(maxLayerIndex).size()];
         boolean isFirstLayer = true;
@@ -124,7 +126,7 @@ public class NeuralNetwork {
         for (int i = 0; i < this.weights.size(); i++) {
             if (isFirstLayer) {
                 passForwards(computeLayer(
-                        inputs.stream().mapToDouble(x->x).toArray(),
+                        inputs.stream().mapToDouble(x -> x).toArray(),
                         this.weights.get(i),
                         this.neurons.get(i + 1),
                         isFirstLayer),
@@ -150,12 +152,12 @@ public class NeuralNetwork {
      * before computation and must be multiplied by the neuron's bias after.
      * Returns the array of dot product results at the end.
      *
-     * @param inputs        an array of input values, either the inputs from the
-     *                      sensors or results from previous layers
-     * @param weights       the layer of weights between the two neuron layers
-     * @param neurons       the target layer of neurons
-     * @param isFirstLayer  a boolean, true if it's the first layer, else false
-     * @return              the array of dot product results
+     * @param inputs an array of input values, either the inputs from the
+     * sensors or results from previous layers
+     * @param weights the layer of weights between the two neuron layers
+     * @param neurons the target layer of neurons
+     * @param isFirstLayer a boolean, true if it's the first layer, else false
+     * @return the array of dot product results
      */
     private double[] computeLayer(double[] inputs,
             final List<List<Double>> weights, final List<Neuron> neurons,
@@ -163,9 +165,11 @@ public class NeuralNetwork {
         double[] dotProducts = new double[weights.size()];
 
         // activate each value before computation
-        if (!isFirstLayer)
-            for (int i = 0; i < neurons.size(); i++)
+        if (!isFirstLayer) {
+            for (int i = 0; i < neurons.size(); i++) {
                 inputs[i] = this.activationFunction.apply(inputs[i]);
+            }
+        }
 
         // compute dot product between inputs & weights for each target neuron
         for (int i = 0; i < weights.size(); i++) {
@@ -177,16 +181,18 @@ public class NeuralNetwork {
         }
 
         // multiply each result by the bias 
-        if (!isFirstLayer)
-            for (int i = 0; i < neurons.size(); i++)
+        if (!isFirstLayer) {
+            for (int i = 0; i < neurons.size(); i++) {
                 dotProducts[i] *= neurons.get(i).getBias();
+            }
+        }
 
         return dotProducts;
     }
 
     /**
      * Passes forwards the results from the layer computation to a destination
-     * array. 
+     * array.
      *
      * This overwrites values written in the destination array but does not
      * modify any values past the length of the source array.
@@ -194,7 +200,7 @@ public class NeuralNetwork {
      * @param src array containing results from layer computation
      * @param dest target array to copy values into
      */
-    private void passForwards(final double[] src, double[] dest) {
+    private void passForwards(final double[] src, final double[] dest) {
         System.arraycopy(src, 0, dest, 0, src.length);
     }
 
