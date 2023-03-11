@@ -30,7 +30,7 @@ public class Neuron {
      * Creates a Neuron with a randomly generated bias.
      */
     public Neuron() {
-        this.bias = Rng.RNG.nextDouble(0d, 1d);
+        this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
     }
 
     /**
