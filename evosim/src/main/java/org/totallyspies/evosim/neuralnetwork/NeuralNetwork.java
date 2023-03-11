@@ -3,7 +3,6 @@ package org.totallyspies.evosim.neuralnetwork;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.DoubleStream;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
@@ -62,14 +61,14 @@ public class NeuralNetwork {
      * number of elements in the list is the number of layers.
      */
     public NeuralNetwork(final List<Integer> sizes) {
-        this.neurons = new ArrayList<List<Neuron>>();
-        this.weights = new ArrayList<List<List<Double>>>();
+        this.neurons = new ArrayList<>();
+        this.weights = new ArrayList<>();
         this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(
                 Rng.RNG.nextInt(0, Formulas.ACTIVATION_FUNCTIONS.size()));
 
         // populate neural network
         for (int i = 0; i < sizes.size(); i++) { // layer number
-            neurons.add(new ArrayList<Neuron>());
+            neurons.add(new ArrayList<>());
             for (int j = 0; j < sizes.get(i); j++) { // layer size
                 neurons.get(i).add(new Neuron());
             }
@@ -80,12 +79,12 @@ public class NeuralNetwork {
             neurons on the output (right) side, and within each list there are 
             as many weights as neurons on the input (left) side.*/
         for (int i = 0; i < sizes.size() - 1; i++) {
-            weights.add(new ArrayList<List<Double>>());
+            weights.add(new ArrayList<>());
             int outputNeuronNum = sizes.get(i + 1);
             int inputNeuronNum = sizes.get(i);
 
             for (int j = 0; j < outputNeuronNum; j++) {
-                weights.get(i).add(new ArrayList<Double>());
+                weights.get(i).add(new ArrayList<>());
                 for (int k = 0; k < inputNeuronNum; k++) {
                     weights.get(i).get(j).add(
                             Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX));
@@ -125,7 +124,7 @@ public class NeuralNetwork {
         for (int i = 0; i < this.weights.size(); i++) {
             if (isFirstLayer) {
                 passForwards(computeLayer(
-                        DoubleStream.builder().build().toArray(),
+                        inputs.stream().mapToDouble(x->x).toArray(),
                         this.weights.get(i),
                         this.neurons.get(i + 1),
                         isFirstLayer),
@@ -172,7 +171,7 @@ public class NeuralNetwork {
         for (int i = 0; i < weights.size(); i++) {
             double dotProduct = 0;
             for (int j = 0; j < weights.get(i).size(); j++) {
-                dotProduct += inputs[i] * weights.get(i).get(j);
+                dotProduct += inputs[j] * weights.get(i).get(j);
             }
             dotProducts[i] = dotProduct;
         }
@@ -186,7 +185,8 @@ public class NeuralNetwork {
     }
 
     /**
-     * Passes forwards the results from the layer computation.
+     * Passes forwards the results from the layer computation to a destination
+     * array. 
      *
      * This overwrites values written in the destination array but does not
      * modify any values past the length of the source array.
@@ -195,8 +195,7 @@ public class NeuralNetwork {
      * @param dest target array to copy values into
      */
     private void passForwards(final double[] src, double[] dest) {
-        for (int i = 0; i < src.length; i++)
-            dest[i] = src[i];
+        System.arraycopy(src, 0, dest, 0, src.length);
     }
 
 }
