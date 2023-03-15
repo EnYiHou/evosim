@@ -19,12 +19,12 @@ public class Neuron {
     /**
      * The upper bound for generating random biases.
      */
-    private final double BIAS_MAX = 1d;
+    private static final double BIAS_MAX = 1d;
 
     /**
      * The lower bound for generating random biases.
      */
-    private final double BIAS_MIN = 0d;
+    private static final double BIAS_MIN = 0d;
 
     /**
      * Creates a Neuron with a randomly generated bias.
@@ -36,10 +36,10 @@ public class Neuron {
     /**
      * Creates a Neuron with a predefined bias.
      *
-     * @param bias the bias used to shift the activation function
+     * @param neuronBias the bias used to shift the activation function
      */
-    public Neuron(final double bias) {
-        this.bias = bias;
+    public Neuron(final double neuronBias) {
+        this.bias = neuronBias;
     }
 
     public double getBias() {
