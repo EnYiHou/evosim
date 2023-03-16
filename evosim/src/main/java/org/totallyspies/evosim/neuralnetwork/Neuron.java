@@ -9,7 +9,7 @@ import org.totallyspies.evosim.utils.Rng;
  *
  * @author Matthew
  */
-public class Neuron {
+public final class Neuron {
 
     /**
      * A double value to shift the results neural network's activation.
@@ -46,8 +46,8 @@ public class Neuron {
         return this.bias;
     }
 
-    public void setBias(final double bias) {
-        this.bias = bias;
+    public void setBias(final double newBias) {
+        this.bias = newBias;
     }
 
 }
