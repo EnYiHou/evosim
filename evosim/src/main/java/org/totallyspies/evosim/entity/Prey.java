@@ -25,4 +25,24 @@ public class Prey extends Entity {
             this.sensors[i][3] = this.positionY + Math.sin(angle) * Entity.SENSORS_LENGTH;
         }
     }
+
+    @Override
+    public Entity clone() {
+        return null;
+    }
+
+    @Override
+    public void onCollide(Entity entity) {
+
+    }
+
+    @Override
+    public void onSplit() {
+
+    }
+
+    @Override
+    public void onDie() {
+
+    }
 }
