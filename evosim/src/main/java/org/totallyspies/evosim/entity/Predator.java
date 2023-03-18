@@ -1,30 +1,71 @@
 package org.totallyspies.evosim.entity;
 
+import org.totallyspies.evosim.geometry.Point;
+
 public class Predator extends Entity {
 
-    public final static double VIEW_ANGLE = 60.0d;
-    public final static double ANGLE_BETWEEN_SENSORS = Predator.VIEW_ANGLE / (Entity.SENSORS_COUNT - 1);
-    public final static double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+    /**
+     * The view angle of the predator.
+     */
+    public static final double VIEW_ANGLE = 60.0d;
+    /**
+     * The angle between each sensor.
+     */
+    public static final double ANGLE_BETWEEN_SENSORS =
+            Predator.VIEW_ANGLE / (Entity.SENSORS_COUNT - 1);
+    /**
+     * The split energy that the predator will gain when it eats a prey.
+     */
+    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
 
-    public Predator(double speed) {
+    /**
+     * Creates a new predator with the given speed.
+     *
+     * @param speed the speed of the predator
+     */
+    public Predator(final double speed) {
         super(speed);
     }
 
+    /**
+     * Creates a new predator with the given speed and position.
+     *
+     * @param speed    the speed of the predator
+     * @param position the position of the predator
+     */
+    public Predator(final double speed, final Point position) {
+        super(speed, position);
+    }
+
+    /**
+     * This method will be called when the predator is updated.
+     */
     @Override
     public void onUpdate() {
 
     }
 
+    /**
+     * Adjust the sensors of the predator.
+     * The sensors will be adjusted on every update,
+     * according to the Entity's position and rotation angle.
+     */
     @Override
     public void adjustSensors() {
         for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
-            double angle = this.rotationAngleInRadians
+            double angle = this.getRotationAngleInRadians()
                     + Math.toRadians(-Predator.VIEW_ANGLE / 2
                     + Predator.ANGLE_BETWEEN_SENSORS * i);
-            this.sensors[i][0] = this.positionX;
-            this.sensors[i][1] = this.positionY;
-            this.sensors[i][2] = this.positionX + Math.cos(angle) * Entity.SENSORS_LENGTH;
-            this.sensors[i][3] = this.positionY + Math.sin(angle) * Entity.SENSORS_LENGTH;
+            this.getSensors()[i].getStartPoint()
+                    .setPositionX(this.getPosition().getPositionX());
+            this.getSensors()[i].getStartPoint()
+                    .setPositionY(this.getPosition().getPositionY());
+            this.getSensors()[i].getEndPoint()
+                    .setPositionX(this.getPosition().getPositionX()
+                            + Math.cos(angle) * Entity.SENSORS_LENGTH);
+            this.getSensors()[i].getEndPoint()
+                    .setPositionY(this.getPosition().getPositionY()
+                            + Math.sin(angle) * Entity.SENSORS_LENGTH);
         }
     }
 
@@ -35,12 +76,15 @@ public class Predator extends Entity {
      */
     @Override
     public Predator clone() {
+        // Mutate the speed of the predator
         Predator predator = new Predator(
                 (Math.random() < Entity.SPEED_MUTATION_RATE)
-                        ? Math.random()*Entity.MAX_SPEED : this.speed);
-        predator.positionX = this.positionX;
-        predator.positionY = this.positionY;
-        predator.rotationAngleInRadians = this.rotationAngleInRadians;
+                        ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
+                new Point(this.getPosition().getPositionX(),
+                        this.getPosition().getPositionY()));
+
+        predator.setRotationAngleInRadians(this.getRotationAngleInRadians());
+
         //predator.brain = this.brain.cloneAndMutate();
         return predator;
     }
@@ -49,16 +93,13 @@ public class Predator extends Entity {
     /**
      * If the predator collides with a prey, it will gain energy.
      * If the predator has enough energy, it will split.
-     *
-     * @param entity the entity that the predator collided with
      */
     @Override
-    public void onCollide(Entity entity) {
-        if (entity instanceof Prey)
-            this.energy += Predator.SPLIT_ENERGY_FILLING_SPEED;
-
-        if (this.energy > 1) {
-            this.energy -= 1;
+    public void onCollide() {
+        this.setEnergy(this.getEnergy()
+                + Predator.SPLIT_ENERGY_FILLING_SPEED);
+        if (this.getEnergy() > 1) {
+            this.setEnergy(this.getEnergy() - 1);
             this.onSplit();
         }
 

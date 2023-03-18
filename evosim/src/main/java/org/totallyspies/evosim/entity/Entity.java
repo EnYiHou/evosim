@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.entity;
 
+import org.totallyspies.evosim.geometry.Line;
+import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 
 /**
@@ -30,79 +32,92 @@ public abstract class Entity {
      * The last two elements are the coordinates of the sensor's end.
      * The sensors are ordered from left to right.
      */
-    protected double[][] sensors;
+    private Line[] sensors;
 
     /**
-     * The speed of the entity. The entity will move according to this speed on every update.
+     * The speed of the entity.
+     * The entity will move according to this speed on every update.
      */
-    final protected double speed;
+    private final double speed;
 
-    final static protected double MAX_SPEED = 3.0;
+    /**
+     * The maximum speed of the entity.
+     */
+    protected static final double MAX_SPEED = 3.0;
     /**
      * The rotation angle of the entity in radians.
      */
-    final static protected double SPEED_MUTATION_RATE = 0.2;
+    protected static final double SPEED_MUTATION_RATE = 0.2;
 
     /**
      * The neural network of the entity.
      * The neural network will be used to compute the output of the entity.
      * The output of the neural network will be used to move the entity.
      */
-    final protected NeuralNetwork brain;
+    private final NeuralNetwork brain;
 
     /**
-     * The positionX of the entity.
+     * The position of the entity.
      */
-    protected double positionX;
-
-    /**
-     * The positionY of the entity.
-     */
-    protected double positionY;
+    private Point position;
 
     /**
      * The energy of the entity.
      * The energy will be drained when the entity moves.
      * Then entity will not be able to move when the energy is 0.
-     *
+     * <p>
      * The value of the energy will be between 0 and 1.
      */
-    protected double energy;
+    private double energy;
 
-    protected static double ENERGY_DRAIN_RATE = 0.01;
+    /**
+     * The speed at which the energy of the entity will be drained.
+     */
+    public static final double ENERGY_DRAIN_RATE = 0.01;
 
     /**
      * The accumulated split energy of the entity.
      * The entity will multiply when the accumulated split energy reaches 1.
      * The accumulated split energy will be set to 0 when the entity splits.
      */
-    protected double splitEnergy;
+    private double splitEnergy;
     /**
      * The rotation angle of the entity in radians.
      */
-    protected double rotationAngleInRadians;
+    private double rotationAngleInRadians;
 
     /**
      * The number of children of the entity.
      */
-    protected int childCount;
+    private int childCount;
+
 
     /**
      * The constructor of the entity.
      *
-     * @param speed The speed of the entity.
+     * @param entitySpeed    The speed of the entity.
+     * @param entityPosition The position of the entity.
      */
-    public Entity(double speed) {
+    public Entity(final double entitySpeed, final Point entityPosition) {
         this.brain = new NeuralNetwork();
-        this.speed = speed;
+        this.speed = entitySpeed;
 
         //randomize initial rotation angle
         this.rotationAngleInRadians = Math.random() * 2 * Math.PI;
 
         //initialize sensors
-        this.sensors = new double[Entity.SENSORS_COUNT][4];
+        this.sensors = new Line[Entity.SENSORS_COUNT];
+        this.position = entityPosition;
         adjustSensors();
+    }
 
+    /**
+     * The constructor of the entity.
+     *
+     * @param entitySpeed The speed of the entity.
+     */
+    public Entity(final double entitySpeed) {
+        this(entitySpeed, new Point());
     }
 
     /**
@@ -112,10 +127,12 @@ public abstract class Entity {
      *
      * @param movementSpeed The speed of the movement.
      */
-    public void move(double movementSpeed){
-        this.positionX += Math.cos(this.rotationAngleInRadians) * movementSpeed;
-        this.positionY += Math.sin(this.rotationAngleInRadians) * movementSpeed;
-        this.energy -= Entity.ENERGY_DRAIN_RATE*movementSpeed;
+    public void move(final double movementSpeed) {
+        this.position.setPositionX(this.position.getPositionX()
+                + Math.cos(this.rotationAngleInRadians) * movementSpeed);
+        this.position.setPositionY(this.position.getPositionX()
+                + Math.sin(this.rotationAngleInRadians) * movementSpeed);
+        this.energy -= Entity.ENERGY_DRAIN_RATE * movementSpeed;
     }
 
     /**
@@ -142,10 +159,8 @@ public abstract class Entity {
     /**
      * Each entity will have its own implementation of this method.
      * This method will be called when the entity collides with another entity.
-     *
-     * @param entity The entity that the entity collides with.
      */
-    public abstract void onCollide(Entity entity);
+    public abstract void onCollide();
 
     /**
      * Each subclass entity will have its own implementation of this method.
@@ -156,15 +171,14 @@ public abstract class Entity {
     /**
      * This method will be called when the entity dies.
      */
-    public void onDie(){
-        //TODO: implement this method
+    public void onDie() {
     }
 
-
-
-
-    public void update() {
-
+    /**
+     * This method will be called at each update.
+     * This method will be in charge of the behavior of the entity.
+     */
+    public final void update() {
         this.adjustSensors();
         //compute sensors value
         //get output of neural network
@@ -172,39 +186,137 @@ public abstract class Entity {
         this.onUpdate();
     }
 
-    public boolean checkCollide(Entity entity) {
-        double distance = Math.sqrt(Math.pow(this.positionX - entity.positionX, 2)
-                + Math.pow(this.positionY - entity.positionY, 2));
-        return (distance < Entity.ENTITY_RADIUS * 2) ? true : false;
-    }
-
-
-
-
-    public double[] getSensorValues(){
-        double[] sensorValues = new double[Entity.SENSORS_COUNT];
-        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
-            sensorValues[i] = this.sensors[i][4];
+    /**
+     * This method will be called to detect collision between this entity
+     * and another entity.
+     *
+     * @param entity The entity to check collision with.
+     * @return true if the two entities collide, false otherwise.
+     */
+    public final boolean checkCollide(final Entity entity) {
+        // TODO check if the two entities collide
+        double distance = 0;
+        boolean collide = false;
+        if (distance < Entity.ENTITY_RADIUS * 2) {
+            collide = true;
+            onCollide();
         }
-        return sensorValues;
+        //distance between the two entities
+        return collide;
     }
 
-    public double getPositionX() {
-        return positionX;
+    /**
+     * This method returns the sensors of the entity.
+     *
+     * @return The sensors of the entity.
+     */
+    public final Line[] getSensors() {
+        return this.sensors;
     }
 
-    public void setPositionX(double positionX) {
-        this.positionX = positionX;
+    /**
+     * This method returns the position of the entity.
+     *
+     * @return The position of the entity.
+     */
+    public final Point getPosition() {
+        return this.position;
     }
 
-    public double getPositionY() {
-        return positionY;
+    /**
+     * This method returns the energy of the entity.
+     *
+     * @return The energy of the entity.
+     */
+    public final double getEnergy() {
+        return this.energy;
     }
 
-    public void setPositionY(double positionY) {
-        this.positionY = positionY;
+    /**
+     * This method returns the split energy of the entity.
+     *
+     * @return The split energy of the entity.
+     */
+    public final double getSplitEnergy() {
+        return this.splitEnergy;
     }
 
+    /**
+     * This method returns the child count of the entity.
+     *
+     * @return The child count of the entity.
+     */
+    public final int getChildCount() {
+        return this.childCount;
+    }
 
+    /**
+     * This method returns the rotation angle of the entity in radians.
+     *
+     * @return The rotation angle of the entity in radians.
+     */
+    public final double getRotationAngleInRadians() {
+        return this.rotationAngleInRadians;
+    }
 
+    /**
+     * This method returns the speed of the entity.
+     *
+     * @return The speed of the entity.
+     */
+    public final double getSpeed() {
+        return this.speed;
+    }
+
+    /**
+     * This method returns the neural network of the entity.
+     *
+     * @return The neural network of the entity.
+     */
+    public final NeuralNetwork getBrain() {
+        return this.brain;
+    }
+
+    /**
+     * This method sets the position of the entity.
+     *
+     * @param entityPosition The position of the entity.
+     */
+    public final void setPosition(final Point entityPosition) {
+        this.position = entityPosition;
+    }
+    /**
+     * This method sets the energy of the entity.
+     *
+     * @param entityEnergy The energy of the entity.
+     */
+    public final void setEnergy(final double entityEnergy) {
+        this.energy = entityEnergy;
+    }
+    /**
+     * This method sets the split energy of the entity.
+     *
+     * @param entitySplitEnergy The split energy of the entity.
+     */
+    public final void setSplitEnergy(final double entitySplitEnergy) {
+        this.splitEnergy = entitySplitEnergy;
+    }
+    /**
+     * This method sets the child count of the entity.
+     *
+     * @param entityChildCount The child count of the entity.
+     */
+    public final void setChildCount(final int entityChildCount) {
+        this.childCount = entityChildCount;
+    }
+    /**
+     * This method sets the rotation angle of the entity in radians.
+     *
+     * @param entityRotationAngleInRadians The rotation angle of the
+     *                                     entity in radians.
+     */
+    public final void setRotationAngleInRadians(
+            final double entityRotationAngleInRadians) {
+        this.rotationAngleInRadians = entityRotationAngleInRadians;
+    }
 }
