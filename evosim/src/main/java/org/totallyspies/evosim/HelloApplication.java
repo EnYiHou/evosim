@@ -7,9 +7,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public final class HelloApplication extends Application {
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(final Stage primaryStage) throws IOException {
 
         Group root = new Group();
         root.setRotationAxis(Rotate.X_AXIS);
@@ -21,8 +21,11 @@ public class HelloApplication extends Application {
 
         primaryStage.show();
     }
-
-    public static void main(String[] args) {
+    /**
+     * Main method.
+     * @param args
+     */
+    public static void main(final String[] args) {
         launch();
     }
 }
