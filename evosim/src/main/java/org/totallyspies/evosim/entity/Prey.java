@@ -2,6 +2,12 @@ package org.totallyspies.evosim.entity;
 
 import org.totallyspies.evosim.geometry.Point;
 
+/**
+ * This class represents a prey in the simulation.
+ * It is an Entity that can be eaten by predators.
+ *
+ * @author EnYi
+ */
 public class Prey extends Entity {
 
     /**
@@ -76,9 +82,9 @@ public class Prey extends Entity {
      * @return the cloned prey
      */
     @Override
-    public Predator clone() {
+    public Prey clone() {
         // Mutate the speed of the prey
-        Predator prey = new Predator(
+        Prey prey = new Prey(
                 (Math.random() < Entity.SPEED_MUTATION_RATE)
                         ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
                 new Point(this.getPosition().getPositionX(),
@@ -102,9 +108,8 @@ public class Prey extends Entity {
      */
     @Override
     public void onSplit() {
-        Predator prey = this.clone();
+        Prey prey = this.clone();
         // TODO add the prey to the list of entities
-
     }
 
     /**

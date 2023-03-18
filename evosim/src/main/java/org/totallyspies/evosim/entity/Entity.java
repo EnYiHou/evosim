@@ -27,12 +27,10 @@ public abstract class Entity {
 
     /**
      * The sensors of the entity.
-     * Each sensor is represented by a 4-element array of doubles.
-     * The first two elements are the coordinates of the sensor's origin.
-     * The last two elements are the coordinates of the sensor's end.
-     * The sensors are ordered from left to right.
+     * Each sensor is a line that will be used to detect other entities.
      */
     private Line[] sensors;
+
 
     /**
      * The speed of the entity.
@@ -45,7 +43,7 @@ public abstract class Entity {
      */
     protected static final double MAX_SPEED = 3.0;
     /**
-     * The rotation angle of the entity in radians.
+     * The Mutation rate of the speed of the entity.
      */
     protected static final double SPEED_MUTATION_RATE = 0.2;
 

@@ -2,6 +2,12 @@ package org.totallyspies.evosim.entity;
 
 import org.totallyspies.evosim.geometry.Point;
 
+/**
+ * This class represents a predator in the simulation.
+ * It is an Entity that can eat prey.
+ *
+ * @author EnYi
+ */
 public class Predator extends Entity {
 
     /**
