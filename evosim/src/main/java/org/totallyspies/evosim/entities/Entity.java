@@ -100,8 +100,10 @@ public abstract class Entity {
      * @param entityPosition The position of the entity.
      */
     public Entity(final double entitySpeed, final Point entityPosition) {
-        this.brain = new NeuralNetwork(Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
-                .boxed().collect(ArrayList::new, ArrayList::add, ArrayList::addAll));
+        this.brain = new NeuralNetwork(
+                Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
+                .boxed().collect(
+                        ArrayList::new, ArrayList::add, ArrayList::addAll));
         this.speed = entitySpeed;
 
         //randomize initial rotation angle
