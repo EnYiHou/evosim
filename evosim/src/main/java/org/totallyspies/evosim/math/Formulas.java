@@ -69,13 +69,13 @@ public final class Formulas {
      * If the line is inside the circle, the distance is 0.
      *
      * If the line intersects the circle, the distance is the distance
-     * between the start of the line and the intersection.
+     * between the start of the line and the closest intersection.
      *
      * @param line the line given in the form of {x1, y1, x2, y2}
      * @param entityCenterX the x coordinate of the center of the circle
      * @param entityCenterY the y coordinate of the center of the circle
      * @param circleRadius the radius of the circle
-     * @return the distance between the line and the circle
+     * @return the closest distance between the line and the circle
      */
     public static double closestIntersection(final double[] line,
                                              final double entityCenterX,

@@ -15,23 +15,9 @@ public class Predator extends Entity {
      */
     public static final double VIEW_ANGLE = 60.0d;
     /**
-     * The angle between each sensor.
-     */
-    public static final double ANGLE_BETWEEN_SENSORS =
-            Predator.VIEW_ANGLE / (Entity.SENSORS_COUNT - 1);
-    /**
      * The split energy that the predator will gain when it eats a prey.
      */
     public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
-
-    /**
-     * Creates a new predator with the given speed.
-     *
-     * @param speed the speed of the predator
-     */
-    public Predator(final double speed) {
-        super(speed);
-    }
 
     /**
      * Creates a new predator with the given speed and position.
@@ -40,7 +26,7 @@ public class Predator extends Entity {
      * @param position the position of the predator
      */
     public Predator(final double speed, final Point position) {
-        super(speed, position);
+        super(speed, position, Predator.VIEW_ANGLE);
     }
 
     /**
@@ -51,29 +37,6 @@ public class Predator extends Entity {
 
     }
 
-    /**
-     * Adjust the sensors of the predator.
-     * The sensors will be adjusted on every update,
-     * according to the Entity's position and rotation angle.
-     */
-    @Override
-    public void adjustSensors() {
-        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
-            double angle = this.getRotationAngleInRadians()
-                    + Math.toRadians(-Predator.VIEW_ANGLE / 2
-                    + Predator.ANGLE_BETWEEN_SENSORS * i);
-            this.getSensors()[i].getStartPoint()
-                    .setPositionX(this.getPosition().getPositionX());
-            this.getSensors()[i].getStartPoint()
-                    .setPositionY(this.getPosition().getPositionY());
-            this.getSensors()[i].getEndPoint()
-                    .setPositionX(this.getPosition().getPositionX()
-                            + Math.cos(angle) * Entity.SENSORS_LENGTH);
-            this.getSensors()[i].getEndPoint()
-                    .setPositionY(this.getPosition().getPositionY()
-                            + Math.sin(angle) * Entity.SENSORS_LENGTH);
-        }
-    }
 
     /**
      * Clone the predator and mutate its speed.
@@ -86,8 +49,8 @@ public class Predator extends Entity {
         Predator predator = new Predator(
                 (Math.random() < Entity.SPEED_MUTATION_RATE)
                         ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
-                new Point(this.getPosition().getPositionX(),
-                        this.getPosition().getPositionY()));
+                new Point(this.getPosition().getX(),
+                        this.getPosition().getY()));
 
         predator.setRotationAngleInRadians(this.getRotationAngleInRadians());
 

@@ -31,34 +31,23 @@ public class Point {
     public Point() {
         this(0, 0);
     }
-
-    /**
-     * Adds the given value to the x coordinate.
-     * @param val the value to add
-     */
-    public final void addX(final double val) {
-        this.x += val;
-    }
-    /**
-     * Adds the given value to the y coordinate.
-     * @param val the value to add
-     */
-    public final void addY(final double val) {
-        this.y += val;
-    }
-    public final double getPositionX() {
+    public final double getX() {
         return x;
     }
 
-    public final double getPositionY() {
+    public final double getY() {
         return y;
     }
 
-    public final void setPositionX(final double positionX) {
+    public final void setX(final double positionX) {
         this.x = positionX;
     }
 
-    public final void setPositionY(final double positionY) {
+    public final void setY(final double positionY) {
+        this.y = positionY;
+    }
+    public final void set(final double positionX, final double positionY) {
+        this.x = positionX;
         this.y = positionY;
     }
 

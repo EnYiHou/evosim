@@ -36,17 +36,9 @@ public class Line {
                 final double endX, final double endY) {
         this(new Point(startX, startY), new Point(endX, endY));
     }
-    /**
-     * get the start point of the line.
-     * @return the start point of the line
-     */
     public final Point getStartPoint() {
         return this.startPoint;
     }
-    /**
-     * get the end point of the line.
-     * @return the end point of the line
-     */
     public final Point getEndPoint() {
         return this.endPoint;
     }
