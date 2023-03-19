@@ -11,8 +11,7 @@ public final class ResourceManager {
   /**
    * Private constructor to make static class.
    */
-  private ResourceManager() {
-  }
+  private ResourceManager() { }
 
   private static final String RESOURCE_FOLDER = "/org/totallyspies/evosim";
   private static final String FXML_FOLDER = RESOURCE_FOLDER + "/fxml";
