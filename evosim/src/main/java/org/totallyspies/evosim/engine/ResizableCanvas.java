@@ -8,10 +8,12 @@ import javafx.scene.layout.StackPane;
  * The Canvas will be automatically resized when this is resized.
  */
 public class ResizableCanvas extends StackPane {
+
     /**
      * The canvas in which the simulation is rendered.
      */
     private final Canvas canvas;
+
     /**
      * Creates a new ResizableCanvas.
      */
@@ -21,6 +23,7 @@ public class ResizableCanvas extends StackPane {
         this.canvas.widthProperty().bind(this.widthProperty());
         this.canvas.heightProperty().bind(this.heightProperty());
     }
+
     /**
      * Returns the graphicsContext2D of the canvas.
      * Used to perform drawing operations on the canvas.
@@ -31,4 +34,3 @@ public class ResizableCanvas extends StackPane {
         return this.canvas.getGraphicsContext2D();
     }
 }
-
