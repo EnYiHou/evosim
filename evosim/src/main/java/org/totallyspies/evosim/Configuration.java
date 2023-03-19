@@ -9,6 +9,76 @@ package org.totallyspies.evosim;
  */
 public class Configuration {
 
+  /**
+   * Defaults values for each variable.
+   */
+  public static class Defaults {
+
+    /**
+     * The number of sensors each entity has.
+     */
+    public static final int ENTITY_SENSORS_COUNT = 30;
+
+    /**
+     *  The radius of an entity.
+     */
+    public static final double ENTITY_RADIUS = 15.0d;
+
+    /**
+     * The length of an entity's sensors.
+     */
+    public static final double ENTITY_SENSORS_LENGTH = 1000.0d;
+
+    /**
+     * The maximum speed of an entity.
+     */
+    public static final double ENTITY_MAX_SPEED = 3.0d;
+
+    /**
+     * The mutation rate of the speed of the entity.
+     */
+    public static final double ENTITY_SPEED_MUTATION_RATE = 0.2d;
+
+    /**
+     * The speed at which the energy of the entity will be drained.
+     */
+    public static final double ENTITY_ENERGY_DRAIN_RATE = 0.01d;
+
+    /**
+     * The maximum number of predator that could be generated.
+     */
+    public static final int PREDATOR_MAX_NUMBER = 100;
+
+    /**
+     * The view angle of a predator.
+     */
+    public static final double PREDATOR_VIEW_ANGLE = 60.0d;
+
+    /**
+     * The split energy that a predator will gain when it eats a prey.
+     */
+    public static final double PREDATOR_SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+
+    /**
+     * The maximum number of prey that could be generated.
+     */
+    public static final int PREY_MAX_NUMBER = 100;
+
+    /**
+     * The view angle of a prey.
+     */
+    public static final double PREY_VIEW_ANGLE = 300.0d;
+
+    /**
+     * The split energy that a prey will gain when it is not moving.
+     */
+    public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+
+    /**
+     * The number of layers the neural network will contain.
+     */
+    public static final int NEURAL_NETWORK_LAYERS_NUMBER = 2;
+  }
 
   /**
    * The number of sensors each entity has.
@@ -79,21 +149,85 @@ public class Configuration {
    * Create a new default Configuration class, and the setup.
    */
   public Configuration() {
-    this.entitySensorsCount = 30;
-    this.entityRadius = 15.0d;
-    this.entitySensorsLength = 1000.0d;
-    this.entityMaxSpeed = 3.0d;
-    this.entitySpeedMutationRate = 0.2d;
-    this.entityEnergyDrainRate = 0.01d;
+    this.entitySensorsCount = Defaults.ENTITY_SENSORS_COUNT;
+    this.entityRadius = Defaults.ENTITY_RADIUS;
+    this.entitySensorsLength = Defaults.ENTITY_SENSORS_LENGTH;
+    this.entityMaxSpeed = Defaults.ENTITY_MAX_SPEED;
+    this.entitySpeedMutationRate = Defaults.ENTITY_SPEED_MUTATION_RATE;
+    this.entityEnergyDrainRate = Defaults.ENTITY_ENERGY_DRAIN_RATE;
 
-    this.predatorMaxNumber = 100;
-    this.predatorViewAngle = 60.0d;
-    this.predatorSplitEnergyFillingSpeed = 0.5d;
+    this.predatorMaxNumber = Defaults.PREDATOR_MAX_NUMBER;
+    this.predatorViewAngle = Defaults.PREDATOR_VIEW_ANGLE;
+    this.predatorSplitEnergyFillingSpeed = Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
 
-    this.preyMaxNumber = 100;
-    this.preyViewAngle = 300.0d;
-    this.preySplitEnergyFillingSpeed = 0.5d;
+    this.preyMaxNumber = Defaults.PREY_MAX_NUMBER;
+    this.preyViewAngle = Defaults.PREY_VIEW_ANGLE;
+    this.preySplitEnergyFillingSpeed = Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED;
+
+    this.neuralNetworkLayersNumber = Defaults.NEURAL_NETWORK_LAYERS_NUMBER;
   }
 
+  /**
+   * Saves a Configuration file in the temporary files of the user's computer.
+   *
+   * @return if the file was saved without any issues
+   */
+  public String saveFileConfiguration() {
 
+
+    return "Saved!";
+  }
+
+  // Setters
+  public void setEntitySensorsCount(int entitySensorsCount) {
+    this.entitySensorsCount = entitySensorsCount;
+  }
+
+  public void setEntityRadius(double entityRadius) {
+    this.entityRadius = entityRadius;
+  }
+
+  public void setEntitySensorsLength(double entitySensorsLength) {
+    this.entitySensorsLength = entitySensorsLength;
+  }
+
+  public void setEntityMaxSpeed(double entityMaxSpeed) {
+    this.entityMaxSpeed = entityMaxSpeed;
+  }
+
+  public void setEntitySpeedMutationRate(double entitySpeedMutationRate) {
+    this.entitySpeedMutationRate = entitySpeedMutationRate;
+  }
+
+  public void setEntityEnergyDrainRate(double entityEnergyDrainRate) {
+    this.entityEnergyDrainRate = entityEnergyDrainRate;
+  }
+
+  public void setPredatorMaxNumber(double predatorMaxNumber) {
+    this.predatorMaxNumber = predatorMaxNumber;
+  }
+
+  public void setPredatorViewAngle(double predatorViewAngle) {
+    this.predatorViewAngle = predatorViewAngle;
+  }
+
+  public void setPredatorSplitEnergyFillingSpeed(double predatorSplitEnergyFillingSpeed) {
+    this.predatorSplitEnergyFillingSpeed = predatorSplitEnergyFillingSpeed;
+  }
+
+  public void setPreyMaxNumber(double preyMaxNumber) {
+    this.preyMaxNumber = preyMaxNumber;
+  }
+
+  public void setPreyViewAngle(double preyViewAngle) {
+    this.preyViewAngle = preyViewAngle;
+  }
+
+  public void setPreySplitEnergyFillingSpeed(double preySplitEnergyFillingSpeed) {
+    this.preySplitEnergyFillingSpeed = preySplitEnergyFillingSpeed;
+  }
+
+  public void setNeuralNetworkLayersNumber(int neuralNetworkLayersNumber) {
+    this.neuralNetworkLayersNumber = neuralNetworkLayersNumber;
+  }
 }
