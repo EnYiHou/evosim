@@ -43,6 +43,7 @@ public class Point {
         this.x = positionX;
         this.y = positionY;
     }
+    
     public final double getX() {
         return x;
     }
@@ -58,7 +59,4 @@ public class Point {
     public final void setY(final double positionY) {
         this.y = positionY;
     }
-
-
-
 }
