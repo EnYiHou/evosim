@@ -1,6 +1,7 @@
 package org.totallyspies.evosim;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -12,18 +13,36 @@ public class ConfigurationTest {
 
   private Configuration defaultConfiguration = new Configuration();
 
+  private Configuration testConfiguration = new Configuration();
+
   @Test
   public void savesFilePrint() {
-    assertEquals("Saved!", defaultConfiguration.saveFileConfiguration());
+    assertEquals("Saved!", defaultConfiguration.saveLastConfiguration());
+    assertEquals("Saved!",
+        defaultConfiguration.saveFileConfiguration("helloWorld.json"));
   }
 
   @Test
-  public void savedAtRightPath() {
-    assertEquals(System.getProperty("java.io.tmpdir"), defaultConfiguration.loadFileConfiguration().getPath());
+  public void loadFileSavesDefaultConfiguration() {
+    assertEquals(defaultConfiguration.toString(),
+        Configuration.getConfiguration("defaultConfigurations.json")
+            .toString());
   }
 
   @Test
-  public void loadContent() {
+  public void loadFileSavesLastConfiguration() {
+    defaultConfiguration.setEntityMaxSpeed(67d);
+    defaultConfiguration.setPreySplitEnergyFillingSpeed(45d);
+    defaultConfiguration.saveLastConfiguration();
+    assertEquals(defaultConfiguration.toString(),
+        Configuration.getLast().toString());
+  }
+
+  @Test
+  public void loadFile() {
+    testConfiguration.setNeuralNetworkLayersNumber(8);
+    testConfiguration.setEntityMaxSpeed(34d);
+    testConfiguration.saveFileConfiguration("testConfiguration.json");
 
   }
 
