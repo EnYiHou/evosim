@@ -1,5 +1,9 @@
 package org.totallyspies.evosim;
 
+import java.io.File;
+import java.io.FileWriter;
+import org.json.JSONObject;
+
 /**
  * Configuration class consists of saving the settings the user configurations.
  * If the user close the application without saving the configurations, the
@@ -168,15 +172,58 @@ public final class Configuration {
     this.neuralNetworkLayersNumber = Defaults.NEURAL_NETWORK_LAYERS_NUMBER;
   }
 
-  // @Todo
-
   /**
    * Saves a Configuration file in the temporary files of the user's computer.
    *
    * @return if the file was saved without any issues
+   * @Todo
    */
   public String saveFileConfiguration() {
+    try {
+      JSONObject jsonText = getJSONObject();
+      File json = new File(System.getProperty("java.io.tmpdir"),
+          "defaultConfigurations.json");
+      if (json.exists()) {
+        json.createNewFile();
+      }
+
+      try (FileWriter writer = new FileWriter(json)) {
+        jsonText.write(writer);
+      }
+
+    } catch (Exception e) {
+      return e.getMessage();
+    }
     return "Saved!";
+  }
+
+  /**
+   * @return
+   * @Todo
+   */
+  public File loadFileConfiguration() {
+
+    return null;
+  }
+
+  private JSONObject getJSONObject() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("entitySensorsCount", this.entitySensorsCount);
+    jsonObject.put("entityRadius", this.entityRadius);
+    jsonObject.put("entitySensorsLength", this.entitySensorsLength);
+    jsonObject.put("entityMaxSpeed", this.entityMaxSpeed);
+    jsonObject.put("entitySpeedMutationRate", this.entitySpeedMutationRate);
+    jsonObject.put("entityEnergyDrainRate", this.entityEnergyDrainRate);
+    jsonObject.put("predatorMaxNumber", this.predatorMaxNumber);
+    jsonObject.put("predatorViewAngle", this.predatorViewAngle);
+    jsonObject.put("predatorSplitEnergyFillingSpeed",
+        this.predatorSplitEnergyFillingSpeed);
+    jsonObject.put("preyMaxNumber", this.preyMaxNumber);
+    jsonObject.put("preySplitEnergyFillingSpeed",
+        this.preySplitEnergyFillingSpeed);
+    jsonObject.put("preyViewAngle", this.preyViewAngle);
+
+    return jsonObject;
   }
 
   // Setters

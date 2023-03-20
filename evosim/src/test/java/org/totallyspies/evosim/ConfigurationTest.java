@@ -10,14 +10,20 @@ import org.junit.jupiter.api.Test;
  */
 public class ConfigurationTest {
 
+  private Configuration defaultConfiguration = new Configuration();
+
   @Test
-  public void saveConfigurationsInTempFolder() {
-    Configuration defaultConfiguration = new Configuration();
+  public void savesFilePrint() {
     assertEquals("Saved!", defaultConfiguration.saveFileConfiguration());
   }
 
   @Test
-  public void something() {
+  public void savedAtRightPath() {
+    assertEquals(System.getProperty("java.io.tmpdir"), defaultConfiguration.loadFileConfiguration().getPath());
+  }
+
+  @Test
+  public void loadContent() {
 
   }
 
