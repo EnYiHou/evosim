@@ -1,6 +1,7 @@
 module org.totallyspies.evosim {
     requires javafx.controls;
     requires javafx.fxml;
+    requires org.json;
 
 
     opens org.totallyspies.evosim to javafx.fxml;
