@@ -159,9 +159,14 @@ public final class Configuration {
   private int neuralNetworkLayersNumber;
 
   /**
+   * The only configuration that exists using the Singleton Pattern.
+   */
+  private static Configuration configuration = new Configuration();
+
+  /**
    * Create a new default Configuration object, and the setup.
    */
-  public Configuration() {
+  private Configuration() {
     this.entitySensorsCount = Defaults.ENTITY_SENSORS_COUNT;
     this.entityRadius = Defaults.ENTITY_RADIUS;
     this.entitySensorsLength = Defaults.ENTITY_SENSORS_LENGTH;
@@ -283,6 +288,14 @@ public final class Configuration {
     }
 
     return null;
+  }
+
+  /**
+   * Get a default configuration.
+   * @return Configuration saved from a Json File
+   */
+  public static Configuration getConfiguration() {
+    return Configuration.configuration;
   }
 
   /**
