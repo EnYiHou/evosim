@@ -10,6 +10,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import org.totallyspies.evosim.EvosimApplication;
 import org.totallyspies.evosim.ResourceManager;
 
 /**
@@ -81,5 +82,12 @@ public final class WelcomeController {
                 node.setMouseTransparent(true);
             }
         });
+    }
+
+    @FXML
+    private void onNext() {
+        EvosimApplication.getApplication().setRoot(
+            ResourceManager.FXML_MAIN_VIEW
+        );
     }
 }
