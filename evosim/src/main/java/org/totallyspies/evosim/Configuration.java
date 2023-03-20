@@ -1,6 +1,8 @@
 package org.totallyspies.evosim;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import org.json.JSONObject;
 
@@ -82,6 +84,12 @@ public final class Configuration {
      * The number of layers the neural network will contain.
      */
     public static final int NEURAL_NETWORK_LAYERS_NUMBER = 2;
+
+    /**
+     * The default name of a configuration file.
+     */
+    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "defaultConfigurations.json";
+
   }
 
   /**
@@ -150,7 +158,7 @@ public final class Configuration {
   private int neuralNetworkLayersNumber;
 
   /**
-   * Create a new default Configuration class, and the setup.
+   * Create a new default Configuration object, and the setup.
    */
   public Configuration() {
     this.entitySensorsCount = Defaults.ENTITY_SENSORS_COUNT;
@@ -173,21 +181,84 @@ public final class Configuration {
   }
 
   /**
+   * Create a new Configuration object form a JSONObject.
+   *
+   * @param jsonObject JSONObject loaded from a json file.
+   */
+  private Configuration(final JSONObject jsonObject) {
+    this.entitySensorsCount = jsonObject.getInt("entitySensorsCount");
+    this.entityRadius = jsonObject.getDouble("entityRadius");
+    this.entitySensorsLength = jsonObject.getDouble("entitySensorsLength");
+    this.entityMaxSpeed = jsonObject.getDouble("entityMaxSpeed");
+    this.entitySpeedMutationRate = jsonObject.getDouble(
+        "entitySpeedMutationRate");
+    this.entityEnergyDrainRate = jsonObject.getDouble(
+        "entityEnergyDrainRate");
+
+    this.predatorMaxNumber = jsonObject.getInt("predatorMaxNumber");
+    this.predatorViewAngle = jsonObject.getDouble("predatorViewAngle");
+    this.predatorSplitEnergyFillingSpeed = jsonObject.getDouble(
+        "predatorSplitEnergyFillingSpeed");
+
+    this.preyMaxNumber = jsonObject.getInt("preyMaxNumber");
+    this.preyViewAngle = jsonObject.getDouble("preyViewAngle");
+    this.preySplitEnergyFillingSpeed = jsonObject.getDouble(
+        "preySplitEnergyFillingSpeed");
+
+    this.neuralNetworkLayersNumber = jsonObject.getInt(
+        "neuralNetworkLayersNumber");
+  }
+
+  @Override
+  public String toString() {
+    return "Configuration{" +
+        "entitySensorsCount=" + entitySensorsCount +
+        ", entityRadius=" + entityRadius +
+        ", entitySensorsLength=" + entitySensorsLength +
+        ", entityMaxSpeed=" + entityMaxSpeed +
+        ", entitySpeedMutationRate=" + entitySpeedMutationRate +
+        ", entityEnergyDrainRate=" + entityEnergyDrainRate +
+        ", predatorMaxNumber=" + predatorMaxNumber +
+        ", predatorViewAngle=" + predatorViewAngle +
+        ", predatorSplitEnergyFillingSpeed=" + predatorSplitEnergyFillingSpeed +
+        ", preyMaxNumber=" + preyMaxNumber +
+        ", preyViewAngle=" + preyViewAngle +
+        ", preySplitEnergyFillingSpeed=" + preySplitEnergyFillingSpeed +
+        ", neuralNetworkLayersNumber=" + neuralNetworkLayersNumber +
+        '}';
+  }
+
+  /**
+   * Saves the default files that the user didn't have time to save.
+   *
+   * @return "Saved!" if the last configuration has saved.
+   */
+  public String saveLastConfiguration() {
+    try {
+      saveFileConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    } catch (Exception e) {
+      e.getMessage();
+    }
+    return "Saved!";
+  }
+
+  /**
    * Saves a Configuration file in the temporary files of the user's computer.
    *
-   * @return if the file was saved without any issues
-   * @Todo
+   * @param fileName a new file name for the save file
+   * @return "Saved!" if the file was saved without any issues
    */
-  public String saveFileConfiguration() {
+  public String saveFileConfiguration(final String fileName) {
     try {
       JSONObject jsonText = getJSONObject();
-      File json = new File(System.getProperty("java.io.tmpdir"),
-          "defaultConfigurations.json");
-      if (json.exists()) {
-        json.createNewFile();
+
+      File jsonFile = new File(System.getProperty("java.io.tmpdir"),
+          fileName);
+      if (jsonFile.exists()) {
+        jsonFile.createNewFile();
       }
 
-      try (FileWriter writer = new FileWriter(json)) {
+      try (FileWriter writer = new FileWriter(jsonFile)) {
         jsonText.write(writer);
       }
 
@@ -198,14 +269,64 @@ public final class Configuration {
   }
 
   /**
-   * @return
-   * @Todo
+   * Get a saved configuration in the temp file.
+   *
+   * @param fileName The name of the file we want to load.
+   * @return Configuration saved from a Json File.
    */
-  public File loadFileConfiguration() {
+  public static Configuration getConfiguration(final String fileName) {
+    JSONObject jsonObject = loadSavedConfiguration(fileName);
+
+    if (jsonObject != null) {
+      return new Configuration(jsonObject);
+    }
 
     return null;
   }
 
+  /**
+   * Render the last configuration the user used before closing the
+   * application.
+   *
+   * @return Configuration object with the last Configuration the user used.
+   */
+  public static Configuration getLast() {
+    try{
+      return getConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    } catch (Exception e) {
+      System.out.println("Last Configuration doesn't exists yet.");
+      return null;
+    }
+  }
+
+  /**
+   * Load a saved Configuration JSON file and turn it into an JSONObject.
+   *
+   * @param fileName The file name of the json file we want to load.
+   * @return JSONObject from a source JSON Configuration file.
+   */
+  private static JSONObject loadSavedConfiguration(final String fileName) {
+    String jsonText = "";
+    try {
+      String tmpdir = System.getProperty("java.io.tmpdir");
+      File jsonFile = new File(tmpdir, fileName);
+
+      try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
+        jsonText = reader.readLine();
+      }
+
+    } catch (Exception e) {
+      e.getMessage();
+      return null;
+    }
+    return new JSONObject(jsonText);
+  }
+
+  /**
+   * Makes a JSONObject, and put all the Configuration variables into it.
+   *
+   * @return JSONObject with Configuration's variables.
+   */
   private JSONObject getJSONObject() {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("entitySensorsCount", this.entitySensorsCount);
@@ -222,7 +343,7 @@ public final class Configuration {
     jsonObject.put("preySplitEnergyFillingSpeed",
         this.preySplitEnergyFillingSpeed);
     jsonObject.put("preyViewAngle", this.preyViewAngle);
-
+    jsonObject.put("neuralNetworkLayersNumber", this.neuralNetworkLayersNumber);
     return jsonObject;
   }
 
@@ -291,5 +412,58 @@ public final class Configuration {
   public void setNeuralNetworkLayersNumber(
       final int newNeuralNetworkLayersNumber) {
     this.neuralNetworkLayersNumber = newNeuralNetworkLayersNumber;
+  }
+
+  // Getters
+  public int getEntitySensorsCount() {
+    return this.entitySensorsCount;
+  }
+
+  public double getEntityRadius() {
+    return this.entityRadius;
+  }
+
+  public double getEntitySensorsLength() {
+    return this.entitySensorsLength;
+  }
+
+  public double getEntityMaxSpeed() {
+    return this.entityMaxSpeed;
+  }
+
+  public double getEntitySpeedMutationRate() {
+    return this.entitySpeedMutationRate;
+  }
+
+  public double getEntityEnergyDrainRate() {
+    return this.entityEnergyDrainRate;
+  }
+
+  public double getPredatorMaxNumber() {
+    return this.predatorMaxNumber;
+  }
+
+  public double getPredatorViewAngle() {
+    return this.predatorViewAngle;
+  }
+
+  public double getPredatorSplitEnergyFillingSpeed() {
+    return this.predatorSplitEnergyFillingSpeed;
+  }
+
+  public double getPreyMaxNumber() {
+    return this.preyMaxNumber;
+  }
+
+  public double getPreyViewAngle() {
+    return this.preyViewAngle;
+  }
+
+  public double getPreySplitEnergyFillingSpeed() {
+    return this.preySplitEnergyFillingSpeed;
+  }
+
+  public int getNeuralNetworkLayersNumber() {
+    return this.neuralNetworkLayersNumber;
   }
 }
