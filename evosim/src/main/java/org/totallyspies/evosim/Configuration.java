@@ -88,7 +88,8 @@ public final class Configuration {
     /**
      * The default name of a configuration file.
      */
-    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "defaultConfigurations.json";
+    private static final String DEFAULT_CONFIGURATION_FILE_NAME =
+        "defaultConfigurations.json";
 
   }
 
@@ -211,21 +212,21 @@ public final class Configuration {
 
   @Override
   public String toString() {
-    return "Configuration{" +
-        "entitySensorsCount=" + entitySensorsCount +
-        ", entityRadius=" + entityRadius +
-        ", entitySensorsLength=" + entitySensorsLength +
-        ", entityMaxSpeed=" + entityMaxSpeed +
-        ", entitySpeedMutationRate=" + entitySpeedMutationRate +
-        ", entityEnergyDrainRate=" + entityEnergyDrainRate +
-        ", predatorMaxNumber=" + predatorMaxNumber +
-        ", predatorViewAngle=" + predatorViewAngle +
-        ", predatorSplitEnergyFillingSpeed=" + predatorSplitEnergyFillingSpeed +
-        ", preyMaxNumber=" + preyMaxNumber +
-        ", preyViewAngle=" + preyViewAngle +
-        ", preySplitEnergyFillingSpeed=" + preySplitEnergyFillingSpeed +
-        ", neuralNetworkLayersNumber=" + neuralNetworkLayersNumber +
-        '}';
+    return "Configuration{"
+        + "entitySensorsCount=" + entitySensorsCount
+        + ", entityRadius=" + entityRadius
+        + ", entitySensorsLength=" + entitySensorsLength
+        + ", entityMaxSpeed=" + entityMaxSpeed
+        + ", entitySpeedMutationRate=" + entitySpeedMutationRate
+        + ", entityEnergyDrainRate=" + entityEnergyDrainRate
+        + ", predatorMaxNumber=" + predatorMaxNumber
+        + ", predatorViewAngle=" + predatorViewAngle
+        + ", predatorSplitEnergyFillingSpeed=" + predatorSplitEnergyFillingSpeed
+        + ", preyMaxNumber=" + preyMaxNumber
+        + ", preyViewAngle=" + preyViewAngle
+        + ", preySplitEnergyFillingSpeed=" + preySplitEnergyFillingSpeed
+        + ", neuralNetworkLayersNumber=" + neuralNetworkLayersNumber
+        + '}';
   }
 
   /**
@@ -291,7 +292,7 @@ public final class Configuration {
    * @return Configuration object with the last Configuration the user used.
    */
   public static Configuration getLast() {
-    try{
+    try {
       return getConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
     } catch (Exception e) {
       System.out.println("Last Configuration doesn't exists yet.");
@@ -311,7 +312,8 @@ public final class Configuration {
       String tmpdir = System.getProperty("java.io.tmpdir");
       File jsonFile = new File(tmpdir, fileName);
 
-      try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
+      try (BufferedReader reader = new BufferedReader(
+          new FileReader(jsonFile))) {
         jsonText = reader.readLine();
       }
 
