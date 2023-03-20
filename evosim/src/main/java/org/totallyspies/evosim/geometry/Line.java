@@ -11,6 +11,7 @@ public class Line {
      * The start point of the line.
      */
     private final Point startPoint;
+
     /**
      * The end point of the line.
      */
@@ -25,6 +26,7 @@ public class Line {
         this.startPoint = start;
         this.endPoint = end;
     }
+
     /**
      * Creates a new line with the given start and end points.
      * @param startX the x coordinate of the start point

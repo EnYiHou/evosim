@@ -1,7 +1,9 @@
 package org.totallyspies.evosim.entities;
 
+import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 
 import java.util.ArrayList;
@@ -29,26 +31,31 @@ public abstract class Entity {
     public static final double SENSORS_LENGTH = 1000.0d;
 
     /**
+     * The maximum possible speed of the entity during a mutation.
+     */
+    protected static final double MAX_SPEED = 3.0;
+
+    /**
+     * The Mutation rate of the speed of the entity.
+     */
+    protected static final double SPEED_MUTATION_RATE = 0.2;
+
+    /**
+     * The speed at which the energy of the entity will be drained.
+     */
+    public static final double ENERGY_DRAIN_RATE = 0.01;
+
+    /**
      * The sensors of the entity.
      * Each sensor is a line that will be used to detect other entities.
      */
     private Line[] sensors;
 
-
     /**
-     * The speed of the entity.
-     * The entity will move according to this speed on every update.
+     * The random speed of the entity.
+     * This value determines the maximum speed of the entity.
      */
     private final double speed;
-
-    /**
-     * The maximum speed of the entity.
-     */
-    protected static final double MAX_SPEED = 3.0;
-    /**
-     * The Mutation rate of the speed of the entity.
-     */
-    protected static final double SPEED_MUTATION_RATE = 0.2;
 
     /**
      * The neural network of the entity.
@@ -60,7 +67,7 @@ public abstract class Entity {
     /**
      * The position of the entity.
      */
-    private Point position;
+    private final Circle body;
 
     /**
      * The energy of the entity.
@@ -71,10 +78,6 @@ public abstract class Entity {
      */
     private double energy;
 
-    /**
-     * The speed at which the energy of the entity will be drained.
-     */
-    public static final double ENERGY_DRAIN_RATE = 0.01;
 
     /**
      * The accumulated split energy of the entity.
@@ -82,90 +85,24 @@ public abstract class Entity {
      * The accumulated split energy will be set to 0 when the entity splits.
      */
     private double splitEnergy;
+
     /**
      * The rotation angle of the entity in radians.
+     * This angle represents the direction of the entity.
      */
-    private double rotationAngleInRadians;
+    private double directionAngleInRadians;
 
     /**
      * The number of children of the entity.
      */
     private int childCount;
+
     /**
      * The view angle of the entity.
+     * The view angle is the angle of the field of view of the entity.
      */
-    private double viewAngle;
+    private double fovAngleInDegrees;
 
-
-    /**
-     * The constructor of the entity.
-     *
-     * @param entitySpeed    The speed of the entity.
-     * @param entityPosition The position of the entity.
-     * @param newViewAngle   The view angle of the entity.
-     */
-    protected Entity(final double entitySpeed,
-                     final Point entityPosition,
-                     final double newViewAngle) {
-        this.brain = new NeuralNetwork(
-                Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
-                        .boxed().collect(ArrayList::new,
-                                ArrayList::add,
-                                ArrayList::addAll));
-        this.speed = entitySpeed;
-
-        //randomize initial rotation angle
-        this.rotationAngleInRadians = Math.random() * 2 * Math.PI;
-
-        //initialize sensors
-        this.sensors = new Line[Entity.SENSORS_COUNT];
-        this.position = entityPosition;
-        this.viewAngle = newViewAngle;
-        adjustSensors();
-    }
-    /**
-     * Move the entity according to the given movement speed
-     * and its current rotation angle.
-     * The energy of the entity will be drained according to the movement speed.
-     *
-     * @param movementSpeed The speed of the movement.
-     */
-    public void move(final double movementSpeed) {
-        this.position.setX(this.position.getX()
-                + Math.cos(this.rotationAngleInRadians) * movementSpeed);
-        this.position.setY(this.position.getX()
-                + Math.sin(this.rotationAngleInRadians) * movementSpeed);
-        this.energy -= Entity.ENERGY_DRAIN_RATE * movementSpeed;
-    }
-
-    /**
-     * Each subclass entity will have its own implementation of this method.
-     * This method will be called on every update.
-     */
-    public abstract void onUpdate();
-
-    /**
-     * This method will adjust the sensors of the
-     * entity according to the given view angle.
-     */
-    public void adjustSensors() {
-        double angleBetweenSensors = this.viewAngle
-                / (Entity.SENSORS_COUNT - 1);
-        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
-            double angle = this.getRotationAngleInRadians()
-                    + Math.toRadians(-this.viewAngle / 2
-                    + angleBetweenSensors * i);
-            this.getSensors()[i].getStartPoint()
-                    .set(this.getPosition().getX(),
-                            this.getPosition().getY());
-
-            this.getSensors()[i].getEndPoint()
-                    .set(this.getPosition().getX()
-                                    + Math.cos(angle) * Entity.SENSORS_LENGTH,
-                            this.getPosition().getY()
-                                    + Math.sin(angle) * Entity.SENSORS_LENGTH);
-        }
-    }
 
     /**
      * Each subclass entity will have its own implementation of this method.
@@ -185,6 +122,79 @@ public abstract class Entity {
      * This method will be called when the entity splits.
      */
     public abstract void onSplit();
+
+    /**
+     * The constructor of the entity.
+     *
+     * @param entitySpeed      The speed of the entity.
+     * @param entityPosition   The position of the entity.
+     * @param newViewAngle     The view angle of the entity.
+     * @param newRotationAngle The rotation angle of the entity.
+     */
+    protected Entity(final double entitySpeed,
+                     final Point entityPosition,
+                     final double newViewAngle,
+                     final double newRotationAngle) {
+        this.body = new Circle(entityPosition, Entity.ENTITY_RADIUS);
+        this.brain = new NeuralNetwork(
+                Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
+                        .boxed().collect(ArrayList::new,
+                                ArrayList::add,
+                                ArrayList::addAll));
+        this.speed = entitySpeed;
+
+        this.directionAngleInRadians = newRotationAngle;
+
+        //initialize sensors
+        this.sensors = new Line[Entity.SENSORS_COUNT];
+        this.fovAngleInDegrees = newViewAngle;
+        adjustSensors();
+    }
+
+    /**
+     * Move the entity according to the given movement speed
+     * and its current rotation angle.
+     * The energy of the entity will be drained according to the movement speed.
+     *
+     * @param movementSpeed The speed of the movement.
+     */
+    public void move(final double movementSpeed) {
+        Point position = this.body.getCenter();
+        position.setX(position.getX()
+                + Math.cos(this.directionAngleInRadians) * movementSpeed);
+        position.setY(position.getX()
+                + Math.sin(this.directionAngleInRadians) * movementSpeed);
+        this.energy -= Entity.ENERGY_DRAIN_RATE * movementSpeed;
+    }
+
+    /**
+     * Each subclass entity will have its own implementation of this method.
+     * This method will be called on every update.
+     */
+    public abstract void onUpdate();
+
+    /**
+     * This method will adjust the sensors of the
+     * entity according to the entity's position and rotation angle.
+     */
+    public void adjustSensors() {
+        double angleBetweenSensors = this.fovAngleInDegrees
+                / (Entity.SENSORS_COUNT - 1);
+        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
+            double angle = this.directionAngleInRadians
+                    + Math.toRadians(-this.fovAngleInDegrees / 2
+                    + angleBetweenSensors * i);
+            this.sensors[i].getStartPoint()
+                    .setCoordinates(this.getBodyCenter().getX(),
+                            this.getBodyCenter().getY());
+
+            this.sensors[i].getEndPoint()
+                    .setCoordinates(this.getBodyCenter().getX()
+                                    + Math.cos(angle) * Entity.SENSORS_LENGTH,
+                            this.getBodyCenter().getY()
+                                    + Math.sin(angle) * Entity.SENSORS_LENGTH);
+        }
+    }
 
     /**
      * This method will be called when the entity dies.
@@ -213,7 +223,10 @@ public abstract class Entity {
      */
     public final boolean checkCollide(final Entity entity) {
         // TODO check if the two entities collide
-        double distance = 0;
+        double distance = Formulas.distance(this.getBodyCenter().getX(),
+                this.getBodyCenter().getY(),
+                entity.getBodyCenter().getX(),
+                entity.getBodyCenter().getY());
         boolean collide = false;
         if (distance < Entity.ENTITY_RADIUS * 2) {
             collide = true;
@@ -222,11 +235,9 @@ public abstract class Entity {
         //distance between the two entities
         return collide;
     }
+
     public final Line[] getSensors() {
         return this.sensors;
-    }
-    public final Point getPosition() {
-        return this.position;
     }
     public final double getEnergy() {
         return this.energy;
@@ -237,29 +248,32 @@ public abstract class Entity {
     public final int getChildCount() {
         return this.childCount;
     }
-    public final double getRotationAngleInRadians() {
-        return this.rotationAngleInRadians;
+
+    public final double getDirectionAngleInRadians() {
+        return this.directionAngleInRadians;
     }
+
     public final double getSpeed() {
         return this.speed;
     }
+
+    public final Point getBodyCenter() {
+        return this.body.getCenter();
+    }
+
     public final NeuralNetwork getBrain() {
         return this.brain;
     }
-    public final void setPosition(final Point entityPosition) {
-        this.position = entityPosition;
-    }
-    public final void setEnergy(final double entityEnergy) {
+
+    protected final void setEnergy(final double entityEnergy) {
         this.energy = entityEnergy;
     }
-    public final void setSplitEnergy(final double entitySplitEnergy) {
+
+    protected final void setSplitEnergy(final double entitySplitEnergy) {
         this.splitEnergy = entitySplitEnergy;
     }
-    public final void setChildCount(final int entityChildCount) {
+
+    protected final void setChildCount(final int entityChildCount) {
         this.childCount = entityChildCount;
-    }
-    public final void setRotationAngleInRadians(
-            final double entityRotationAngleInRadians) {
-        this.rotationAngleInRadians = entityRotationAngleInRadians;
     }
 }

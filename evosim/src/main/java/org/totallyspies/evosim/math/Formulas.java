@@ -1,5 +1,8 @@
 package org.totallyspies.evosim.math;
 
+import org.totallyspies.evosim.geometry.Circle;
+import org.totallyspies.evosim.geometry.Line;
+
 import java.util.List;
 import java.util.function.Function;
 
@@ -59,7 +62,6 @@ public final class Formulas {
                     Formulas::relu
             );
 
-
     /**
      * Calculates the distance between a line and circle.
      *
@@ -71,28 +73,28 @@ public final class Formulas {
      * If the line intersects the circle, the distance is the distance
      * between the start of the line and the closest intersection.
      *
-     * @param line the line given in the form of {x1, y1, x2, y2}
-     * @param entityCenterX the x coordinate of the center of the circle
-     * @param entityCenterY the y coordinate of the center of the circle
-     * @param circleRadius the radius of the circle
+     * @param line the line
+     * @param circle the circle
+
      * @return the closest distance between the line and the circle
      */
-    public static double closestIntersection(final double[] line,
-                                             final double entityCenterX,
-                                             final double entityCenterY,
-                                             final double circleRadius) {
+    public static double closestIntersection(final Line line,
+                                             final Circle circle) {
 
         double slope;
         double yInt;
-        double lineStartX = line[0];
-        double lineStartY = line[1];
-        double lineEndX = line[2];
-        double lineEndY = line[3];
+        double lineStartX = line.getStartPoint().getX();
+        double lineStartY = line.getStartPoint().getY();
+        double lineEndX = line.getEndPoint().getX();
+        double lineEndY = line.getEndPoint().getY();
+        final double circleCenterX = circle.getCenter().getX();
+        final double circleCenterY = circle.getCenter().getY();
+        final double circleRadius = circle.getRadius();
         double deltaX = lineEndX - lineStartX;
         double length = distance(lineStartX, lineStartY, lineEndX, lineEndY);
 
 
-        if (distance(entityCenterX, entityCenterY, lineStartX, lineStartY)
+        if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
                 - circleRadius > length) {
             return length;
         }
@@ -101,18 +103,17 @@ public final class Formulas {
 
             double x = lineStartX;
             double sqrt = Math.sqrt(circleRadius * circleRadius
-                    - (x - entityCenterX) * (x - entityCenterX));
+                    - (x - circleCenterX) * (x - circleCenterX));
             double distance1 = distance(x, sqrt
-                    + entityCenterY, lineStartX, lineStartY);
+                    + circleCenterY, lineStartX, lineStartY);
             double distance2 = distance(x, -sqrt
-                    + entityCenterY, lineStartX, lineStartY);
+                    + circleCenterY, lineStartX, lineStartY);
 
             return (distance1 <= distance2 ? distance1 : distance2);
 
 
         } else {
 
-            // y == slope * x + yInt
             //calculate the slope of the line
             slope = (lineEndY - lineStartY) / (deltaX);
             //calculate the y intercept of the line
@@ -124,9 +125,9 @@ public final class Formulas {
 
 
             a = (slope * slope + 1);
-            b = (-2 * entityCenterX) + 2 * slope * (yInt - entityCenterY);
-            c = entityCenterX * entityCenterX + (yInt - entityCenterY)
-                    * (yInt - entityCenterY) - circleRadius * circleRadius;
+            b = (-2 * circleCenterX) + 2 * slope * (yInt - circleCenterY);
+            c = circleCenterX * circleCenterX + (yInt - circleCenterY)
+                    * (yInt - circleCenterY) - circleRadius * circleRadius;
             double[] results = getQuadraticEquationResults(a, b, c);
 
             if (results.length == 0) {

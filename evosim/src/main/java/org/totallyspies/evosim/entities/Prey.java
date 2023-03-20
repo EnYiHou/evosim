@@ -14,19 +14,23 @@ public class Prey extends Entity {
      * The view angle of the prey.
      */
     public static final double VIEW_ANGLE = 300.0d;
+
     /**
      * The split energy that the prey will gain when it
      * is not moving.
      */
     public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+
     /**
      * Creates a new prey with the given speed and position.
      *
      * @param speed    the speed of the prey
      * @param position the position of the prey
+     * @param rotationAngleInRadians the rotation angle of the prey
      */
-    public Prey(final double speed, final Point position) {
-        super(speed, position, Prey.VIEW_ANGLE);
+    public Prey(final double speed, final Point position,
+                final double rotationAngleInRadians) {
+        super(speed, position, Prey.VIEW_ANGLE, rotationAngleInRadians);
     }
 
     /**
@@ -34,8 +38,8 @@ public class Prey extends Entity {
      */
     @Override
     public void onUpdate() {
-
     }
+
     /**
      * Clone the prey and mutate its speed.
      *
@@ -47,13 +51,17 @@ public class Prey extends Entity {
         Prey prey = new Prey(
                 (Math.random() < Entity.SPEED_MUTATION_RATE)
                         ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
-                new Point(this.getPosition().getX(),
-                        this.getPosition().getY()));
+                new Point(this.getBodyCenter().getX(),
+                        this.getBodyCenter().getY()),
+                this.getDirectionAngleInRadians());
 
-        prey.setRotationAngleInRadians(this.getRotationAngleInRadians());
         // TODO copy the brain of the prey
+
+        this.setChildCount(this.getChildCount() + 1);
+
         return prey;
     }
+
     /**
      * If the prey collides with a predator, it will die.
      */
@@ -70,13 +78,5 @@ public class Prey extends Entity {
     public void onSplit() {
         Prey prey = this.clone();
         // TODO add the prey to the list of entities
-    }
-
-    /**
-     * Remove the prey from the list of entities.
-     */
-    @Override
-    public void onDie() {
-        // TODO remove the prey from the list of entities
     }
 }

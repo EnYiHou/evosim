@@ -14,6 +14,7 @@ public class Predator extends Entity {
      * The view angle of the predator.
      */
     public static final double VIEW_ANGLE = 60.0d;
+
     /**
      * The split energy that the predator will gain when it eats a prey.
      */
@@ -24,9 +25,14 @@ public class Predator extends Entity {
      *
      * @param speed    the speed of the predator
      * @param position the position of the predator
+     * @param rotationAngleInRadians the rotation angle of the predator
      */
-    public Predator(final double speed, final Point position) {
-        super(speed, position, Predator.VIEW_ANGLE);
+    public Predator(final double speed,
+                    final Point position,
+                    final double rotationAngleInRadians) {
+        super(speed, position,
+                Predator.VIEW_ANGLE,
+                rotationAngleInRadians);
     }
 
     /**
@@ -34,9 +40,7 @@ public class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
-
     }
-
 
     /**
      * Clone the predator and mutate its speed.
@@ -49,19 +53,19 @@ public class Predator extends Entity {
         Predator predator = new Predator(
                 (Math.random() < Entity.SPEED_MUTATION_RATE)
                         ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
-                new Point(this.getPosition().getX(),
-                        this.getPosition().getY()));
+                new Point(this.getBodyCenter().getX(),
+                        this.getBodyCenter().getY()),
+                this.getDirectionAngleInRadians());
 
-        predator.setRotationAngleInRadians(this.getRotationAngleInRadians());
+        // TODO copy the brain of the prey
 
-        //predator.brain = this.brain.cloneAndMutate();
+        this.setChildCount(this.getChildCount() + 1);
         return predator;
     }
 
-
     /**
      * If the predator collides with a prey, it will gain energy.
-     * If the predator has enough energy, it will split.
+     * If the predator gained enough energy, it will split.
      */
     @Override
     public void onCollide() {
@@ -83,13 +87,5 @@ public class Predator extends Entity {
         Predator predator = this.clone();
         // TODO add the predator to the list of entities
 
-    }
-
-    /**
-     * Remove the predator from the list of entities.
-     */
-    @Override
-    public void onDie() {
-        // TODO remove the predator from the list of entities
     }
 }
