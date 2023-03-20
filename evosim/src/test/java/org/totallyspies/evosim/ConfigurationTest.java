@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
  */
 public class ConfigurationTest {
 
-  private Configuration defaultConfiguration = new Configuration();
+  private Configuration defaultConfiguration = Configuration.getConfiguration();
 
-  private Configuration testConfiguration = new Configuration();
+  private Configuration testConfiguration = Configuration.getConfiguration();
 
   @Test
   public void savesFilePrint() {
@@ -45,5 +45,4 @@ public class ConfigurationTest {
     testConfiguration.saveFileConfiguration("testConfiguration.json");
 
   }
-
 }
