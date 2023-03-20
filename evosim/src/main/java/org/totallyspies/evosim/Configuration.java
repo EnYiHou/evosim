@@ -2,12 +2,12 @@ package org.totallyspies.evosim;
 
 /**
  * Configuration class consists of saving the settings the user configurations.
- * If the user close the application without saving the configurations,
- * the applications will remember them and will load them if needed.
+ * If the user close the application without saving the configurations, the
+ * applications will remember them and will load them if needed.
  *
  * @author edeli
  */
-public class Configuration {
+public final class Configuration {
 
   /**
    * Defaults values for each variable.
@@ -20,7 +20,7 @@ public class Configuration {
     public static final int ENTITY_SENSORS_COUNT = 30;
 
     /**
-     *  The radius of an entity.
+     * The radius of an entity.
      */
     public static final double ENTITY_RADIUS = 15.0d;
 
@@ -86,7 +86,7 @@ public class Configuration {
   private int entitySensorsCount;
 
   /**
-   *  The radius of an entity.
+   * The radius of an entity.
    */
   private double entityRadius;
 
@@ -158,7 +158,8 @@ public class Configuration {
 
     this.predatorMaxNumber = Defaults.PREDATOR_MAX_NUMBER;
     this.predatorViewAngle = Defaults.PREDATOR_VIEW_ANGLE;
-    this.predatorSplitEnergyFillingSpeed = Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
+    this.predatorSplitEnergyFillingSpeed = Defaults.
+        PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
 
     this.preyMaxNumber = Defaults.PREY_MAX_NUMBER;
     this.preyViewAngle = Defaults.PREY_VIEW_ANGLE;
@@ -167,67 +168,81 @@ public class Configuration {
     this.neuralNetworkLayersNumber = Defaults.NEURAL_NETWORK_LAYERS_NUMBER;
   }
 
+  // @Todo
+
   /**
    * Saves a Configuration file in the temporary files of the user's computer.
    *
    * @return if the file was saved without any issues
    */
   public String saveFileConfiguration() {
-
-
     return "Saved!";
   }
 
   // Setters
-  public void setEntitySensorsCount(int entitySensorsCount) {
-    this.entitySensorsCount = entitySensorsCount;
+  public void setEntitySensorsCount(
+      final int newEntitySensorsCount) {
+    this.entitySensorsCount = newEntitySensorsCount;
   }
 
-  public void setEntityRadius(double entityRadius) {
-    this.entityRadius = entityRadius;
+  public void setEntityRadius(
+      final double newEntityRadius) {
+    this.entityRadius = newEntityRadius;
   }
 
-  public void setEntitySensorsLength(double entitySensorsLength) {
-    this.entitySensorsLength = entitySensorsLength;
+  public void setEntitySensorsLength(
+      final double newEntitySensorsLength) {
+    this.entitySensorsLength = newEntitySensorsLength;
   }
 
-  public void setEntityMaxSpeed(double entityMaxSpeed) {
-    this.entityMaxSpeed = entityMaxSpeed;
+  public void setEntityMaxSpeed(
+      final double newEntityMaxSpeed) {
+    this.entityMaxSpeed = newEntityMaxSpeed;
   }
 
-  public void setEntitySpeedMutationRate(double entitySpeedMutationRate) {
-    this.entitySpeedMutationRate = entitySpeedMutationRate;
+  public void setEntitySpeedMutationRate(
+      final double newEntitySpeedMutationRate) {
+    this.entitySpeedMutationRate = newEntitySpeedMutationRate;
   }
 
-  public void setEntityEnergyDrainRate(double entityEnergyDrainRate) {
-    this.entityEnergyDrainRate = entityEnergyDrainRate;
+  public void setEntityEnergyDrainRate(
+      final double newEntityEnergyDrainRate) {
+    this.entityEnergyDrainRate = newEntityEnergyDrainRate;
   }
 
-  public void setPredatorMaxNumber(double predatorMaxNumber) {
-    this.predatorMaxNumber = predatorMaxNumber;
+  public void setPredatorMaxNumber(
+      final double newPredatorMaxNumber) {
+    this.predatorMaxNumber = newPredatorMaxNumber;
   }
 
-  public void setPredatorViewAngle(double predatorViewAngle) {
-    this.predatorViewAngle = predatorViewAngle;
+  public void setPredatorViewAngle(
+      final double newPredatorViewAngle) {
+    this.predatorViewAngle = newPredatorViewAngle;
   }
 
-  public void setPredatorSplitEnergyFillingSpeed(double predatorSplitEnergyFillingSpeed) {
-    this.predatorSplitEnergyFillingSpeed = predatorSplitEnergyFillingSpeed;
+  public void setPredatorSplitEnergyFillingSpeed(
+      final double newPredatorSplitEnergyFillingSpeed) {
+    this.predatorSplitEnergyFillingSpeed = newPredatorSplitEnergyFillingSpeed;
   }
 
-  public void setPreyMaxNumber(double preyMaxNumber) {
-    this.preyMaxNumber = preyMaxNumber;
+  public void setPreyMaxNumber(
+      final double newPreyMaxNumber
+  ) {
+    this.preyMaxNumber = newPreyMaxNumber;
   }
 
-  public void setPreyViewAngle(double preyViewAngle) {
-    this.preyViewAngle = preyViewAngle;
+  public void setPreyViewAngle(
+      final double newPreyViewAngle) {
+    this.preyViewAngle = newPreyViewAngle;
   }
 
-  public void setPreySplitEnergyFillingSpeed(double preySplitEnergyFillingSpeed) {
-    this.preySplitEnergyFillingSpeed = preySplitEnergyFillingSpeed;
+  public void setPreySplitEnergyFillingSpeed(
+      final double newPreySplitEnergyFillingSpeed) {
+    this.preySplitEnergyFillingSpeed = newPreySplitEnergyFillingSpeed;
   }
 
-  public void setNeuralNetworkLayersNumber(int neuralNetworkLayersNumber) {
-    this.neuralNetworkLayersNumber = neuralNetworkLayersNumber;
+  public void setNeuralNetworkLayersNumber(
+      final int newNeuralNetworkLayersNumber) {
+    this.neuralNetworkLayersNumber = newNeuralNetworkLayersNumber;
   }
 }
