@@ -38,11 +38,11 @@ public class Line {
                 final double endX, final double endY) {
         this(new Point(startX, startY), new Point(endX, endY));
     }
-    
+
     public final Point getStartPoint() {
         return this.startPoint;
     }
-    
+
     public final Point getEndPoint() {
         return this.endPoint;
     }

@@ -43,7 +43,7 @@ public class Point {
         this.x = positionX;
         this.y = positionY;
     }
-    
+
     public final double getX() {
         return x;
     }
