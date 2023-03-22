@@ -3,25 +3,27 @@ package org.totallyspies.evosim.entities;
 import org.totallyspies.evosim.geometry.Point;
 
 /**
- * This class represents a predator in the simulation.
- * It is an Entity that can eat prey.
+ * A Predator is a member of the evolution simulation that survives by
+ * hunting prey. To multiply, a predator must eat a certain number of prey
+ * by colliding with them to accumulate split energy. To die, a predator must
+ * run out of energy, which decreases upon every movement.
  *
- * @author EnYi
+ * @author EnYi, Matthew
  */
 public class Predator extends Entity {
 
     /**
-     * The view angle of the predator.
+     * The angle of the predator's view cone.
      */
     public static final double VIEW_ANGLE = 60.0d;
 
     /**
-     * The split energy that the predator will gain when it eats a prey.
+     * The split energy gained upon eating prey.
      */
     public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
 
     /**
-     * Creates a new predator with the given speed and position.
+     * Constructs a new predator.
      *
      * @param speed    the speed of the predator
      * @param position the position of the predator
@@ -36,14 +38,15 @@ public class Predator extends Entity {
     }
 
     /**
-     * This method will be called when the predator is updated.
+     * Determines if this predator should split or die based on its collision
+     * and energy.
      */
     @Override
     public void onUpdate() {
     }
 
     /**
-     * Clone the predator and mutate its speed.
+     * Clones the predator and mutates its speed and neural network.
      *
      * @return the cloned predator
      */
@@ -64,8 +67,12 @@ public class Predator extends Entity {
     }
 
     /**
-     * If the predator collides with a prey, it will gain energy.
-     * If the predator gained enough energy, it will split.
+     * Handles collision between this predator and another Entity.
+     * <p>
+     * If the predator collides with a prey, it will eat it and
+     * accumulate split energy. If doing so provides enough energy, it will
+     * split.
+     * </p>
      */
     @Override
     public void onCollide() {
@@ -79,8 +86,8 @@ public class Predator extends Entity {
     }
 
     /**
-     * Split the predator into two predators.
-     * Add the new predator to the list of entities.
+     * Splits this predator by cloning it and adding the new one to the list
+     * of entities.
      */
     @Override
     public void onSplit() {

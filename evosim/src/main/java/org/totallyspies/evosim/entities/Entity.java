@@ -10,8 +10,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * This class represents an entity in the simulation.
- * @author EnYi
+ * An Entity is an abstract member of the evolution simulation that can take
+ * the form of a Predator or Prey. Each type have a different set of criteria
+ * that must be fulfilled to reproduce or die. Each Entity is controlled by
+ * their brains, neural networks designed to learn the best possible option
+ * for survival when faced with an enemy.
+ *
+ * @author EnYi, Matthew
  */
 public abstract class Entity {
 
@@ -31,12 +36,12 @@ public abstract class Entity {
     public static final double SENSORS_LENGTH = 1000.0d;
 
     /**
-     * The maximum possible speed of the entity during a mutation.
+     * The maximum speed that can be chosen for an entity during mutation.
      */
     protected static final double MAX_SPEED = 3.0;
 
     /**
-     * The Mutation rate of the speed of the entity.
+     * A constant used to mutate the entities speed during reproduction.
      */
     protected static final double SPEED_MUTATION_RATE = 0.2;
 
@@ -46,21 +51,21 @@ public abstract class Entity {
     public static final double ENERGY_DRAIN_RATE = 0.01;
 
     /**
-     * The sensors of the entity.
-     * Each sensor is a line that will be used to detect other entities.
+     * An array of sensors represented by custom Line objects.
      */
     private Line[] sensors;
 
     /**
-     * The random speed of the entity.
-     * This value determines the maximum speed of the entity.
+     * The fixed entity speed randomly chosen at birth for an entity.
      */
     private final double speed;
 
     /**
      * The neural network of the entity.
-     * The neural network will be used to compute the output of the entity.
-     * The output of the neural network will be used to move the entity.
+     * <p>
+     * The network is passed input data from the entity's sensors and outputs
+     * data that will be used to make it's next decision.
+     * </p>
      */
     private final NeuralNetwork brain;
 
@@ -70,61 +75,62 @@ public abstract class Entity {
     private final Circle body;
 
     /**
-     * The energy of the entity.
-     * The energy will be drained when the entity moves.
-     * Then entity will not be able to move when the energy is 0.
+     * The current amount of energy this Entity has left.
      * <p>
-     * The value of the energy will be between 0 and 1.
+     * Energy is drained slowly whenever the entity moves. It is a double
+     * value within a range of 0 to 1, where at 0 the the entity cannot move.
+     * </p>
      */
     private double energy;
 
-
     /**
-     * The accumulated split energy of the entity.
-     * The entity will multiply when the accumulated split energy reaches 1.
-     * The accumulated split energy will be set to 0 when the entity splits.
+     * The current amount of split energy this Entity has accumulated.
+     * <p>
+     * Split energy determines whether or not the entity can multiply yet. It is
+     * bounded between 0 to 1, where at 1 the entity will multiply.
+     * </p>
      */
     private double splitEnergy;
 
     /**
-     * The rotation angle of the entity in radians.
-     * This angle represents the direction of the entity.
+     * The direction the entity is facing in radians.
      */
     private double directionAngleInRadians;
 
     /**
-     * The number of children of the entity.
+     * The number of children born from this entity.
      */
     private int childCount;
 
     /**
-     * The view angle of the entity.
-     * The view angle is the angle of the field of view of the entity.
+     * The angle of the field of view cone of this entity in degrees.
      */
     private double fovAngleInDegrees;
 
-
     /**
-     * Each subclass entity will have its own implementation of this method.
-     * This method will be called to clone the entity.
-     * @return The cloned entity.
+     * Clones this entity and mutates some of its properties.
+     *
+     * @return  the cloned entity.
      */
     public abstract Entity clone();
 
     /**
-     * Each entity will have its own implementation of this method.
-     * This method will be called when the entity collides with another entity.
+     * Handles what happens on collision between certain entity types.
      */
     public abstract void onCollide();
 
     /**
-     * Each subclass entity will have its own implementation of this method.
-     * This method will be called when the entity splits.
+     * Handles what happens when an entity multiplies.
      */
     public abstract void onSplit();
 
     /**
-     * The constructor of the entity.
+     * Handles what happens on update every frame to an entity.
+     */
+    public abstract void onUpdate();
+
+    /**
+     * Constructs a new Entity.
      *
      * @param entitySpeed      The speed of the entity.
      * @param entityPosition   The position of the entity.
@@ -152,11 +158,13 @@ public abstract class Entity {
     }
 
     /**
-     * Move the entity according to the given movement speed
-     * and its current rotation angle.
-     * The energy of the entity will be drained according to the movement speed.
+     * Moves the entity according to the given movement speed and its current
+     * rotation angle.
+     * <p>
+     * The entity's energy is drained according to their speed.
+     * </p>
      *
-     * @param movementSpeed The speed of the movement.
+     * @param movementSpeed the speed of the movement.
      */
     public void move(final double movementSpeed) {
         Point position = this.body.getCenter();
@@ -168,14 +176,8 @@ public abstract class Entity {
     }
 
     /**
-     * Each subclass entity will have its own implementation of this method.
-     * This method will be called on every update.
-     */
-    public abstract void onUpdate();
-
-    /**
-     * This method will adjust the sensors of the
-     * entity according to the entity's position and rotation angle.
+     * Adjusts this entity's sensors based on its position and rotation onto
+     * its new front side.
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
@@ -197,14 +199,14 @@ public abstract class Entity {
     }
 
     /**
-     * This method will be called when the entity dies.
+     * Removes the entity from the simulation and list of entities.
      */
     public void onDie() {
     }
 
     /**
-     * This method will be called at each update.
-     * This method will be in charge of the behavior of the entity.
+     * Processes data from this entity's sensors and moves according to its
+     * decision.
      */
     public final void update() {
         this.adjustSensors();
@@ -215,10 +217,10 @@ public abstract class Entity {
     }
 
     /**
-     * This method will be called to detect collision between this entity
-     * and another entity.
+     * Detects collision between this entity and another.
      *
      * @param entity The entity to check collision with.
+     *
      * @return true if the two entities collide, false otherwise.
      */
     public final boolean checkCollide(final Entity entity) {

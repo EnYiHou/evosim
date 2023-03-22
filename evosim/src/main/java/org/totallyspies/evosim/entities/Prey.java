@@ -3,26 +3,27 @@ package org.totallyspies.evosim.entities;
 import org.totallyspies.evosim.geometry.Point;
 
 /**
- * This class represents a prey in the simulation.
- * It is an Entity that can be eaten by predators.
+ * A Prey is member of the evolution simulation that survives by evading
+ * collision with predators. To multiply, a prey must remain stationary to
+ * accumulate split energy. To die, a prey must collide with a predator and
+ * get eaten.
  *
- * @author EnYi
+ * @author EnYi, Matthew
  */
 public class Prey extends Entity {
 
     /**
-     * The view angle of the prey.
+     * The angle of the prey's view cone.
      */
     public static final double VIEW_ANGLE = 300.0d;
 
     /**
-     * The split energy that the prey will gain when it
-     * is not moving.
+     * The split energy gained by not moving.
      */
     public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
 
     /**
-     * Creates a new prey with the given speed and position.
+     * Constructs a new prey.
      *
      * @param speed    the speed of the prey
      * @param position the position of the prey
@@ -34,14 +35,15 @@ public class Prey extends Entity {
     }
 
     /**
-     * This method will be called when the prey is updated.
+     * Determines if this prey should split or die based on its collision and
+     * energy.
      */
     @Override
     public void onUpdate() {
     }
 
     /**
-     * Clone the prey and mutate its speed.
+     * Clones the prey and mutates its speed and neural network.
      *
      * @return the cloned prey
      */
@@ -63,7 +65,10 @@ public class Prey extends Entity {
     }
 
     /**
-     * If the prey collides with a predator, it will die.
+     * Handles collision between this prey and another Entity.
+     * <p>
+     * If the prey collides with a predator, it will be eaten and die.
+     * </p>
      */
     @Override
     public void onCollide() {
@@ -71,8 +76,8 @@ public class Prey extends Entity {
     }
 
     /**
-     * Split the prey into two preys.
-     * Add the new prey to the list of entities.
+     * Splits this prey by cloning it and adding the new one to the list
+     * of entities.
      */
     @Override
     public void onSplit() {
