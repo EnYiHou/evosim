@@ -5,6 +5,6 @@ package org.totallyspies.evosim.simulation;
  *
  * @author Matthew
  */
-public class simulationApp {
+public class SimulationApp {
 
 }
