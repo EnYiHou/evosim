@@ -193,7 +193,7 @@ public class NeuralNetwork {
         // multiply each result by the bias
         if (!isFirstLayer) {
             for (int i = 0; i < neuronsList.size(); i++) {
-                dotProducts[i] *= neuronsList.get(i).getBias();
+                dotProducts[i] += neuronsList.get(i).getBias();
             }
         }
 
@@ -213,6 +213,19 @@ public class NeuralNetwork {
      */
     private void passForwards(final double[] src, final double[] dest) {
         System.arraycopy(src, 0, dest, 0, src.length);
+    }
+
+    /**
+     * Clones and mutates the current neural network for another entity.
+     * <p>
+     * The neural network is copied for use of new entity. To mutate it, the
+     * values of all the weights and biases are regenerated based on a set
+     * mutation rate.
+     * </p>
+     * @return  the mutated brain
+     */
+    private NeuralNetwork cloneAndMutate() {
+        return null;
     }
 
 }
