@@ -224,7 +224,7 @@ public class NeuralNetwork {
      * </p>
      * @return  the mutated brain
      */
-    private NeuralNetwork cloneAndMutate() {
+    public NeuralNetwork cloneAndMutate() {
         return null;
     }
 

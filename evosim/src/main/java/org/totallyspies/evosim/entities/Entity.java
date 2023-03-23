@@ -5,6 +5,7 @@ import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
+import org.totallyspies.evosim.simulation.SimulationApp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,12 @@ public abstract class Entity {
     /**
      * The maximum speed that can be chosen for an entity during mutation.
      */
-    protected static final double MAX_SPEED = 3.0;
+    public static final double MAX_SPEED = 3.0;
+
+    /**
+     * The minimum speed that can be chosen for an entity during mutation.
+     */
+    public static final double MIN_SPEED = 0.5;
 
     /**
      * A constant used to mutate the entities speed during reproduction.
@@ -202,6 +208,7 @@ public abstract class Entity {
      * Removes the entity from the simulation and list of entities.
      */
     public void onDie() {
+        SimulationApp.ENTITY_LIST.remove(this);
     }
 
     /**
@@ -218,10 +225,13 @@ public abstract class Entity {
 
     /**
      * Detects collision between this entity and another.
+     * <p>
+     * Collision between two entities of the same type are ignored and will
+     * return false.
+     * </p>
      *
      * @param entity The entity to check collision with.
-     *
-     * @return true if the two entities collide, false otherwise.
+     * @return true if a prey and predator collide.
      */
     public final boolean checkCollide(final Entity entity) {
         // TODO check if the two entities collide
@@ -235,6 +245,7 @@ public abstract class Entity {
             onCollide();
         }
         //distance between the two entities
+        // TODO check if the collision is between a predator and prey
         return collide;
     }
 

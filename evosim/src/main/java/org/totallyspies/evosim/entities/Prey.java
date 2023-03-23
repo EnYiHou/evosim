@@ -1,6 +1,7 @@
 package org.totallyspies.evosim.entities;
 
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.simulation.SimulationApp;
 
 /**
  * A Prey is member of the evolution simulation that survives by evading
@@ -72,7 +73,7 @@ public class Prey extends Entity {
      */
     @Override
     public void onCollide() {
-        // TODO remove the prey from the list of entities
+        this.onDie();
     }
 
     /**
@@ -81,7 +82,6 @@ public class Prey extends Entity {
      */
     @Override
     public void onSplit() {
-        Prey prey = this.clone();
-        // TODO add the prey to the list of entities
+        SimulationApp.ENTITY_LIST.add(this.clone());
     }
 }

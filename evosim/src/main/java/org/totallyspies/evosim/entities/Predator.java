@@ -10,7 +10,7 @@ import org.totallyspies.evosim.geometry.Point;
  *
  * @author EnYi, Matthew
  */
-public class Predator extends Entity {
+public final class Predator extends Entity {
 
     /**
      * The angle of the predator's view cone.
@@ -67,7 +67,7 @@ public class Predator extends Entity {
     }
 
     /**
-     * Handles collision between this predator and another Entity.
+     * Handles collision between this predator and prey.
      * <p>
      * If the predator collides with a prey, it will eat it and
      * accumulate split energy. If doing so provides enough energy, it will
@@ -78,11 +78,11 @@ public class Predator extends Entity {
     public void onCollide() {
         this.setEnergy(this.getEnergy()
                 + Predator.SPLIT_ENERGY_FILLING_SPEED);
-        if (this.getEnergy() > 1) {
+
+        if (this.getEnergy() > 1) { // enough energy to split
             this.setEnergy(this.getEnergy() - 1);
             this.onSplit();
         }
-
     }
 
     /**
