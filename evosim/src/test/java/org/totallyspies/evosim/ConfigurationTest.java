@@ -11,9 +11,8 @@ import org.junit.jupiter.api.Test;
  */
 public class ConfigurationTest {
 
-  private Configuration defaultConfiguration = new Configuration();
-
-  private Configuration testConfiguration = new Configuration();
+  private Configuration defaultConfiguration = Configuration.getConfiguration();
+  private Configuration latest = Configuration.getLast();
 
   @Test
   public void savesFilePrint() {
@@ -40,9 +39,9 @@ public class ConfigurationTest {
 
   @Test
   public void loadFile() {
-    testConfiguration.setNeuralNetworkLayersNumber(8);
-    testConfiguration.setEntityMaxSpeed(34d);
-    testConfiguration.saveFileConfiguration("testConfiguration.json");
+    latest.setNeuralNetworkLayersNumber(8);
+    latest.setEntityMaxSpeed(34d);
+    latest.saveFileConfiguration("testConfiguration.json");
 
   }
 
