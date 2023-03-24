@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -15,101 +16,117 @@ import org.totallyspies.evosim.utils.Rng;
  */
 public final class Neuron {
 
-  /**
-   * A double value to shift the results neural network's activation.
-   */
-  private final double bias;
+    /**
+     * The upper bound used to generate random weights.
+     */
+    private static final double WEIGHT_MAX = 0.99d;
+    /**
+     * The lower bound used to generate random weights.
+     */
+    private static final double WEIGHT_MIN = -0.99d;
+    /**
+     * The upper bound for generating random biases.
+     */
+    private static final double BIAS_MAX = 1d;
+    /**
+     * The lower bound for generating random biases.
+     */
+    private static final double BIAS_MIN = 0d;
+    /**
+     * A double value to shift the results neural network's activation.
+     */
+    private final double bias;
+    /**
+     * The weights the Neuron has, which are necessary for computations.
+     */
+    private final List<Double> weights;
+    /**
+     * The activation function randomly selected.
+     */
+    private Function<Double, Double> activationFunction;
 
-  /**
-   * The weights the Neuron has, which are necessary for computations.
-   */
-  private final List<Double> weights;
+    /**
+     * Creates a Neuron with a randomly generated bias.
+     *
+     * @param inputs                the inputs that feed the neuron
+     * @param newActivationFunction the function to initialize the value
+     * @param randomizeWeights      if weight should be randomized
+     */
+    public Neuron(
+        final int inputs,
+        final Function<Double, Double> newActivationFunction,
+        final boolean randomizeWeights
+    ) {
 
-  /**
-   * The activation function randomly selected.
-   */
-  private Function<Double, Double> activationFunction;
+        this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
 
-  /**
-   * The upper bound used to generate random weights.
-   */
-  private static final double WEIGHT_MAX = 0.99d;
+        this.weights = Stream
+            .generate(() -> randomizeWeights ? 1
+                : Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX))
+            .limit(inputs)
+            .toList();
 
-  /**
-   * The lower bound used to generate random weights.
-   */
-  private static final double WEIGHT_MIN = -0.99d;
-
-  /**
-   * The upper bound for generating random biases.
-   */
-  private static final double BIAS_MAX = 1d;
-
-  /**
-   * The lower bound for generating random biases.
-   */
-  private static final double BIAS_MIN = 0d;
-
-  /**
-   * Creates a Neuron with a randomly generated bias.
-   *
-   * @param inputs                the inputs that feed the neuron
-   * @param newActivationFunction the function to initialize the value
-   * @param randomizeWeights      if weight should be randomized
-   */
-  public Neuron(
-      final int inputs,
-      final Function<Double, Double> newActivationFunction,
-      final boolean randomizeWeights) {
-
-    this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
-
-    this.weights = Stream
-        .generate(() -> randomizeWeights ? 1
-            : Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX))
-        .limit(inputs)
-        .toList();
-
-    this.activationFunction = newActivationFunction;
-  }
-
-  @Override
-  public String toString() {
-    return "\nNeuron{"
-        + "bias=" + this.bias
-        + ", weights=" + this.weights
-        + "}\n";
-  }
-
-  /**
-   * Creates a Neuron with a predefined bias.
-   *
-   * @param neuronBias    the bias used to shift the activation function
-   * @param neuronWeights the weight used to do the computations
-   */
-  public Neuron(final double neuronBias, final List<Double> neuronWeights) {
-    this.bias = neuronBias;
-    this.weights = neuronWeights;
-  }
-
-  /**
-   * Feeds the input forward.
-   *
-   * @param inputs outputs from the previous layer or root inputs of the
-   *               network
-   * @return dot product of activated inputs and weights
-   */
-  public double feed(final List<Double> inputs) {
-    if (inputs.size() != this.weights.size()) {
-      throw new ArrayIndexOutOfBoundsException();
+        this.activationFunction = newActivationFunction;
     }
 
-    return IntStream
-        .range(0, inputs.size())
-        .mapToDouble(
-            i -> this.activationFunction.apply(inputs.get(i))
-                * this.weights.get(i))
-        .sum() * this.bias;
-  }
+    /**
+     * Creates a Neuron with a predefined bias.
+     *
+     * @param neuronBias    the bias used to shift the activation function
+     * @param neuronWeights the weight used to do the computations
+     */
+    public Neuron(final double neuronBias, final List<Double> neuronWeights) {
+        this.bias = neuronBias;
+        this.weights = neuronWeights;
+    }
+
+    @Override
+    public String toString() {
+        return "\nNeuron{"
+            + "bias=" + this.bias
+            + ", weights=" + this.weights
+            + "}\n";
+    }
+
+    /**
+     * Feeds the input forward.
+     *
+     * @param inputs outputs from the previous layer or root inputs of the
+     *               network
+     * @return dot product of activated inputs and weights
+     */
+    public double feed(final List<Double> inputs) {
+        if (inputs.size() != this.weights.size()) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+
+        return IntStream
+            .range(0, inputs.size())
+            .mapToDouble(
+                i -> this.activationFunction.apply(inputs.get(i))
+                    * this.weights.get(i))
+            .sum() * this.bias;
+    }
+
+    /**
+     * Mutates the neuron. For each field, if a random value between 0 and 1 is
+     * under the mutation rate, the field (weight or bias) is randomized.
+     * @param mutationRate The mutation rate for the mutations.
+     * @return New neuron based on parent
+     */
+    public Neuron mutate(final double mutationRate) {
+        final double newBias = Rng.RNG.nextDouble() < mutationRate
+            ? Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX)
+            : this.bias;
+
+        return new Neuron(
+            newBias,
+            this.weights.stream().map(
+                w -> Rng.RNG.nextDouble() < mutationRate
+                    ? Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX)
+                    : w
+            ).toList()
+        );
+    }
 
 }
