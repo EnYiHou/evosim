@@ -1,7 +1,7 @@
 package org.totallyspies.evosim.neuralnetwork;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -49,10 +49,10 @@ public final class Neuron {
     public Neuron(final int inputs) {
         this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
 
-        this.weights = new ArrayList<>();
-        for (int i = 0; i < inputs - 1; i++) {
-            this.weights.add(Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX));
-        }
+        this.weights = Stream
+            .generate(() -> Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX))
+            .limit(inputs)
+            .toList();
     }
 
     /**

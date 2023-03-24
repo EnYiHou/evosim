@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import java.util.stream.Stream;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
@@ -27,16 +28,6 @@ public class NeuralNetwork {
   private List<List<Neuron>> neuronsLayers;
 
   /**
-   * A 3D list containing all the weights of the network.
-   * <p>
-   * Each neuron of the network has a weight attached to every other neuron from
-   * the preceding layer. The first inner list selects which layer and the
-   * second inner list selects which neuron of that layer to look at.
-   * </p>
-   */
-  private List<List<List<Double>>> weightsLayers;
-
-  /**
    * The activation function randomly selected.
    */
   private Function<Double, Double> activationFunction;
@@ -55,38 +46,34 @@ public class NeuralNetwork {
    * Constructs a Neural Network with a set number of layers with specific
    * sizes.
    *
-   * @param sizes a list of integers representing the size of each layer. the
-   *              number of elements in the list is the number of layers.
+   * @param layers a list of integers representing the size of each layer. the
+   *               number of elements in the list is the number of layers.
    */
-  public NeuralNetwork(final List<Integer> sizes) {
+  public NeuralNetwork(final List<Integer> layerSizes) {
     this.neuronsLayers = new ArrayList<>();
-    this.weightsLayers = new ArrayList<>();
+
     this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(
         Rng.RNG.nextInt(0, Formulas.ACTIVATION_FUNCTIONS.size()));
-    int maxLayerIndex = 0;
 
     // populate neural network
-    for (int i = 0; i < sizes.size(); i++) { // layer number
-      this.neuronsLayers.add(new ArrayList<>());
-      for (int j = 0; j < sizes.get(i); j++) { // layer size
-        this.neuronsLayers.get(i).add(new Neuron());
+    int maxLayerSize = 0;
+    int lastSize = 0;
+    for (int curSize : layerSizes) { // layer number
+      int finalLastSize = lastSize;
+      this.neuronsLayers.add(
+          Stream
+              .generate(() -> new Neuron(finalLastSize))
+              .limit(curSize)
+              .toList()
+      );
+      if (curSize > maxLayerSize) {
+        maxLayerSize = curSize;
       }
-
-      if (this.neuronsLayers.get(i).size() > this.neuronsLayers.get(
-          maxLayerIndex).size()) {
-        maxLayerIndex = i;
-      }
+      lastSize = curSize;
     }
 
     // create an array with the size of the largest neuron layer
-    this.computations = new double[this.neuronsLayers.get(maxLayerIndex)
-        .size()];
-
-        /*populate weights:
-            within each weight layer, there are as many weight lists as
-            neurons on the output (right) side, and within each list there are
-            as many weights as neurons on the input (left) side.*/
-
+    this.computations = new double[maxLayerSize];
   }
 
   /**
