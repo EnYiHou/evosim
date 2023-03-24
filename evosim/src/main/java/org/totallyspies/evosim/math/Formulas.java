@@ -56,10 +56,10 @@ public final class Formulas {
      */
     public static final List<Function<Double, Double>> ACTIVATION_FUNCTIONS =
             List.of(
-                    Formulas::logistic,
-                    Formulas::hyperbolicTangent,
-                    Formulas::arctangent,
-                    Formulas::relu
+                    Formulas::logistic//,
+                    //Formulas::hyperbolicTangent,
+                    //Formulas::arctangent,
+                    //Formulas::relu
             );
 
     /**

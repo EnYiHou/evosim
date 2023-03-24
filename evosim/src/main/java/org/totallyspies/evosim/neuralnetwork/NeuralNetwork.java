@@ -1,8 +1,10 @@
 package org.totallyspies.evosim.neuralnetwork;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
@@ -17,7 +19,7 @@ import org.totallyspies.evosim.utils.Rng;
  * list of weights. The final layer's values (output layer) determines what the
  * Entity's decision will be.
  *
- * @author Matthew
+ * @author Matthew edeli
  */
 public class NeuralNetwork {
 
@@ -49,7 +51,9 @@ public class NeuralNetwork {
 
       this.neuronLayers.add(
           Stream
-              .generate(() -> new Neuron(finalLastSize, activationFunction))
+              .generate(() -> finalLastSize == 0
+                  ? new Neuron(1, activationFunction, false)
+                  : new Neuron(finalLastSize, activationFunction, true))
               .limit(curSize)
               .toList()
       );
@@ -77,13 +81,28 @@ public class NeuralNetwork {
    * neurons in the output layer.
    */
   public List<Double> calcNetworkDecision(final List<Double> inputs) {
-    List<Double> outputs = inputs;
-    for (List<Neuron> neurons : this.neuronLayers) {
+    Iterator<List<Neuron>> iterator = this.neuronLayers.iterator();
+    List<Neuron> firstLayer = iterator.next();
+
+    if (inputs.size() != firstLayer.size()) {
+      throw new ArrayIndexOutOfBoundsException();
+    }
+
+    List<Double> outputs = IntStream
+        .range(0, inputs.size())
+        .mapToDouble(i -> firstLayer.get(i).feed(List.of(inputs.get(i))))
+        .boxed()
+        .toList();
+
+    System.out.println(outputs);
+
+    while (iterator.hasNext()) {
       List<Double> latestOutputs = outputs;
-      outputs = neurons
+      outputs = iterator.next()
           .stream()
           .map(neuron -> neuron.feed(latestOutputs))
           .toList();
+      System.out.println(outputs);
     }
 
     return outputs;
@@ -101,6 +120,18 @@ public class NeuralNetwork {
    */
   private NeuralNetwork cloneAndMutate() {
     return null;
+  }
+
+  /**
+   * Test the Neural Network.
+   * @param args
+   */
+  public static void main(final String[] args) {
+    NeuralNetwork neuralNetwork = new NeuralNetwork(List.of(2, 2, 1));
+    System.out.println(neuralNetwork.calcNetworkDecision(
+        List.of(4d, 5d)));
+
+    System.out.println(neuralNetwork.neuronLayers);
   }
 
 }
