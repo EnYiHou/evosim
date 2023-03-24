@@ -190,26 +190,29 @@ public final class WelcomeController {
         });
     }
 
+    private <T extends Number> boolean isNumberFloatingPoint(final T num) {
+        if (!List.of(
+            Integer.class,
+            Double.class
+        ).contains(num.getClass())) {
+            throw new RuntimeException("T not Double or Integer");
+        }
+
+        return num.getClass() == Double.class;
+    }
+
     private <T extends Number> SafeSlider createSliderDefault(
         final String name,
         final Consumer<T> setter,
         final T defaultValue
     ) {
-        if (!List.of(
-            Integer.class,
-            Double.class
-        ).contains(defaultValue.getClass())) {
-            throw new RuntimeException("T not Double or Integer");
-        }
-        final boolean isFloatingPoint = defaultValue.getClass() == Double.class;
-
         return createSlider(
             name,
             setter,
             (T) (Integer.valueOf(0)),
             true,
             (
-                isFloatingPoint
+                isNumberFloatingPoint(defaultValue)
                     ? (T) Double.valueOf(defaultValue.doubleValue() * 2)
                     : (T) Integer.valueOf(defaultValue.intValue() * 2)
             ),
@@ -225,15 +228,8 @@ public final class WelcomeController {
         final T max, final boolean hardMax,
         final T defaultValue
     ) {
-        if (!List.of(
-            Integer.class,
-            Double.class
-        ).contains(defaultValue.getClass())) {
-            throw new RuntimeException("T not Double or Integer");
-        }
-        final boolean isFloatingPoint = defaultValue.getClass() == Double.class;
         final SafeSlider slider = new SafeSlider();
-        slider.setFloatingPoint(isFloatingPoint);
+        slider.setFloatingPoint(isNumberFloatingPoint(defaultValue));
         slider.setMin(min);
         slider.setHardMin(hardMin);
         slider.setMax(max);
