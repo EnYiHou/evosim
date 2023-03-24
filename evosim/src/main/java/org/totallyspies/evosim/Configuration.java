@@ -288,7 +288,7 @@ public final class Configuration {
    *
    * @return Configuration object with the last Configuration the user used.
    */
-  public static Configuration xgetLast() {
+  public static Configuration getLast() {
     try {
       return getConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
     } catch (Exception e) {
