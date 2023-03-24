@@ -50,6 +50,11 @@ public final class SafeSlider extends VBox {
     private static final Number DEFAULT_VALUE = 50;
 
     /**
+     * Default min/max enforcement.
+     */
+    private static final boolean DEFAULT_HARDLIMIT = false;
+
+    /**
      * Default name to use.
      */
     private static final String DEFAULT_NAME = "Safe slider";
@@ -68,6 +73,17 @@ public final class SafeSlider extends VBox {
      * Whether to use a floating point value or not for this slider.
      */
     private final SimpleBooleanProperty floatingPoint;
+
+    /**
+     * Whether the minimum should be enforced.
+     */
+    private final SimpleBooleanProperty hardMin;
+
+    /**
+     * Whether the maximum should be enforced.
+     */
+    private final SimpleBooleanProperty hardMax;
+
 
     /**
      * Slider JavaFX node that is shown in the UI.
@@ -106,6 +122,9 @@ public final class SafeSlider extends VBox {
     public SafeSlider() {
         this.slider = new Slider();
         this.textField = new TextField();
+
+        this.hardMin = new SimpleBooleanProperty(DEFAULT_HARDLIMIT);
+        this.hardMax = new SimpleBooleanProperty(DEFAULT_HARDLIMIT);
 
         this.floatingPoint = new SimpleBooleanProperty(DEFAULT_FLOATING_POINT);
         this.floatingPoint.addListener(
@@ -212,13 +231,27 @@ public final class SafeSlider extends VBox {
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Warning");
+        boolean isError = (
+            (
+                newValue.doubleValue() < this.getMin().doubleValue()
+                && this.isHardMin()
+            )
+            || (
+                this.getMax().doubleValue() < newValue.doubleValue()
+                && this.isHardMax()
+            )
+        );
+
+        Alert alert = new Alert(
+            isError ? Alert.AlertType.ERROR : Alert.AlertType.CONFIRMATION
+        );
+
+        alert.setTitle(isError ? "Error" : "Warning");
         alert.setHeaderText("Evosim");
 
         final String rangeText = this.isFloatingPoint()
             ? String.format(
-                "%.02f to %.02f)",
+                "%.02f to %.02f",
                 this.getMin().doubleValue(),
                 this.getMax().doubleValue()
             )
@@ -229,11 +262,15 @@ public final class SafeSlider extends VBox {
             );
 
         alert.setContentText(String.format(
-            "Value set falls out of safe range (%s). Continue?", rangeText
+            "Value set falls out of safe range (%s).", rangeText
         ));
 
+        if (!isError) {
+            alert.setContentText(alert.getContentText() + " Continue?");
+        }
+
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.CANCEL) {
+        if (isError || result.get() == ButtonType.CANCEL) {
             valueProperty.setValue(oldValue);
         }
     }
@@ -370,5 +407,53 @@ public final class SafeSlider extends VBox {
      */
     public SimpleBooleanProperty floatingPointProperty() {
         return floatingPoint;
+    }
+
+    /**
+     * Gets value within {@link #hardMin}.
+     * @return Value within
+     */
+    public boolean isHardMin() {
+        return hardMin.get();
+    }
+
+    /**
+     * Gets {@link #hardMin}.
+     * @return {@link #hardMin}
+     */
+    public SimpleBooleanProperty hardMinProperty() {
+        return hardMin;
+    }
+
+    /**
+     * Sets value within {@link #hardMin}.
+     * @param newHardMin New value to be used
+     */
+    public void setHardMin(final boolean newHardMin) {
+        this.hardMin.set(newHardMin);
+    }
+
+    /**
+     * Gets value within {@link #hardMax}.
+     * @return Value within
+     */
+    public boolean isHardMax() {
+        return hardMax.get();
+    }
+
+    /**
+     * Gets {@link #hardMax}.
+     * @return {@link #hardMax}
+     */
+    public SimpleBooleanProperty hardMaxProperty() {
+        return hardMax;
+    }
+
+    /**
+     * Sets value within {@link #hardMax}.
+     * @param newHardMax New value to be used
+     */
+    public void setHardMax(final boolean newHardMax) {
+        this.hardMax.set(newHardMax);
     }
 }
