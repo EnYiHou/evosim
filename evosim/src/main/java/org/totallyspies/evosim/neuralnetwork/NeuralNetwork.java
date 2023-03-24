@@ -19,7 +19,7 @@ import org.totallyspies.evosim.utils.Rng;
  * list of weights. The final layer's values (output layer) determines what the
  * Entity's decision will be.
  *
- * @author Matthew edeli
+ * @author Matthew Edelina
  */
 public class NeuralNetwork {
 

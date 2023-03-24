@@ -9,6 +9,8 @@ import java.util.function.Function;
 /**
  * This class contains all the activation functions
  * used during the neural-network computation.
+ *
+ * @author EnYi
  */
 public final class Formulas {
     private Formulas() {
