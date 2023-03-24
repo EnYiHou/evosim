@@ -3,27 +3,57 @@ package org.totallyspies.evosim.fxml;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.VBox;
+import org.totallyspies.evosim.Configuration;
 import org.totallyspies.evosim.EvosimApplication;
 import org.totallyspies.evosim.ResourceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input
  * fields.
+ *
  * @author ptrstr
  */
 public final class WelcomeController {
+    /**
+     * Callbacks to be called to when the `Start` button is pressed. Functions
+     * defined here set the configuration and exceptions are raised to the user.
+     */
+    private final List<Runnable> submissionCallbacks;
+
     /**
      * Split pane exported from FXML.
      */
     @FXML
     private SplitPane splitPane;
+
+    /**
+     * Accordion containing the options to be configured by category.
+     */
+    @FXML
+    private Accordion options;
+
+    /**
+     * Constructs the WelcomeController to have an empty array of submission
+     * callbacks.
+     */
+    public WelcomeController() {
+        this.submissionCallbacks = new ArrayList<>();
+    }
 
     /**
      * Initializes the {@code welcome.fxml} by setting
@@ -36,15 +66,93 @@ public final class WelcomeController {
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,
-            new BackgroundSize(
-                BackgroundSize.AUTO,
-                1,
-                true,
-                true,
-                false,
-                true
-            )
+            new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
         )));
+
+        Configuration config = new Configuration();
+
+        TitledPane entityDropdown = new TitledPane("Entities", new VBox(
+            this.createSliderDefault(
+                "Entity energy drain rate",
+                config::setEntityEnergyDrainRate,
+                Configuration.Defaults.ENTITY_RADIUS
+            ),
+            this.createSliderDefault(
+                "Entity max speed",
+                config::setEntityMaxSpeed,
+                Configuration.Defaults.ENTITY_MAX_SPEED
+            ),
+            this.createSliderDefault(
+                "Entity sensor count",
+                config::setEntitySensorsCount,
+                Configuration.Defaults.ENTITY_SENSORS_COUNT
+            ),
+            this.createSliderDefault(
+                "Entity sensor length",
+                config::setEntitySensorsLength,
+                Configuration.Defaults.ENTITY_SENSORS_LENGTH
+            ),
+            this.createSliderDefault(
+                "Entity mutation rate",
+                config::setEntitySpeedMutationRate,
+                Configuration.Defaults.ENTITY_SPEED_MUTATION_RATE
+            ),
+            this.createSliderDefault(
+                "Entity radius",
+                config::setEntityRadius,
+                Configuration.Defaults.ENTITY_RADIUS
+            )
+        ));
+
+        TitledPane predatorDropdown = new TitledPane("Predators", new VBox(
+            this.<Integer>createSliderDefault(
+                "Predator max number",
+                config::setPredatorMaxNumber,
+                Configuration.Defaults.PREDATOR_MAX_NUMBER
+            ),
+            this.createSliderDefault(
+                "Predator split energy filling speed",
+                config::setPredatorSplitEnergyFillingSpeed,
+                Configuration.Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED
+            ),
+            this.createSliderDefault(
+                "Predator view angle",
+                config::setPredatorViewAngle,
+                Configuration.Defaults.PREDATOR_VIEW_ANGLE
+            )
+        ));
+
+
+        TitledPane preyDropdown = new TitledPane("Preys", new VBox(
+            this.<Integer>createSliderDefault(
+                "Prey max number",
+                config::setPreyMaxNumber,
+                Configuration.Defaults.PREY_MAX_NUMBER
+            ),
+            this.createSliderDefault(
+                "Prey split energy filling speed",
+                config::setPreySplitEnergyFillingSpeed,
+                Configuration.Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED
+            ),
+            this.createSliderDefault(
+                "Prey view angle",
+                config::setPreyViewAngle,
+                Configuration.Defaults.PREY_VIEW_ANGLE
+            )
+        ));
+
+        TitledPane neuralNetworkDropdown = new TitledPane(
+            "Neural network",
+            new VBox(
+            )
+        );
+
+        this.options.getPanes().addAll(
+            entityDropdown,
+            predatorDropdown,
+            preyDropdown,
+            neuralNetworkDropdown
+        );
 
         this.hideLockDividers();
     }
@@ -58,18 +166,16 @@ public final class WelcomeController {
         final int dividerCnt = this.splitPane.getDividers().size();
 
         for (int i = 0; i < dividerCnt; ++i) {
-            final int currentIndex = i;
+            final int curI = i;
 
             // Makes any change to the divider position go back to its backed up
             // state
             this.splitPane.getDividers().get(i).positionProperty().addListener(
                 (o, oldValue, newValue) -> {
-                    if (
-                        newValue.doubleValue()
-                        != baseDividerPositions[currentIndex]
-                    ) {
+                    if (newValue.doubleValue() != baseDividerPositions[curI]) {
                         splitPane.setDividerPosition(
-                            currentIndex, baseDividerPositions[currentIndex]
+                            curI,
+                            baseDividerPositions[curI]
                         );
                     }
                 }
@@ -84,8 +190,79 @@ public final class WelcomeController {
         });
     }
 
+    private <T extends Number> SafeSlider createSliderDefault(
+        final String name,
+        final Consumer<T> setter,
+        final T defaultValue
+    ) {
+        if (!List.of(
+            Integer.class,
+            Double.class
+        ).contains(defaultValue.getClass())) {
+            throw new RuntimeException("T not Double or Integer");
+        }
+        final boolean isFloatingPoint = defaultValue.getClass() == Double.class;
+
+        return createSlider(
+            name,
+            setter,
+            (T) (Integer.valueOf(0)),
+            true,
+            (
+                isFloatingPoint
+                    ? (T) Double.valueOf(defaultValue.doubleValue() * 2)
+                    : (T) Integer.valueOf(defaultValue.intValue() * 2)
+            ),
+            false,
+            defaultValue
+        );
+    }
+
+    private <T extends Number> SafeSlider createSlider(
+        final String name,
+        final Consumer<T> setter,
+        final T min, final boolean hardMin,
+        final T max, final boolean hardMax,
+        final T defaultValue
+    ) {
+        if (!List.of(
+            Integer.class,
+            Double.class
+        ).contains(defaultValue.getClass())) {
+            throw new RuntimeException("T not Double or Integer");
+        }
+        final boolean isFloatingPoint = defaultValue.getClass() == Double.class;
+        final SafeSlider slider = new SafeSlider();
+        slider.setFloatingPoint(isFloatingPoint);
+        slider.setMin(min);
+        slider.setHardMin(hardMin);
+        slider.setMax(max);
+        slider.setHardMax(hardMax);
+        slider.setName(name);
+        slider.setValue(defaultValue);
+
+        this.submissionCallbacks.add(
+            () -> setter.accept((T) slider.getValue())
+        );
+
+        return slider;
+    }
+
     @FXML
     private void onNext() {
+        try {
+            this.submissionCallbacks.forEach(Runnable::run);
+        } catch (Exception ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Evosim");
+
+            alert.setContentText(ex.getMessage());
+
+            alert.show();
+            return;
+        }
+
         EvosimApplication.getApplication().setRoot(
             ResourceManager.FXML_MAIN_VIEW
         );
