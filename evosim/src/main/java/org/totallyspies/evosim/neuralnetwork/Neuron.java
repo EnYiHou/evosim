@@ -1,6 +1,8 @@
 package org.totallyspies.evosim.neuralnetwork;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.totallyspies.evosim.utils.Rng;
 
@@ -24,6 +26,11 @@ public final class Neuron {
     private final List<Double> weights;
 
     /**
+     * The activation function randomly selected.
+     */
+    private Function<Double, Double> activationFunction;
+
+    /**
      * The upper bound used to generate random weights.
      */
     private static final double WEIGHT_MAX = 0.99d;
@@ -45,14 +52,22 @@ public final class Neuron {
 
     /**
      * Creates a Neuron with a randomly generated bias.
+     *
+     * @param inputs the inputs that feed the neuron
+     * @param newActivationFunction the function to initialize the value
      */
-    public Neuron(final int inputs) {
+    public Neuron(
+        final int inputs,
+        final Function<Double, Double> newActivationFunction) {
+
         this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
 
         this.weights = Stream
             .generate(() -> Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX))
             .limit(inputs)
             .toList();
+
+        this.activationFunction = newActivationFunction;
     }
 
     /**
@@ -66,12 +81,23 @@ public final class Neuron {
         this.weights = neuronWeights;
     }
 
-    public double getBias() {
-        return this.bias;
-    }
+    /**
+     * Feeds the input forward.
+     *
+     * @param inputs outputs from the previous layer or root inputs of the
+     *               network
+     * @return dot product of activated inputs and weights
+     */
+    public double feed(final List<Double> inputs) {
+        if (inputs.size() != this.weights.size()) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
 
-    public List<Double> getWeights() {
-        return this.weights;
+        return IntStream
+            .range(0, inputs.size())
+            .mapToDouble(
+                i -> this.activationFunction.apply(inputs.get(i))
+                    * this.weights.get(i))
+            .sum() * this.bias;
     }
-
 }

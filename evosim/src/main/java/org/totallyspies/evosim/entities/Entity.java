@@ -1,13 +1,11 @@
 package org.totallyspies.evosim.entities;
 
+import java.util.List;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * An Entity is an abstract member of the evolution simulation that can take
@@ -143,10 +141,7 @@ public abstract class Entity {
                      final double newRotationAngle) {
         this.body = new Circle(entityPosition, Entity.ENTITY_RADIUS);
         this.brain = new NeuralNetwork(
-                Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
-                        .boxed().collect(ArrayList::new,
-                                ArrayList::add,
-                                ArrayList::addAll));
+                List.of(SENSORS_COUNT, 10, 2));
         this.speed = entitySpeed;
 
         this.directionAngleInRadians = newRotationAngle;
