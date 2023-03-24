@@ -88,9 +88,11 @@ public final class Configuration {
     /**
      * The default name of a configuration file.
      */
+
     private static final String DEFAULT_CONFIGURATION_FILE_NAME =
         "defaultConfigurations.json";
 
+    private static final Configuration configuration = new Configuration();
   }
 
   /**
@@ -161,7 +163,7 @@ public final class Configuration {
   /**
    * Create a new default Configuration object, and the setup.
    */
-  public Configuration() {
+  private Configuration() {
     this.entitySensorsCount = Defaults.ENTITY_SENSORS_COUNT;
     this.entityRadius = Defaults.ENTITY_RADIUS;
     this.entitySensorsLength = Defaults.ENTITY_SENSORS_LENGTH;
@@ -181,11 +183,6 @@ public final class Configuration {
     this.neuralNetworkLayersNumber = Defaults.NEURAL_NETWORK_LAYERS_NUMBER;
   }
 
-  /**
-   * Create a new Configuration object form a JSONObject.
-   *
-   * @param jsonObject JSONObject loaded from a json file.
-   */
   private Configuration(final JSONObject jsonObject) {
     this.entitySensorsCount = jsonObject.getInt("entitySensorsCount");
     this.entityRadius = jsonObject.getDouble("entityRadius");
@@ -417,6 +414,10 @@ public final class Configuration {
   }
 
   // Getters
+  public static Configuration getConfiguration() {
+    return Defaults.configuration;
+  }
+
   public int getEntitySensorsCount() {
     return this.entitySensorsCount;
   }
