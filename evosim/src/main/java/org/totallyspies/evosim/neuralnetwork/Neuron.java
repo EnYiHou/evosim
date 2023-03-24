@@ -21,7 +21,7 @@ public final class Neuron {
   private final double bias;
 
   /**
-   * The weights the Neuron has, which are necessery for computations.
+   * The weights the Neuron has, which are necessary for computations.
    */
   private final List<Double> weights;
 
