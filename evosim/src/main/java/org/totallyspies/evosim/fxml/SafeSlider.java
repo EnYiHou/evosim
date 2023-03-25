@@ -47,7 +47,7 @@ public final class SafeSlider extends VBox {
     /**
      * Default value to use for slider.
      */
-    private static final Number DEFAULT_VALUE = 50;
+    private static final Number DEFAULT_SLIDER_VALUE = 50;
 
     /**
      * Default min/max enforcement.
@@ -191,7 +191,7 @@ public final class SafeSlider extends VBox {
         );
 
         this.value = this.constructProperty(
-            this.value == null ? DEFAULT_VALUE : this.value.getValue()
+            this.value == null ? DEFAULT_SLIDER_VALUE : this.value.getValue()
         );
 
         this.value.addListener(

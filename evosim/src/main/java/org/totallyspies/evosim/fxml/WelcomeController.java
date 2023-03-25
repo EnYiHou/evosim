@@ -69,7 +69,7 @@ public final class WelcomeController {
             new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
         )));
 
-        Configuration config = new Configuration();
+        Configuration config = Configuration.getConfiguration();
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(
