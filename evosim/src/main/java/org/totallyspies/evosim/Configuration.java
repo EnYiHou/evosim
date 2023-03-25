@@ -90,7 +90,6 @@ public final class Configuration {
      */
     private static final String DEFAULT_CONFIGURATION_FILE_NAME =
         "defaultConfigurations.json";
-
   }
 
   /**
