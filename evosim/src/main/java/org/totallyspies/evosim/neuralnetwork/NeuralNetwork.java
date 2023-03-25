@@ -63,6 +63,10 @@ public class NeuralNetwork {
         }
     }
 
+    /**
+     * Constructor used intenrally to not have to initialize the
+     * {@link #neuronLayers} expensively.
+     */
     private NeuralNetwork() {
         this.neuronLayers = null;
     }
@@ -78,16 +82,6 @@ public class NeuralNetwork {
             List.of(4d, 5d)));
 
         System.out.println(neuralNetwork.neuronLayers);
-    }
-
-    /**
-     * Create a copy of this Neural Network.
-     *
-     * @return a copy of the Neural Network with similar variables
-     */
-    public NeuralNetwork copy() {
-
-        return null;
     }
 
     /**

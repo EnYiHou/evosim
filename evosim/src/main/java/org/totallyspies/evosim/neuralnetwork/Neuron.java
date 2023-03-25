@@ -73,7 +73,7 @@ public final class Neuron {
      * Creates a Neuron with a predefined bias.
      *
      * @param neuronBias    the bias used to shift the activation function
-     * @param neuronWeights the weight used to do the computations
+     * @param neuronWeights the weights used to do the computations
      */
     public Neuron(final double neuronBias, final List<Double> neuronWeights) {
         this.bias = neuronBias;
