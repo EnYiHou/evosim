@@ -3,7 +3,6 @@ package org.totallyspies.evosim.entities;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
-import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.SimulationApp;
 
@@ -24,7 +23,7 @@ public abstract class Entity {
     /**
      * The radius of an entity.
      */
-    public static final double ENTITY_RADIUS = 15.0d;
+    public static final double ENTITY_RADIUS = 15.0;
 
     /**
      * The number of sensors each entity has.
@@ -34,7 +33,7 @@ public abstract class Entity {
     /**
      * The length of each sensor.
      */
-    public static final double SENSORS_LENGTH = 1000.0d;
+    public static final double SENSORS_LENGTH = 1000.0;
 
     /**
      * The maximum speed that can be chosen for an entity during mutation.
@@ -121,16 +120,6 @@ public abstract class Entity {
     public abstract Entity clone();
 
     /**
-     * Handles what happens on collision between certain entity types.
-     */
-    public abstract void onCollide();
-
-    /**
-     * Handles what happens when an entity multiplies.
-     */
-    public abstract void onSplit();
-
-    /**
      * Handles what happens on update every frame to an entity.
      */
     public abstract void onUpdate();
@@ -207,8 +196,16 @@ public abstract class Entity {
     /**
      * Removes the entity from the simulation and list of entities.
      */
-    public void onDie() {
+    protected void die() {
         SimulationApp.ENTITY_LIST.remove(this);
+    }
+
+    /**
+     * Multiplies this Entity by spending its split energy.
+     */
+    protected void split() {
+        SimulationApp.ENTITY_LIST.add(this.clone());
+        this.setSplitEnergy(this.getSplitEnergy() - 1);
     }
 
     /**
@@ -217,8 +214,9 @@ public abstract class Entity {
      */
     public final void update() {
         this.adjustSensors();
-        //compute sensors value
-        //get output of neural network
+        // TODO compute output from the sensors and pass it into the NN
+        // TODO use NN output in this.move() for the Entity
+
         this.move(speed);
         this.onUpdate();
     }
@@ -230,22 +228,19 @@ public abstract class Entity {
      * return false.
      * </p>
      *
-     * @param entity The entity to check collision with.
      * @return true if a prey and predator collide.
      */
-    public final boolean checkCollide(final Entity entity) {
-        // TODO check if the two entities collide
-        double distance = Formulas.distance(this.getBodyCenter().getX(),
-                this.getBodyCenter().getY(),
-                entity.getBodyCenter().getX(),
-                entity.getBodyCenter().getY());
+    public final boolean checkCollide() {
+//        double distance = Formulas.distance(this.getBodyCenter().getX(),
+//                this.getBodyCenter().getY(),
+//                entity.getBodyCenter().getX(),
+//                entity.getBodyCenter().getY());
         boolean collide = false;
-        if (distance < Entity.ENTITY_RADIUS * 2) {
-            collide = true;
-            onCollide();
-        }
-        //distance between the two entities
-        // TODO check if the collision is between a predator and prey
+//        if (distance < Entity.ENTITY_RADIUS * 2) {
+//            collide = true;
+//        }
+        // TODO refactor this method to only return true for the prey and
+        //  predator involved in the condition (within the grid subset)
         return collide;
     }
 

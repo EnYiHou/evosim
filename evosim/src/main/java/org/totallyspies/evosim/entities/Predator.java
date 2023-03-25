@@ -15,12 +15,17 @@ public final class Predator extends Entity {
     /**
      * The angle of the predator's view cone.
      */
-    public static final double VIEW_ANGLE = 60.0d;
+    public static final double VIEW_ANGLE = 60.0;
 
     /**
      * The split energy gained upon eating prey.
      */
-    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5;
+
+    /**
+     * The energy regained after eating a prey.
+     */
+    public static final double ENERGY_FILLING_SPEED = 0.3;
 
     /**
      * Constructs a new predator.
@@ -40,9 +45,34 @@ public final class Predator extends Entity {
     /**
      * Determines if this predator should split or die based on its collision
      * and energy.
+     * <p>
+     * If this Predator has run out of energy, it will die.
+     * If this Predator has enough split energy, it will clone itself.
+     * </p>
      */
     @Override
     public void onUpdate() {
+        // collision with prey
+        if (checkCollide()) {
+            this.setSplitEnergy(
+                    this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED > 1
+                            ? 1 : this.getSplitEnergy()
+                                    + SPLIT_ENERGY_FILLING_SPEED);
+            this.setEnergy(
+                    this.getEnergy() + ENERGY_FILLING_SPEED > 1
+                            ? 1 : this.getEnergy() + ENERGY_FILLING_SPEED);
+        }
+
+        // death
+        if (this.getEnergy() <= 0) {
+            this.die();
+            return;
+        }
+
+        // multiply
+        if (this.getSplitEnergy() > 1) {
+            this.split();
+        }
     }
 
     /**
@@ -64,35 +94,5 @@ public final class Predator extends Entity {
 
         this.setChildCount(this.getChildCount() + 1);
         return predator;
-    }
-
-    /**
-     * Handles collision between this predator and prey.
-     * <p>
-     * If the predator collides with a prey, it will eat it and
-     * accumulate split energy. If doing so provides enough energy, it will
-     * split.
-     * </p>
-     */
-    @Override
-    public void onCollide() {
-        this.setEnergy(this.getEnergy()
-                + Predator.SPLIT_ENERGY_FILLING_SPEED);
-
-        if (this.getEnergy() > 1) { // enough energy to split
-            this.setEnergy(this.getEnergy() - 1);
-            this.onSplit();
-        }
-    }
-
-    /**
-     * Splits this predator by cloning it and adding the new one to the list
-     * of entities.
-     */
-    @Override
-    public void onSplit() {
-        Predator predator = this.clone();
-        // TODO add the predator to the list of entities
-
     }
 }

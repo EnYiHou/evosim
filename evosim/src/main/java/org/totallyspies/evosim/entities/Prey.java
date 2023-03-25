@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.entities;
 
 import org.totallyspies.evosim.geometry.Point;
-import org.totallyspies.evosim.simulation.SimulationApp;
 
 /**
  * A Prey is member of the evolution simulation that survives by evading
@@ -16,12 +15,17 @@ public class Prey extends Entity {
     /**
      * The angle of the prey's view cone.
      */
-    public static final double VIEW_ANGLE = 300.0d;
+    public static final double VIEW_ANGLE = 300.0;
 
     /**
-     * The split energy gained by not moving.
+     * The split energy gained passively for surviving.
      */
-    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5;
+
+    /**
+     * The energy regained passively for surviving.
+     */
+    public static final double ENERGY_FILLING_SPEED = 0.005;
 
     /**
      * Constructs a new prey.
@@ -38,9 +42,31 @@ public class Prey extends Entity {
     /**
      * Determines if this prey should split or die based on its collision and
      * energy.
+     * <p>
+     * If this Prey has run out of energy or collided a predator, it will die.
+     * If this Prey has enough split energy, it will clone itself.
+     * </p>
      */
     @Override
     public void onUpdate() {
+        // collide with predator
+        if (checkCollide() || this.getEnergy() <= 0) {
+            this.die();
+        }
+
+        // passively gain energy
+        this.setSplitEnergy(
+                this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED > 1
+                        ? 1 : this.getSplitEnergy()
+                        + SPLIT_ENERGY_FILLING_SPEED);
+        this.setEnergy(
+                this.getEnergy() + ENERGY_FILLING_SPEED > 1
+                        ? 1 : this.getEnergy() + ENERGY_FILLING_SPEED);
+
+        // multiply
+        if (this.getSplitEnergy() > 1) {
+            this.split();
+        }
     }
 
     /**
@@ -63,25 +89,5 @@ public class Prey extends Entity {
         this.setChildCount(this.getChildCount() + 1);
 
         return prey;
-    }
-
-    /**
-     * Handles collision between this prey and another Entity.
-     * <p>
-     * If the prey collides with a predator, it will be eaten and die.
-     * </p>
-     */
-    @Override
-    public void onCollide() {
-        this.onDie();
-    }
-
-    /**
-     * Splits this prey by cloning it and adding the new one to the list
-     * of entities.
-     */
-    @Override
-    public void onSplit() {
-        SimulationApp.ENTITY_LIST.add(this.clone());
     }
 }
