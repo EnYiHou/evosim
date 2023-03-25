@@ -44,5 +44,4 @@ public class ConfigurationTest {
     latest.saveFileConfiguration("testConfiguration.json");
 
   }
-
 }

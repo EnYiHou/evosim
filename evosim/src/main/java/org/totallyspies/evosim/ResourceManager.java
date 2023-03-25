@@ -7,7 +7,6 @@ package org.totallyspies.evosim;
  * @author edeli
  */
 public final class ResourceManager {
-
     /**
      * Private constructor to make static class.
      */
