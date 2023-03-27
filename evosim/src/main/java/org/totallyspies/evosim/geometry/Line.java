@@ -3,7 +3,7 @@ package org.totallyspies.evosim.geometry;
 /**
  * This class represents a line in 2D space.
  *
- * @author EnYi Hou
+ * @author EnYi
  */
 public class Line {
 

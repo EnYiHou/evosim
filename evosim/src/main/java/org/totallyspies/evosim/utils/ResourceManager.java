@@ -4,7 +4,7 @@ package org.totallyspies.evosim.utils;
  * A ResourceManager class provides resources definition used in
  * this application.
  *
- * @author edeli
+ * @author niakouu
  */
 public final class ResourceManager {
     /**

@@ -2,47 +2,60 @@ package org.totallyspies.evosim;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.totallyspies.evosim.utils.Configuration;
+import org.totallyspies.evosim.utils.Configuration.Defaults;
 
 /**
  * Tests for Configuration class.
  *
- * @author edeli
+ * @author niakouu
  */
 public class ConfigurationTest {
 
-  private Configuration defaultConfiguration = Configuration.getConfiguration();
-  private Configuration latest = Configuration.getLast();
+  private Configuration configuration = Configuration.getConfiguration();
 
   @Test
-  public void savesFilePrint() {
-    assertEquals("Saved!", defaultConfiguration.saveLastConfiguration());
-    assertEquals("Saved!",
-        defaultConfiguration.saveFileConfiguration("helloWorld.json"));
+  public void saveConfiguration() throws IOException {
+    configuration.saveConfiguration();
+    deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
   }
 
   @Test
-  public void loadFileSavesDefaultConfiguration() {
-    assertEquals(defaultConfiguration.toString(),
-        Configuration.getConfiguration("defaultConfigurations.json")
+  public void loadDefaultConfiguration() throws IOException {
+    configuration.saveConfiguration();
+    assertEquals(configuration.toString(),
+        Configuration.getConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME)
             .toString());
+
+    deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
   }
 
   @Test
-  public void loadFileSavesLastConfiguration() {
-    defaultConfiguration.setEntityMaxSpeed(67d);
-    defaultConfiguration.setPreySplitEnergyFillingSpeed(45d);
-    defaultConfiguration.saveLastConfiguration();
-    assertEquals(defaultConfiguration.toString(),
+  public void loadLastConfiguration() throws IOException {
+    configuration.setEntityMaxSpeed(67d);
+    configuration.setPreySplitEnergyFillingSpeed(45d);
+    configuration.saveConfiguration();
+    assertEquals(configuration.toString(),
         Configuration.getLast().toString());
+
+    deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
   }
 
   @Test
-  public void loadFile() {
-    latest.setNeuralNetworkLayersNumber(8);
-    latest.setEntityMaxSpeed(34d);
-    latest.saveFileConfiguration("testConfiguration.json");
+  public void loadNamedFile() throws IOException {
+    configuration.setNeuralNetworkLayersNumber(8);
+    configuration.setEntityMaxSpeed(34d);
+    configuration.saveConfiguration("testConfiguration.json");
 
+    deleteFile("testConfiguration.json");
+  }
+
+  public void deleteFile(String fileName) {
+    File file = new File(System.getProperty("java.io.tmpdir"),
+        fileName);
+    file.delete();
   }
 }

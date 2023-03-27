@@ -202,6 +202,4 @@ public final class Formulas {
             return results;
         }
     }
-
-
 }

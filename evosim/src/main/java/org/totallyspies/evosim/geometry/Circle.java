@@ -2,6 +2,8 @@ package org.totallyspies.evosim.geometry;
 
 /**
  * This class represents a circle in 2D space.
+ *
+ * @author EnYi
  */
 public class Circle {
 

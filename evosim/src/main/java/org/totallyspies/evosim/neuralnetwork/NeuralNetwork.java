@@ -21,7 +21,7 @@ import org.totallyspies.evosim.utils.Rng;
  * list of weights. The final layer's values (output layer) determines what the
  * Entity's decision will be.
  *
- * @author Matthew Edelina
+ * @author Matthew, niakouu
  */
 public class NeuralNetwork {
 
@@ -70,19 +70,6 @@ public class NeuralNetwork {
      */
     private NeuralNetwork() {
         this.neuronLayers = null;
-    }
-
-    /**
-     * Test the Neural Network.
-     *
-     * @param args
-     */
-    public static void main(final String[] args) {
-        NeuralNetwork neuralNetwork = new NeuralNetwork(List.of(2, 2, 1));
-        System.out.println(neuralNetwork.calcNetworkDecision(
-            List.of(4d, 5d)));
-
-        System.out.println(neuralNetwork.neuronLayers);
     }
 
     /**
