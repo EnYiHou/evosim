@@ -1,4 +1,4 @@
-package org.totallyspies.evosim;
+package org.totallyspies.evosim.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
