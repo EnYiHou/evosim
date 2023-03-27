@@ -1,4 +1,4 @@
-package org.totallyspies.evosim.engine;
+package org.totallyspies.evosim.fxml;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;

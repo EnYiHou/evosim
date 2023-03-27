@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.entities;
 
+import org.totallyspies.evosim.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
 /**
@@ -13,25 +14,22 @@ import org.totallyspies.evosim.geometry.Point;
 public class Prey extends Entity {
 
     /**
-     * The angle of the prey's view cone.
-     */
-    public static final double VIEW_ANGLE = 300.0d;
-
-    /**
-     * The split energy gained by not moving.
-     */
-    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5d;
-
-    /**
      * Constructs a new prey.
      *
-     * @param speed    the speed of the prey
-     * @param position the position of the prey
+     * @param speed                  the speed of the prey
+     * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
      */
-    public Prey(final double speed, final Point position,
-                final double rotationAngleInRadians) {
-        super(speed, position, Prey.VIEW_ANGLE, rotationAngleInRadians);
+    public Prey(
+        final double speed, final Point position,
+        final double rotationAngleInRadians
+    ) {
+        super(
+            speed,
+            position,
+            Configuration.getConfiguration().getPreyViewAngle(),
+            rotationAngleInRadians
+        );
     }
 
     /**
@@ -51,11 +49,16 @@ public class Prey extends Entity {
     public Prey clone() {
         // Mutate the speed of the prey
         Prey prey = new Prey(
-                (Math.random() < Entity.SPEED_MUTATION_RATE)
-                        ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
-                new Point(this.getBodyCenter().getX(),
-                        this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians());
+            (Math.random()
+                < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                ? Math.random() * Configuration.getConfiguration()
+                .getEntityMaxSpeed() : this.getSpeed(),
+            new Point(
+                this.getBodyCenter().getX(),
+                this.getBodyCenter().getY()
+            ),
+            this.getDirectionAngleInRadians()
+        );
 
         // TODO copy the brain of the prey
 

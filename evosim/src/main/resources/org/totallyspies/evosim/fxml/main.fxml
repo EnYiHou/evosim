@@ -6,7 +6,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import org.totallyspies.evosim.engine.ResizableCanvas?>
+<?import org.totallyspies.evosim.fxml.ResizableCanvas?>
 
 <BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <top>

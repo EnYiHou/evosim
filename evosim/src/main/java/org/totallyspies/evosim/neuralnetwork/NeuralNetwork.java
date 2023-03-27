@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.totallyspies.evosim.Configuration;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
@@ -133,13 +134,16 @@ public class NeuralNetwork {
     private NeuralNetwork mutate() {
         NeuralNetwork mutatedNeuralNetwork = new NeuralNetwork();
 
-        // TODO: Use config for mutation rate
         mutatedNeuralNetwork.neuronLayers =
             this.neuronLayers
                 .stream()
                 .map(neurons -> neurons
                     .stream()
-                    .map(neuron -> neuron.mutate(0.25))
+                    .map(neuron -> neuron.mutate(
+                        Configuration
+                            .getConfiguration()
+                            .getEntitySpeedMutationRate()
+                    ))
                     .toList()
                 )
                 .toList();
