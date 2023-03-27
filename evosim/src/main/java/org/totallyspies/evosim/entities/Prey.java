@@ -1,6 +1,6 @@
 package org.totallyspies.evosim.entities;
 
-import org.totallyspies.evosim.Configuration;
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
 /**

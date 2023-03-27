@@ -2,7 +2,7 @@ package org.totallyspies.evosim.entities;
 
 import java.util.List;
 
-import org.totallyspies.evosim.Configuration;
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
