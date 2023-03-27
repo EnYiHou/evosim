@@ -55,13 +55,8 @@ public class Prey extends Entity {
         }
 
         // passively gain energy
-        this.setSplitEnergy(
-                this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED > 1
-                        ? 1 : this.getSplitEnergy()
-                        + SPLIT_ENERGY_FILLING_SPEED);
-        this.setEnergy(
-                this.getEnergy() + ENERGY_FILLING_SPEED > 1
-                        ? 1 : this.getEnergy() + ENERGY_FILLING_SPEED);
+        this.setSplitEnergy(this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED);
+        this.setEnergy(Math.min(this.getEnergy() + ENERGY_FILLING_SPEED, 1));
     }
 
     /**

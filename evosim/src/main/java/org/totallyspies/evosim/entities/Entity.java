@@ -256,12 +256,18 @@ public abstract class Entity {
      * decision.
      */
     public final void update() {
+
         this.adjustSensors();
+
+        // check for collisions and update sensors data;
         this.onUpdate();
+
+
         if (this.splitEnergy > 1) {
             this.splitEnergy -= 1;
             this.split = true;
         }
+
         double[] calculatedDecision =
                 this.brain.calcNetworkDecision(Arrays.asList(this.sensorsData));
 
@@ -276,6 +282,9 @@ public abstract class Entity {
     /**
      * Checks if this entity is colliding with other entities
      * within the nearby grids.
+     * <p>
+     * Updates the sensors data of this entity by checking the
+     * collisions between each sensor and the entities in the nearby grids.
      *
      * @return true if this entity is colliding with another entity.
      * false otherwise.
@@ -283,20 +292,26 @@ public abstract class Entity {
     public final boolean checkCollisions() {
 
         Arrays.fill(this.sensorsData, Entity.SENSORS_LENGTH);
-        int nearbyGrids = 1;
-        int startingGridX = (this.gridX - nearbyGrids) <= 0
-                ? 0 : this.gridX - nearbyGrids;
-        int startingGridY = (this.gridY - nearbyGrids) <= 0
-                ? 0 : this.gridY - nearbyGrids;
-        int endingGridX = (this.gridX + nearbyGrids) >= Simulation.GRID_X
-                ? Simulation.GRID_X : this.gridX + nearbyGrids;
-        int endingGridY = (this.gridY + nearbyGrids) >= Simulation.GRID_Y
-                ? Simulation.GRID_Y : this.gridY + nearbyGrids;
 
-        for (int i = startingGridX; i < endingGridX; i++) {
-            for (int j = startingGridY; j < endingGridY; j++) {
-                for (Entity entity : Simulation.GRIDS.get(i).get(j)) {
+        // The number of nearby grids to check for collisions.
+        int nearbyGrids = 1;
+
+        int startingGridX = Math.min(this.gridX - nearbyGrids, 0);
+        int startingGridY = Math.min(this.gridY - nearbyGrids, 0);
+        int endingGridX = Math.max(this.gridX + nearbyGrids, Simulation.GRID_X);
+        int endingGridY = Math.max(this.gridY + nearbyGrids, Simulation.GRID_Y);
+
+
+        // Loop through the nearby grids and check for collisions.
+        for (int x = startingGridX; x < endingGridX; x++) {
+            for (int y = startingGridY; y < endingGridY; y++) {
+
+                for (Entity entity : Simulation.GRIDS.get(x).get(y)) {
+
+                    // Check if the entity is the same class as this entity.
                     if (!entity.getClass().equals(this.getClass())) {
+
+                        // Check if it collides with the entity.
                         double distance =
                                 Formulas.distance(this.getBodyCenter().getX(),
                                         this.getBodyCenter().getY(),
@@ -305,17 +320,17 @@ public abstract class Entity {
                         if (distance < Entity.ENTITY_RADIUS * 2) {
                             return true;
                         }
+
+                        // Update the sensors data according to the entity.
                         for (int sensorIndex = 0; sensorIndex
                                 < this.sensors.length; sensorIndex++) {
                             Line sensor = this.sensors[sensorIndex];
                             Double distanceToEntity =
                                     Formulas.closestIntersection(sensor,
                                             entity.getBody());
-                            if (distanceToEntity
-                                    < this.sensorsData[sensorIndex]) {
-                                this.sensorsData[sensorIndex] =
-                                        distanceToEntity;
-                            }
+                            this.sensorsData[sensorIndex] = Math.min(
+                                    this.sensorsData[sensorIndex],
+                                    distanceToEntity);
                         }
                     }
                 }

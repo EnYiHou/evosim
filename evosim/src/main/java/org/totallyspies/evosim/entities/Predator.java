@@ -62,11 +62,8 @@ public final class Predator extends Entity {
 
         // collision with prey
         if (checkCollisions()) {
-            this.setSplitEnergy(this.getSplitEnergy()
-                                    + SPLIT_ENERGY_FILLING_SPEED);
-            this.setEnergy(
-                    this.getEnergy() + ENERGY_FILLING_SPEED > 1
-                            ? 1 : this.getEnergy() + ENERGY_FILLING_SPEED);
+            this.setSplitEnergy(this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED);
+            this.setEnergy(Math.min(1, this.getEnergy() + ENERGY_FILLING_SPEED));
         }
 
         if (this.getEnergy() <= 0) {
