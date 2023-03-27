@@ -3,8 +3,9 @@ package org.totallyspies.evosim.entities;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
-import org.totallyspies.evosim.simulation.SimulationApp;
+import org.totallyspies.evosim.simulation.Simulation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,17 +34,17 @@ public abstract class Entity {
     /**
      * The length of each sensor.
      */
-    public static final double SENSORS_LENGTH = 1000.0;
+    public static final double SENSORS_LENGTH = 100.0;
 
     /**
      * The maximum speed that can be chosen for an entity during mutation.
      */
-    public static final double MAX_SPEED = 3.0;
+    public static final double MAX_SPEED = 0.00001;
 
     /**
      * The minimum speed that can be chosen for an entity during mutation.
      */
-    public static final double MIN_SPEED = 0.5;
+    public static final double MIN_SPEED = 0.0;
 
     /**
      * A constant used to mutate the entities speed during reproduction.
@@ -56,9 +57,29 @@ public abstract class Entity {
     public static final double ENERGY_DRAIN_RATE = 0.01;
 
     /**
+     * The maximum speed at which the entity can rotate.
+     */
+    public static final double MAX_ROTATION_SPEED = 0.002;
+
+    /**
      * An array of sensors represented by custom Line objects.
      */
     private Line[] sensors;
+
+    /**
+     * A list of detected distances from the sensors.
+     */
+    private Double[] sensorsData;
+
+    /**
+     * If the entity is dead or not.
+     */
+    private boolean death;
+
+    /**
+     * If the entity split.
+     */
+    private boolean split;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
@@ -113,9 +134,19 @@ public abstract class Entity {
     private double fovAngleInDegrees;
 
     /**
+     * The x index of the grid this entity is in.
+     */
+    private int gridX;
+
+    /**
+     * The y index of the grid this entity is in.
+     */
+    private int gridY;
+
+    /**
      * Clones this entity and mutates some of its properties.
      *
-     * @return  the cloned entity.
+     * @return the cloned entity.
      */
     public abstract Entity clone();
 
@@ -136,43 +167,69 @@ public abstract class Entity {
                      final Point entityPosition,
                      final double newViewAngle,
                      final double newRotationAngle) {
+
+        // initialize entity properties
+        this.energy = 1.0;
+        this.splitEnergy = 0.0;
+        this.death = false;
+        this.split = false;
+        this.childCount = 0;
+        this.speed = entitySpeed;
+        this.directionAngleInRadians = newRotationAngle;
+        this.fovAngleInDegrees = newViewAngle;
         this.body = new Circle(entityPosition, Entity.ENTITY_RADIUS);
+
+        // initialize neural network
         this.brain = new NeuralNetwork(
                 Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
                         .boxed().collect(ArrayList::new,
                                 ArrayList::add,
                                 ArrayList::addAll));
-        this.speed = entitySpeed;
 
-        this.directionAngleInRadians = newRotationAngle;
-
-        //initialize sensors
+        // initialize sensors
         this.sensors = new Line[Entity.SENSORS_COUNT];
-        this.fovAngleInDegrees = newViewAngle;
+        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
+            this.sensors[i] = new Line(0, 0, 0, 0);
+        }
+        this.sensorsData = new Double[Entity.SENSORS_COUNT];
         adjustSensors();
     }
 
     /**
      * Moves the entity according to the given movement speed and its current
      * rotation angle.
+     * If the entity moves off the map, it will wrap around to the other side.
      * <p>
-     * The entity's energy is drained according to their speed.
-     * </p>
+     * The energy of the entity will be drained by the amount of movement.
      *
      * @param movementSpeed the speed of the movement.
      */
     public void move(final double movementSpeed) {
         Point position = this.body.getCenter();
-        position.setX(position.getX()
-                + Math.cos(this.directionAngleInRadians) * movementSpeed);
-        position.setY(position.getX()
-                + Math.sin(this.directionAngleInRadians) * movementSpeed);
+
+        // wrap around the map
+        double positionX = (position.getX()
+                + Math.cos(this.directionAngleInRadians) * movementSpeed)
+                % Simulation.MAP_WIDTH;
+        double positionY = (position.getY()
+                + Math.sin(this.directionAngleInRadians) * movementSpeed)
+                % Simulation.MAP_HEIGHT;
+        if (positionX < 0) {
+            positionX += Simulation.MAP_WIDTH;
+        }
+        if (positionY < 0) {
+            positionY += Simulation.MAP_HEIGHT;
+        }
+
+        position.setX(positionX);
+        position.setY(positionY);
+
+        // drain energy
         this.energy -= Entity.ENERGY_DRAIN_RATE * movementSpeed;
     }
 
     /**
-     * Adjusts this entity's sensors based on its position and rotation onto
-     * its new front side.
+     * Adjusts this entity's sensors based on its position and its direction.
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
@@ -181,6 +238,7 @@ public abstract class Entity {
             double angle = this.directionAngleInRadians
                     + Math.toRadians(-this.fovAngleInDegrees / 2
                     + angleBetweenSensors * i);
+
             this.sensors[i].getStartPoint()
                     .setCoordinates(this.getBodyCenter().getX(),
                             this.getBodyCenter().getY());
@@ -194,71 +252,111 @@ public abstract class Entity {
     }
 
     /**
-     * Removes the entity from the simulation and list of entities.
-     */
-    protected void die() {
-        SimulationApp.ENTITY_LIST.remove(this);
-    }
-
-    /**
-     * Multiplies this Entity by spending its split energy.
-     */
-    protected void split() {
-        SimulationApp.ENTITY_LIST.add(this.clone());
-        this.setSplitEnergy(this.getSplitEnergy() - 1);
-    }
-
-    /**
      * Processes data from this entity's sensors and moves according to its
      * decision.
      */
     public final void update() {
         this.adjustSensors();
-        // TODO compute output from the sensors and pass it into the NN
-        // TODO use NN output in this.move() for the Entity
-
-        this.move(speed);
         this.onUpdate();
+        if (this.splitEnergy > 1) {
+            this.splitEnergy -= 1;
+            this.split = true;
+        }
+        double[] calculatedDecision =
+                this.brain.calcNetworkDecision(Arrays.asList(this.sensorsData));
+
+        // Assuming the first output is the rotation
+        // of the direction of the entity, and the second output is the speed.
+        this.directionAngleInRadians += Entity.MAX_ROTATION_SPEED
+                * calculatedDecision[0];
+        this.move(this.speed * calculatedDecision[1]);
+
     }
 
     /**
-     * Detects collision between this entity and another.
-     * <p>
-     * Collision between two entities of the same type are ignored and will
-     * return false.
-     * </p>
+     * Checks if this entity is colliding with other entities
+     * within the nearby grids.
      *
-     * @return true if a prey and predator collide.
+     * @return true if this entity is colliding with another entity.
+     * false otherwise.
      */
-    public final boolean checkCollide() {
-//        double distance = Formulas.distance(this.getBodyCenter().getX(),
-//                this.getBodyCenter().getY(),
-//                entity.getBodyCenter().getX(),
-//                entity.getBodyCenter().getY());
-        boolean collide = false;
-//        if (distance < Entity.ENTITY_RADIUS * 2) {
-//            collide = true;
-//        }
-        // TODO refactor this method to only return true for the prey and
-        //  predator involved in the condition (within the grid subset)
-        return collide;
+    public final boolean checkCollisions() {
+
+        Arrays.fill(this.sensorsData, Entity.SENSORS_LENGTH);
+        int nearbyGrids = 1;
+        int startingGridX = (this.gridX - nearbyGrids) <= 0
+                ? 0 : this.gridX - nearbyGrids;
+        int startingGridY = (this.gridY - nearbyGrids) <= 0
+                ? 0 : this.gridY - nearbyGrids;
+        int endingGridX = (this.gridX + nearbyGrids) >= Simulation.GRID_X
+                ? Simulation.GRID_X : this.gridX + nearbyGrids;
+        int endingGridY = (this.gridY + nearbyGrids) >= Simulation.GRID_Y
+                ? Simulation.GRID_Y : this.gridY + nearbyGrids;
+
+        for (int i = startingGridX; i < endingGridX; i++) {
+            for (int j = startingGridY; j < endingGridY; j++) {
+                for (Entity entity : Simulation.GRIDS.get(i).get(j)) {
+                    if (!entity.getClass().equals(this.getClass())) {
+                        double distance =
+                                Formulas.distance(this.getBodyCenter().getX(),
+                                        this.getBodyCenter().getY(),
+                                        entity.getBodyCenter().getX(),
+                                        entity.getBodyCenter().getY());
+                        if (distance < Entity.ENTITY_RADIUS * 2) {
+                            return true;
+                        }
+                        for (int sensorIndex = 0; sensorIndex
+                                < this.sensors.length; sensorIndex++) {
+                            Line sensor = this.sensors[sensorIndex];
+                            Double distanceToEntity =
+                                    Formulas.closestIntersection(sensor,
+                                            entity.getBody());
+                            if (distanceToEntity
+                                    < this.sensorsData[sensorIndex]) {
+                                this.sensorsData[sensorIndex] =
+                                        distanceToEntity;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public final Line[] getSensors() {
         return this.sensors;
     }
+
     public final double getEnergy() {
         return this.energy;
     }
     public final double getSplitEnergy() {
         return this.splitEnergy;
     }
+
     public final int getChildCount() {
         return this.childCount;
     }
 
     public final double getDirectionAngleInRadians() {
         return this.directionAngleInRadians;
+    }
+
+    public final boolean getDeath() {
+        return death;
+    }
+
+    public final void setDeath(final boolean isDead) {
+        this.death = isDead;
+    }
+
+    public final boolean getSplit() {
+        return split;
+    }
+
+    public final void setSplit(final boolean isSplit) {
+        this.split = isSplit;
     }
 
     public final double getSpeed() {
@@ -269,6 +367,10 @@ public abstract class Entity {
         return this.body.getCenter();
     }
 
+    public final Circle getBody() {
+        return this.body;
+    }
+
     public final NeuralNetwork getBrain() {
         return this.brain;
     }
@@ -277,11 +379,19 @@ public abstract class Entity {
         this.energy = entityEnergy;
     }
 
-    protected final void setSplitEnergy(final double entitySplitEnergy) {
+    public final void setSplitEnergy(final double entitySplitEnergy) {
         this.splitEnergy = entitySplitEnergy;
     }
 
-    protected final void setChildCount(final int entityChildCount) {
+    public final void setChildCount(final int entityChildCount) {
         this.childCount = entityChildCount;
+    }
+
+    public final void setGridX(final int entityGridX) {
+        this.gridX = entityGridX;
+    }
+
+    public final void setGridY(final int entityGridY) {
+        this.gridY = entityGridY;
     }
 }

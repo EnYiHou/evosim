@@ -25,7 +25,13 @@ public final class Predator extends Entity {
     /**
      * The energy regained after eating a prey.
      */
-    public static final double ENERGY_FILLING_SPEED = 0.3;
+    public static final double ENERGY_FILLING_SPEED = 0.5;
+
+    /**
+     * The energy lost rate.
+     */
+    public static final double ENERGY_BASE_DRAINING_SPEED = 0.1;
+
 
     /**
      * Constructs a new predator.
@@ -52,26 +58,19 @@ public final class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
+        this.setEnergy(this.getEnergy() - ENERGY_BASE_DRAINING_SPEED);
+
         // collision with prey
-        if (checkCollide()) {
-            this.setSplitEnergy(
-                    this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED > 1
-                            ? 1 : this.getSplitEnergy()
+        if (checkCollisions()) {
+            this.setSplitEnergy(this.getSplitEnergy()
                                     + SPLIT_ENERGY_FILLING_SPEED);
             this.setEnergy(
                     this.getEnergy() + ENERGY_FILLING_SPEED > 1
                             ? 1 : this.getEnergy() + ENERGY_FILLING_SPEED);
         }
 
-        // death
         if (this.getEnergy() <= 0) {
-            this.die();
-            return;
-        }
-
-        // multiply
-        if (this.getSplitEnergy() > 1) {
-            this.split();
+            this.setDeath(true);
         }
     }
 

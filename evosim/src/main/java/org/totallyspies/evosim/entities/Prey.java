@@ -50,8 +50,8 @@ public class Prey extends Entity {
     @Override
     public void onUpdate() {
         // collide with predator
-        if (checkCollide() || this.getEnergy() <= 0) {
-            this.die();
+        if (checkCollisions()) {
+            this.setDeath(true);
         }
 
         // passively gain energy
@@ -62,11 +62,6 @@ public class Prey extends Entity {
         this.setEnergy(
                 this.getEnergy() + ENERGY_FILLING_SPEED > 1
                         ? 1 : this.getEnergy() + ENERGY_FILLING_SPEED);
-
-        // multiply
-        if (this.getSplitEnergy() > 1) {
-            this.split();
-        }
     }
 
     /**
