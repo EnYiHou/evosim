@@ -1,6 +1,8 @@
 package org.totallyspies.evosim.entities;
 
 import java.util.List;
+
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -19,45 +21,9 @@ import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 public abstract class Entity {
 
     /**
-     * The radius of an entity.
-     */
-    public static final double ENTITY_RADIUS = 15.0d;
-
-    /**
-     * The number of sensors each entity has.
-     */
-    public static final int SENSORS_COUNT = 30;
-
-    /**
-     * The length of each sensor.
-     */
-    public static final double SENSORS_LENGTH = 1000.0d;
-
-    /**
-     * The maximum speed that can be chosen for an entity during mutation.
-     */
-    protected static final double MAX_SPEED = 3.0;
-
-    /**
-     * A constant used to mutate the entities speed during reproduction.
-     */
-    protected static final double SPEED_MUTATION_RATE = 0.2;
-
-    /**
-     * The speed at which the energy of the entity will be drained.
-     */
-    public static final double ENERGY_DRAIN_RATE = 0.01;
-
-    /**
-     * An array of sensors represented by custom Line objects.
-     */
-    private Line[] sensors;
-
-    /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     private final double speed;
-
     /**
      * The neural network of the entity.
      * <p>
@@ -66,12 +32,14 @@ public abstract class Entity {
      * </p>
      */
     private final NeuralNetwork brain;
-
     /**
      * The position of the entity.
      */
     private final Circle body;
-
+    /**
+     * An array of sensors represented by custom Line objects.
+     */
+    private final Line[] sensors;
     /**
      * The current amount of energy this Entity has left.
      * <p>
@@ -93,7 +61,7 @@ public abstract class Entity {
     /**
      * The direction the entity is facing in radians.
      */
-    private double directionAngleInRadians;
+    private final double directionAngleInRadians;
 
     /**
      * The number of children born from this entity.
@@ -103,12 +71,52 @@ public abstract class Entity {
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
-    private double fovAngleInDegrees;
+    private final double fovAngleInDegrees;
+
+    /**
+     * Constructs a new Entity.
+     *
+     * @param entitySpeed      The speed of the entity.
+     * @param entityPosition   The position of the entity.
+     * @param newViewAngle     The view angle of the entity.
+     * @param newRotationAngle The rotation angle of the entity.
+     */
+    protected Entity(
+        final double entitySpeed,
+        final Point entityPosition,
+        final double newViewAngle,
+        final double newRotationAngle
+    ) {
+        this.body = new Circle(
+            entityPosition,
+            Configuration.getConfiguration().getEntityRadius()
+        );
+
+        // TODO: Add configuration for # layers and nodes per layer
+        this.brain = new NeuralNetwork(
+            List.of(
+                Configuration.getConfiguration().getEntitySensorsCount(),
+                10,
+                2
+            ));
+
+        this.speed = entitySpeed;
+
+        this.directionAngleInRadians = newRotationAngle;
+
+        //initialize sensors
+        this.sensors = new Line[
+            Configuration.getConfiguration().getEntitySensorsCount()
+            ];
+
+        this.fovAngleInDegrees = newViewAngle;
+        adjustSensors();
+    }
 
     /**
      * Clones this entity and mutates some of its properties.
      *
-     * @return  the cloned entity.
+     * @return the cloned entity.
      */
     public abstract Entity clone();
 
@@ -128,31 +136,6 @@ public abstract class Entity {
     public abstract void onUpdate();
 
     /**
-     * Constructs a new Entity.
-     *
-     * @param entitySpeed      The speed of the entity.
-     * @param entityPosition   The position of the entity.
-     * @param newViewAngle     The view angle of the entity.
-     * @param newRotationAngle The rotation angle of the entity.
-     */
-    protected Entity(final double entitySpeed,
-                     final Point entityPosition,
-                     final double newViewAngle,
-                     final double newRotationAngle) {
-        this.body = new Circle(entityPosition, Entity.ENTITY_RADIUS);
-        this.brain = new NeuralNetwork(
-                List.of(SENSORS_COUNT, 10, 2));
-        this.speed = entitySpeed;
-
-        this.directionAngleInRadians = newRotationAngle;
-
-        //initialize sensors
-        this.sensors = new Line[Entity.SENSORS_COUNT];
-        this.fovAngleInDegrees = newViewAngle;
-        adjustSensors();
-    }
-
-    /**
      * Moves the entity according to the given movement speed and its current
      * rotation angle.
      * <p>
@@ -164,10 +147,13 @@ public abstract class Entity {
     public void move(final double movementSpeed) {
         Point position = this.body.getCenter();
         position.setX(position.getX()
-                + Math.cos(this.directionAngleInRadians) * movementSpeed);
+            + Math.cos(this.directionAngleInRadians) * movementSpeed);
         position.setY(position.getX()
-                + Math.sin(this.directionAngleInRadians) * movementSpeed);
-        this.energy -= Entity.ENERGY_DRAIN_RATE * movementSpeed;
+            + Math.sin(this.directionAngleInRadians) * movementSpeed);
+        this.energy -= (
+            Configuration.getConfiguration().getEntityEnergyDrainRate()
+            * movementSpeed
+        );
     }
 
     /**
@@ -176,20 +162,33 @@ public abstract class Entity {
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
-                / (Entity.SENSORS_COUNT - 1);
-        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
+            / (Configuration.getConfiguration().getEntitySensorsCount() - 1);
+
+        for (
+            int i = 0;
+            i < Configuration.getConfiguration().getEntitySensorsCount();
+            i++
+        ) {
             double angle = this.directionAngleInRadians
-                    + Math.toRadians(-this.fovAngleInDegrees / 2
-                    + angleBetweenSensors * i);
+                + Math.toRadians(-this.fovAngleInDegrees / 2
+                + angleBetweenSensors * i);
             this.sensors[i].getStartPoint()
-                    .setCoordinates(this.getBodyCenter().getX(),
-                            this.getBodyCenter().getY());
+                .setCoordinates(
+                    this.getBodyCenter().getX(),
+                    this.getBodyCenter().getY()
+                );
 
             this.sensors[i].getEndPoint()
-                    .setCoordinates(this.getBodyCenter().getX()
-                                    + Math.cos(angle) * Entity.SENSORS_LENGTH,
-                            this.getBodyCenter().getY()
-                                    + Math.sin(angle) * Entity.SENSORS_LENGTH);
+                .setCoordinates(
+                    this.getBodyCenter().getX()
+                        + Math.cos(angle) * Configuration
+                        .getConfiguration()
+                        .getEntitySensorsCount(),
+                    this.getBodyCenter().getY()
+                        + Math.sin(angle)
+                        * Configuration.getConfiguration()
+                            .getEntitySensorsCount()
+                );
         }
     }
 
@@ -215,20 +214,22 @@ public abstract class Entity {
      * Detects collision between this entity and another.
      *
      * @param entity The entity to check collision with.
-     *
      * @return true if the two entities collide, false otherwise.
      */
     public final boolean checkCollide(final Entity entity) {
         // TODO check if the two entities collide
-        double distance = Formulas.distance(this.getBodyCenter().getX(),
-                this.getBodyCenter().getY(),
-                entity.getBodyCenter().getX(),
-                entity.getBodyCenter().getY());
+        double distance = Formulas.distance(
+            this.getBodyCenter().getX(),
+            this.getBodyCenter().getY(),
+            entity.getBodyCenter().getX(),
+            entity.getBodyCenter().getY()
+        );
         boolean collide = false;
-        if (distance < Entity.ENTITY_RADIUS * 2) {
+        if (distance < Configuration.getConfiguration().getEntityRadius() * 2) {
             collide = true;
             onCollide();
         }
+
         //distance between the two entities
         return collide;
     }
@@ -236,14 +237,29 @@ public abstract class Entity {
     public final Line[] getSensors() {
         return this.sensors;
     }
+
     public final double getEnergy() {
         return this.energy;
     }
+
+    protected final void setEnergy(final double entityEnergy) {
+        this.energy = entityEnergy;
+    }
+
     public final double getSplitEnergy() {
         return this.splitEnergy;
     }
+
+    protected final void setSplitEnergy(final double entitySplitEnergy) {
+        this.splitEnergy = entitySplitEnergy;
+    }
+
     public final int getChildCount() {
         return this.childCount;
+    }
+
+    protected final void setChildCount(final int entityChildCount) {
+        this.childCount = entityChildCount;
     }
 
     public final double getDirectionAngleInRadians() {
@@ -260,17 +276,5 @@ public abstract class Entity {
 
     public final NeuralNetwork getBrain() {
         return this.brain;
-    }
-
-    protected final void setEnergy(final double entityEnergy) {
-        this.energy = entityEnergy;
-    }
-
-    protected final void setSplitEnergy(final double entitySplitEnergy) {
-        this.splitEnergy = entitySplitEnergy;
-    }
-
-    protected final void setChildCount(final int entityChildCount) {
-        this.childCount = entityChildCount;
     }
 }

@@ -3,6 +3,7 @@ package org.totallyspies.evosim;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.totallyspies.evosim.utils.Configuration;
 
 /**
  * Tests for Configuration class.

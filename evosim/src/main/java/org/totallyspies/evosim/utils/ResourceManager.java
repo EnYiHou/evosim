@@ -1,4 +1,4 @@
-package org.totallyspies.evosim;
+package org.totallyspies.evosim.utils;
 
 /**
  * A ResourceManager class provides resources definition used in
