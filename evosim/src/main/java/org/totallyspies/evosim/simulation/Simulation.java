@@ -5,6 +5,7 @@ import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
 
 import java.util.ArrayList;
@@ -110,9 +111,12 @@ public final class Simulation {
      * @param initPredator  the initial number of predators spawned
      */
     public void populateEntityList(final int initPrey, final int initPredator) {
+        double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
+
+        // TODO add min speed to config
         for (int i = 0; i < initPrey; i++) {
             ENTITY_LIST.add(new Prey(
-                    Rng.RNG.nextDouble(Entity.MIN_SPEED, Entity.MAX_SPEED),
+                    Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
                             Rng.RNG.nextDouble(0, Simulation.MAP_HEIGHT)
@@ -123,7 +127,7 @@ public final class Simulation {
 
         for (int i = 0; i < initPredator; i++) {
             ENTITY_LIST.add(new Predator(
-                    Rng.RNG.nextDouble(Entity.MIN_SPEED, Entity.MAX_SPEED),
+                    Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
                             Rng.RNG.nextDouble(0, Simulation.MAP_HEIGHT)
