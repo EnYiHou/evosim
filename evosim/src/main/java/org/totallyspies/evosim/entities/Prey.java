@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.entities;
 
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
 /**
@@ -12,31 +13,24 @@ import org.totallyspies.evosim.geometry.Point;
  */
 public class Prey extends Entity {
 
-    /**
-     * The angle of the prey's view cone.
-     */
-    public static final double VIEW_ANGLE = 300.0;
-
-    /**
-     * The split energy gained passively for surviving.
-     */
-    public static final double SPLIT_ENERGY_FILLING_SPEED = 0.5;
-
-    /**
-     * The energy regained passively for surviving.
-     */
-    public static final double ENERGY_FILLING_SPEED = 0.005;
 
     /**
      * Constructs a new prey.
      *
-     * @param speed    the speed of the prey
-     * @param position the position of the prey
+     * @param speed                  the speed of the prey
+     * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
      */
-    public Prey(final double speed, final Point position,
-                final double rotationAngleInRadians) {
-        super(speed, position, Prey.VIEW_ANGLE, rotationAngleInRadians);
+    public Prey(
+        final double speed, final Point position,
+        final double rotationAngleInRadians
+    ) {
+        super(
+            speed,
+            position,
+            Configuration.getConfiguration().getPreyViewAngle(),
+            rotationAngleInRadians
+        );
     }
 
     /**
@@ -55,8 +49,12 @@ public class Prey extends Entity {
         }
 
         // passively gain energy
-        this.setSplitEnergy(this.getSplitEnergy() + SPLIT_ENERGY_FILLING_SPEED);
-        this.setEnergy(Math.min(this.getEnergy() + ENERGY_FILLING_SPEED, 1));
+        this.setSplitEnergy(this.getSplitEnergy()
+                + Configuration.getConfiguration()
+                .getPreySplitEnergyFillingSpeed());
+        this.setEnergy(Math.min(this.getEnergy()
+                + Configuration.getConfiguration()
+                .getPreyEnergyFillingSpeed(), 1));
     }
 
     /**
@@ -68,13 +66,19 @@ public class Prey extends Entity {
     public Prey clone() {
         // Mutate the speed of the prey
         Prey prey = new Prey(
-                (Math.random() < Entity.SPEED_MUTATION_RATE)
-                        ? Math.random() * Entity.MAX_SPEED : this.getSpeed(),
-                new Point(this.getBodyCenter().getX(),
-                        this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians());
+            (Math.random()
+                < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                ? Math.random() * Configuration.getConfiguration()
+                .getEntityMaxSpeed() : this.getSpeed(),
+            new Point(
+                this.getBodyCenter().getX(),
+                this.getBodyCenter().getY()
+            ),
+            this.getDirectionAngleInRadians()
+        );
 
-        // TODO copy the brain of the prey
+        // mutate the brain of the predator
+        prey.setBrain(this.getBrain().mutate());
 
         this.setChildCount(this.getChildCount() + 1);
 

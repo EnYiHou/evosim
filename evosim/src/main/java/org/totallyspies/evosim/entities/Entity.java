@@ -1,14 +1,15 @@
 package org.totallyspies.evosim.entities;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * An Entity is an abstract member of the evolution simulation that can take
@@ -20,46 +21,6 @@ import java.util.Arrays;
  * @author EnYi, Matthew
  */
 public abstract class Entity {
-
-    /**
-     * The radius of an entity.
-     */
-    public static final double ENTITY_RADIUS = 15.0;
-
-    /**
-     * The number of sensors each entity has.
-     */
-    public static final int SENSORS_COUNT = 30;
-
-    /**
-     * The length of each sensor.
-     */
-    public static final double SENSORS_LENGTH = 100.0;
-
-    /**
-     * The maximum speed that can be chosen for an entity during mutation.
-     */
-    public static final double MAX_SPEED = 0.00001;
-
-    /**
-     * The minimum speed that can be chosen for an entity during mutation.
-     */
-    public static final double MIN_SPEED = 0.0;
-
-    /**
-     * A constant used to mutate the entities speed during reproduction.
-     */
-    protected static final double SPEED_MUTATION_RATE = 0.2;
-
-    /**
-     * The speed at which the energy of the entity will be drained.
-     */
-    public static final double ENERGY_DRAIN_RATE = 0.01;
-
-    /**
-     * The maximum speed at which the entity can rotate.
-     */
-    public static final double MAX_ROTATION_SPEED = 0.002;
 
     /**
      * An array of sensors represented by custom Line objects.
@@ -85,7 +46,6 @@ public abstract class Entity {
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     private final double speed;
-
     /**
      * The neural network of the entity.
      * <p>
@@ -93,8 +53,7 @@ public abstract class Entity {
      * data that will be used to make it's next decision.
      * </p>
      */
-    private final NeuralNetwork brain;
-
+    private NeuralNetwork brain;
     /**
      * The position of the entity.
      */
@@ -131,7 +90,8 @@ public abstract class Entity {
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
-    private double fovAngleInDegrees;
+    private final double fovAngleInDegrees;
+
 
     /**
      * The x index of the grid this entity is in.
@@ -177,21 +137,21 @@ public abstract class Entity {
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
-        this.body = new Circle(entityPosition, Entity.ENTITY_RADIUS);
+        this.body = new Circle(entityPosition,
+                Configuration.getConfiguration().getEntityRadius());
 
+        int sensorCount = Configuration.getConfiguration()
+                .getEntitySensorsCount();
         // initialize neural network
         this.brain = new NeuralNetwork(
-                Arrays.stream(new int[]{SENSORS_COUNT, 10, 2})
-                        .boxed().collect(ArrayList::new,
-                                ArrayList::add,
-                                ArrayList::addAll));
+               List.of(sensorCount, 10, 2));
 
         // initialize sensors
-        this.sensors = new Line[Entity.SENSORS_COUNT];
-        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
+        this.sensors = new Line[sensorCount];
+        for (int i = 0; i < sensorCount; i++) {
             this.sensors[i] = new Line(0, 0, 0, 0);
         }
-        this.sensorsData = new Double[Entity.SENSORS_COUNT];
+        this.sensorsData = new Double[sensorCount];
         adjustSensors();
     }
 
@@ -225,7 +185,8 @@ public abstract class Entity {
         position.setY(positionY);
 
         // drain energy
-        this.energy -= Entity.ENERGY_DRAIN_RATE * movementSpeed;
+        this.energy -= Configuration.getConfiguration()
+                .getEntityEnergyDrainRate() * movementSpeed;
     }
 
     /**
@@ -233,21 +194,34 @@ public abstract class Entity {
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
-                / (Entity.SENSORS_COUNT - 1);
-        for (int i = 0; i < Entity.SENSORS_COUNT; i++) {
+            / (Configuration.getConfiguration().getEntitySensorsCount() - 1);
+
+        for (
+            int i = 0;
+            i < Configuration.getConfiguration().getEntitySensorsCount();
+            i++
+        ) {
             double angle = this.directionAngleInRadians
-                    + Math.toRadians(-this.fovAngleInDegrees / 2
-                    + angleBetweenSensors * i);
+                + Math.toRadians(-this.fovAngleInDegrees / 2
+                + angleBetweenSensors * i);
 
             this.sensors[i].getStartPoint()
-                    .setCoordinates(this.getBodyCenter().getX(),
-                            this.getBodyCenter().getY());
+                .setCoordinates(
+                    this.getBodyCenter().getX(),
+                    this.getBodyCenter().getY()
+                );
 
             this.sensors[i].getEndPoint()
-                    .setCoordinates(this.getBodyCenter().getX()
-                                    + Math.cos(angle) * Entity.SENSORS_LENGTH,
-                            this.getBodyCenter().getY()
-                                    + Math.sin(angle) * Entity.SENSORS_LENGTH);
+                .setCoordinates(
+                    this.getBodyCenter().getX()
+                        + Math.cos(angle) * Configuration
+                        .getConfiguration()
+                        .getEntitySensorsCount(),
+                    this.getBodyCenter().getY()
+                        + Math.sin(angle)
+                        * Configuration.getConfiguration()
+                            .getEntitySensorsCount()
+                );
         }
     }
 
@@ -268,14 +242,15 @@ public abstract class Entity {
             this.split = true;
         }
 
-        double[] calculatedDecision =
+        List<Double> calculatedDecision =
                 this.brain.calcNetworkDecision(Arrays.asList(this.sensorsData));
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
-        this.directionAngleInRadians += Entity.MAX_ROTATION_SPEED
-                * calculatedDecision[0];
-        this.move(this.speed * calculatedDecision[1]);
+        this.directionAngleInRadians += Configuration.getConfiguration()
+                .getEntityMaxRotationSpeed()
+                * calculatedDecision.get(0);
+        this.move(this.speed * calculatedDecision.get(1));
 
     }
 
@@ -291,7 +266,8 @@ public abstract class Entity {
      */
     public final boolean checkCollisions() {
 
-        Arrays.fill(this.sensorsData, Entity.SENSORS_LENGTH);
+        Arrays.fill(this.sensorsData,
+                Configuration.getConfiguration().getEntitySensorsLength());
 
         // The number of nearby grids to check for collisions.
         int nearbyGrids = 1;
@@ -317,7 +293,8 @@ public abstract class Entity {
                                         this.getBodyCenter().getY(),
                                         entity.getBodyCenter().getX(),
                                         entity.getBodyCenter().getY());
-                        if (distance < Entity.ENTITY_RADIUS * 2) {
+                        if (distance < Configuration.getConfiguration()
+                                .getEntityRadius() * 2) {
                             return true;
                         }
 
@@ -346,6 +323,7 @@ public abstract class Entity {
     public final double getEnergy() {
         return this.energy;
     }
+
     public final double getSplitEnergy() {
         return this.splitEnergy;
     }
@@ -388,6 +366,10 @@ public abstract class Entity {
 
     public final NeuralNetwork getBrain() {
         return this.brain;
+    }
+
+    public final void setBrain(final NeuralNetwork entityBrain) {
+        this.brain = entityBrain;
     }
 
     protected final void setEnergy(final double entityEnergy) {
