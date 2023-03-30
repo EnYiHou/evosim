@@ -85,6 +85,10 @@ public final class Simulation {
     };
 
     private Simulation() {
+        generateGrids();
+        // TODO add initial population (add config for initial population)
+        populateEntityList(100, 100);
+        updateGrids();
     }
 
     /**
@@ -143,14 +147,13 @@ public final class Simulation {
      */
     private void updateGrids() {
         //clear entity from grids
-        for (int i = 0; i < GRIDS.size(); i++) {
-            for (int j = 0; j < GRIDS.get(i).size(); j++) {
-                GRIDS.get(i).get(j).clear();
+        for (List<List<Entity>> grid : GRIDS) {
+            for (List<Entity> entities : grid) {
+                entities.clear();
             }
         }
 
-        for (int i = 0; i < ENTITY_LIST.size(); i++) {
-            final Entity entity = ENTITY_LIST.get(i);
+        for (final Entity entity : ENTITY_LIST) {
             final int x = (int) (entity.getBodyCenter().getX()
                     / Simulation.GRID_WIDTH);
             final int y = (int) (entity.getBodyCenter().getY()
