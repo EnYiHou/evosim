@@ -6,10 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.totallyspies.evosim.utils.ResourceManager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.net.URL;
 
 /**
  * Controller for the {@code about.fxml} file. Dynamically adds all input
@@ -51,21 +49,19 @@ public final class AboutController {
      * Text nodes.
      */
     public void initialize() {
-        addMenuText(ResourceManager.UI_TEXT);
+        addMenuText(getClass().getResourceAsStream(ResourceManager.UI_TEXT));
     }
 
     /**
      * Loads the AboutWindow text from the project's json file.
      */
-    private void addMenuText(final String path) {
+    private void addMenuText(final InputStream path) {
         String jsonText = "";
 
         try {
-            File jsonFile = new File(path);
-
             try (BufferedReader reader =
-                         new BufferedReader(new FileReader(jsonFile))) {
-                String line = reader.readLine().trim();
+                         new BufferedReader(new InputStreamReader(path))) {
+                String line = reader.readLine();
 
                 while (line != null) {
                     jsonText += line;

@@ -21,7 +21,7 @@
             <Insets />
          </opaqueInsets>
          <children>
-            <VBox alignment="TOP_CENTER" maxHeight="150.0" maxWidth="401.0" minHeight="150.0" minWidth="401.0" prefHeight="130.0" prefWidth="400.0" style="-fx-border-color: rgb(90, 90, 90); -fx-spacing: 7;">
+            <VBox alignment="TOP_CENTER" maxHeight="150.0" maxWidth="405.0" minHeight="150.0" minWidth="405.0" prefHeight="130.0" prefWidth="400.0" style="-fx-border-color: rgb(90, 90, 90); -fx-spacing: 7;">
                <children>
                   <Label text="Developers" textAlignment="CENTER">
                      <font>
@@ -38,7 +38,7 @@
                         <Font name="System Italic" size="24.0" />
                      </font>
                   </Label>
-                  <Text fx:id="txtDescription" strokeType="OUTSIDE" strokeWidth="0.0" text="text not found" textAlignment="JUSTIFY" wrappingWidth="350.0" />
+                  <Text fx:id="txtDescription" lineSpacing="2.0" strokeType="OUTSIDE" strokeWidth="0.0" text="text not found" textAlignment="JUSTIFY" wrappingWidth="350.0" />
                </children>
             </VBox>
          </children>
