@@ -99,10 +99,9 @@ public final class Formulas {
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
                 - circleRadius > length) {
             return length;
+
         }
-
         if (deltaX == 0) {
-
             double x = lineStartX;
             double sqrt = Math.sqrt(circleRadius * circleRadius
                     - (x - circleCenterX) * (x - circleCenterX));
@@ -113,7 +112,10 @@ public final class Formulas {
 
             return (distance1 <= distance2 ? distance1 : distance2);
 
-
+        }
+        if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
+            - circleRadius < 0) {
+            return 0d;
         } else {
 
             //calculate the slope of the line
