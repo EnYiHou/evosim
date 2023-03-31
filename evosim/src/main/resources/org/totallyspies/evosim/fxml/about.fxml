@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Label layoutX="169.0" layoutY="36.0" text="placeholder" />
-   </children>
-</Pane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.AboutController">
+   <top>
+      <Label alignment="CENTER" prefHeight="57.0" prefWidth="258.0" text="About Evosim" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <VBox alignment="TOP_CENTER" prefHeight="386.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <children>
+            <VBox alignment="TOP_CENTER" maxHeight="150.0" maxWidth="401.0" minHeight="150.0" minWidth="401.0" prefHeight="130.0" prefWidth="400.0" style="-fx-border-color: rgb(90, 90, 90); -fx-spacing: 7;">
+               <children>
+                  <Label text="Developers" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Italic" size="24.0" />
+                     </font>
+                  </Label>
+                  <Text fx:id="txtDevelopers" lineSpacing="4.0" strokeType="OUTSIDE" strokeWidth="0.0" text="text not found" textAlignment="CENTER" wrappingWidth="350.0" />
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefHeight="243.0" prefWidth="402.0" style="-fx-spacing: 10;">
+               <children>
+                  <Label text="Project Description" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Italic" size="24.0" />
+                     </font>
+                  </Label>
+                  <Text fx:id="txtDescription" strokeType="OUTSIDE" strokeWidth="0.0" text="text not found" textAlignment="JUSTIFY" wrappingWidth="350.0" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

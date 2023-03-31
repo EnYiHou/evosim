@@ -65,7 +65,7 @@ public class NeuralNetwork {
     }
 
     /**
-     * Constructor used intenrally to not have to initialize the
+     * Constructor used internally to not have to initialize the
      * {@link #neuronLayers} expensively.
      */
     private NeuralNetwork() {

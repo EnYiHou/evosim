@@ -1,4 +1,4 @@
-package org.totallyspies.evosim;
+package org.totallyspies.evosim.ui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

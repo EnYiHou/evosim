@@ -1,4 +1,4 @@
-package org.totallyspies.evosim;
+package org.totallyspies.evosim.ui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.io.IOException;
+
 
 /**
  * The AboutWindow is a small, locked modal window that displays basic
@@ -31,7 +32,7 @@ public final class AboutWindow {
     /**
      * The sole stage used for the "about" window.
      */
-    private final Stage abtStage = new Stage();
+    private Stage abtStage;
 
     /**
      * The JavaFX scene for the stage.
@@ -46,6 +47,7 @@ public final class AboutWindow {
      * @param parent the parent stage of this window
      */
     public AboutWindow(final Stage parent) {
+        this.abtStage = new Stage();
         this.setRoot(ResourceManager.FXML_ABOUT);
         abtStage.setTitle("ABOUT Evosim");
         abtStage.initModality(Modality.APPLICATION_MODAL);
@@ -67,7 +69,6 @@ public final class AboutWindow {
 
         try {
             if (scene == null) {
-                System.out.println("here");
                 this.scene = new Scene(loader.load(),
                         ABT_WINDOW_WIDTH, ABT_WINDOW_HEIGHT);
             } else {

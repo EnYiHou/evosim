@@ -1,14 +1,14 @@
 package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
-import org.totallyspies.evosim.AboutWindow;
-import org.totallyspies.evosim.EvosimApplication;
+import org.totallyspies.evosim.ui.AboutWindow;
+import org.totallyspies.evosim.ui.EvosimApplication;
 
 /**
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input
  * fields.
  */
-public class MainController {
+public final class MainController {
 
     /**
      * Initializes {@code main.fxml}.
