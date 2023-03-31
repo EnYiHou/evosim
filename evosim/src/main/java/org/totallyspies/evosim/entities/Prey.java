@@ -28,7 +28,7 @@ public class Prey extends Entity {
         super(
             speed,
             position,
-            Configuration.getConfiguration().getPreyViewAngle(),
+            Configuration.getCONFIGURATION().getPreyViewAngle(),
             rotationAngleInRadians
         );
     }
@@ -50,10 +50,10 @@ public class Prey extends Entity {
 
         // passively gain energy
         this.setSplitEnergy(this.getSplitEnergy()
-                + Configuration.getConfiguration()
+                + Configuration.getCONFIGURATION()
                 .getPreySplitEnergyFillingSpeed());
         this.setEnergy(Math.min(this.getEnergy()
-                + Configuration.getConfiguration()
+                + Configuration.getCONFIGURATION()
                 .getPreyEnergyFillingSpeed(), 1));
     }
 
@@ -67,8 +67,8 @@ public class Prey extends Entity {
         // Mutate the speed of the prey
         Prey prey = new Prey(
             (Math.random()
-                < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                ? Math.random() * Configuration.getConfiguration()
+                < Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
+                ? Math.random() * Configuration.getCONFIGURATION()
                 .getEntityMaxSpeed() : this.getSpeed(),
             new Point(
                 this.getBodyCenter().getX(),

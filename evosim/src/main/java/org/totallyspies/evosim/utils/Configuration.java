@@ -212,7 +212,7 @@ public final class Configuration {
   /**
    * The only configuration that exists using the Singleton Pattern.
    */
-  private static Configuration configuration = new Configuration();
+  private static final Configuration CONFIGURATION = new Configuration();
 
   /**
    * Create a new default Configuration object, and the setup.
@@ -369,8 +369,8 @@ public final class Configuration {
    *
    * @return Configuration saved from a Json File
    */
-  public static Configuration getConfiguration() {
-    return Configuration.configuration;
+  public static Configuration getCONFIGURATION() {
+    return Configuration.CONFIGURATION;
   }
 
   /**

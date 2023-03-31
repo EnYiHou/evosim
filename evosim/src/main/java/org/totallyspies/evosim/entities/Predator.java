@@ -28,7 +28,7 @@ public final class Predator extends Entity {
         super(
             speed,
             position,
-            Configuration.getConfiguration().getPredatorViewAngle(),
+            Configuration.getCONFIGURATION().getPredatorViewAngle(),
             rotationAngleInRadians
         );
     }
@@ -43,16 +43,16 @@ public final class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
-        this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
+        this.setEnergy(this.getEnergy() - Configuration.getCONFIGURATION()
                 .getPredatorEnergyBaseDrainingSpeed());
 
         // collision with prey
         if (checkCollisions()) {
             this.setSplitEnergy(this.getSplitEnergy()
-                    + Configuration.getConfiguration()
+                    + Configuration.getCONFIGURATION()
                     .getPredatorSplitEnergyFillingSpeed());
             this.setEnergy(Math.min(1, this.getEnergy()
-                    + Configuration.getConfiguration()
+                    + Configuration.getCONFIGURATION()
                     .getPredatorEnergyFillingSpeed()));
         }
 
@@ -71,8 +71,8 @@ public final class Predator extends Entity {
         // Mutate the speed of the predator
         Predator predator = new Predator(
             (Math.random()
-                < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                ? Math.random() * Configuration.getConfiguration()
+                < Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
+                ? Math.random() * Configuration.getCONFIGURATION()
                 .getEntityMaxSpeed() : this.getSpeed(),
             new Point(
                 this.getBodyCenter().getX(),

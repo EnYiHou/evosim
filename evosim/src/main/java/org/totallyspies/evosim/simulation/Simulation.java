@@ -51,23 +51,31 @@ public final class Simulation {
     /**
      * The number of grids in the x direction.
      */
-    public static final int GRID_X = (int) (MAP_WIDTH / GRID_WIDTH);
+    public static final int GRID_X = (int) (Simulation.MAP_WIDTH
+            / Simulation.GRID_WIDTH);
 
     /**
      * The number of grids in the y direction.
      */
-    public static final int GRID_Y = (int) (MAP_HEIGHT / GRID_HEIGHT);
+    public static final int GRID_Y = (int) (Simulation.MAP_HEIGHT
+            / Simulation.GRID_HEIGHT);
+
+    /**
+     * The singleton instance of the simulation.
+     */
+    private static final Simulation INSTANCE = new Simulation();
 
     /**
      * The animation loop of the simulation that runs every frame.
      */
-    private final AnimationTimer animationLoop = new AnimationTimer() {
+    private  final AnimationTimer animationLoop = new AnimationTimer() {
         @Override
         public void handle(final long now) {
 
             updateGrids();
 
-            ListIterator<Entity> iterator = ENTITY_LIST.listIterator();
+            ListIterator<Entity> iterator = Simulation
+                    .ENTITY_LIST.listIterator();
             while (iterator.hasNext()) {
                 final Entity entity = iterator.next();
                 entity.update();
@@ -85,25 +93,25 @@ public final class Simulation {
     };
 
     private Simulation() {
-        generateGrids();
+        this.generateGrids();
         // TODO add initial population (add config for initial population)
-        populateEntityList(100, 100);
-        updateGrids();
+        this.populateEntityList(100, 100);
+        this.updateGrids();
     }
 
     /**
      * Generate the grids for the simulation.
      */
-    public void generateGrids() {
-        final int x = (int) (MAP_WIDTH / GRID_WIDTH);
-        final int y = (int) (MAP_HEIGHT / GRID_HEIGHT);
+    private void generateGrids() {
+        final int x = (int) (Simulation.MAP_WIDTH / Simulation.GRID_WIDTH);
+        final int y = (int) (Simulation.MAP_HEIGHT / Simulation.GRID_HEIGHT);
 
         for (int i = 0; i < x; i++) {
             final List<List<Entity>> grid = new ArrayList<>();
             for (int j = 0; j < y; j++) {
                 grid.add(new ArrayList<>());
             }
-            GRIDS.add(grid);
+            Simulation.GRIDS.add(grid);
         }
     }
 
@@ -114,12 +122,13 @@ public final class Simulation {
      * @param initPrey      the initial number of prey spawned
      * @param initPredator  the initial number of predators spawned
      */
-    public void populateEntityList(final int initPrey, final int initPredator) {
-        double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
+    private void populateEntityList(final int initPrey,
+                                          final int initPredator) {
+        double maxSpeed = Configuration.getCONFIGURATION().getEntityMaxSpeed();
 
         // TODO add min speed to config
         for (int i = 0; i < initPrey; i++) {
-            ENTITY_LIST.add(new Prey(
+            Simulation.ENTITY_LIST.add(new Prey(
                     Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
@@ -130,7 +139,7 @@ public final class Simulation {
         }
 
         for (int i = 0; i < initPredator; i++) {
-            ENTITY_LIST.add(new Predator(
+            Simulation.ENTITY_LIST.add(new Predator(
                     Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
@@ -147,18 +156,18 @@ public final class Simulation {
      */
     private void updateGrids() {
         //clear entity from grids
-        for (List<List<Entity>> grid : GRIDS) {
+        for (List<List<Entity>> grid : Simulation.GRIDS) {
             for (List<Entity> entities : grid) {
                 entities.clear();
             }
         }
 
-        for (final Entity entity : ENTITY_LIST) {
+        for (final Entity entity : Simulation.ENTITY_LIST) {
             final int x = (int) (entity.getBodyCenter().getX()
                     / Simulation.GRID_WIDTH);
             final int y = (int) (entity.getBodyCenter().getY()
                     / Simulation.GRID_WIDTH);
-            GRIDS.get(x).get(y).add(entity);
+            Simulation.GRIDS.get(x).get(y).add(entity);
             entity.setGridX(x);
             entity.setGridY(y);
         }

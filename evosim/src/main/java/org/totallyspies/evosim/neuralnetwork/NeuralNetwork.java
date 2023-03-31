@@ -107,7 +107,6 @@ public class NeuralNetwork {
             .boxed()
             .toList();
 
-        System.out.println(outputs);
 
         while (iterator.hasNext()) {
             List<Double> latestOutputs = outputs;
@@ -115,7 +114,6 @@ public class NeuralNetwork {
                 .stream()
                 .map(neuron -> neuron.feed(latestOutputs))
                 .toList();
-            System.out.println(outputs);
         }
 
         return outputs;
@@ -141,7 +139,7 @@ public class NeuralNetwork {
                     .stream()
                     .map(neuron -> neuron.mutate(
                         Configuration
-                            .getConfiguration()
+                            .getCONFIGURATION()
                             .getEntitySpeedMutationRate()
                     ))
                     .toList()

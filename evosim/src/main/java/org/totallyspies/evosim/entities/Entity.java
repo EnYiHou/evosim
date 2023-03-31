@@ -138,9 +138,9 @@ public abstract class Entity {
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
         this.body = new Circle(entityPosition,
-                Configuration.getConfiguration().getEntityRadius());
+                Configuration.getCONFIGURATION().getEntityRadius());
 
-        int sensorCount = Configuration.getConfiguration()
+        int sensorCount = Configuration.getCONFIGURATION()
                 .getEntitySensorsCount();
         // initialize neural network
         this.brain = new NeuralNetwork(
@@ -185,7 +185,7 @@ public abstract class Entity {
         position.setY(positionY);
 
         // drain energy
-        this.energy -= Configuration.getConfiguration()
+        this.energy -= Configuration.getCONFIGURATION()
                 .getEntityEnergyDrainRate() * movementSpeed;
     }
 
@@ -194,11 +194,11 @@ public abstract class Entity {
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
-            / (Configuration.getConfiguration().getEntitySensorsCount() - 1);
+            / (Configuration.getCONFIGURATION().getEntitySensorsCount() - 1);
 
         for (
             int i = 0;
-            i < Configuration.getConfiguration().getEntitySensorsCount();
+            i < Configuration.getCONFIGURATION().getEntitySensorsCount();
             i++
         ) {
             double angle = this.directionAngleInRadians
@@ -215,11 +215,11 @@ public abstract class Entity {
                 .setCoordinates(
                     this.getBodyCenter().getX()
                         + Math.cos(angle) * Configuration
-                        .getConfiguration()
+                        .getCONFIGURATION()
                         .getEntitySensorsCount(),
                     this.getBodyCenter().getY()
                         + Math.sin(angle)
-                        * Configuration.getConfiguration()
+                        * Configuration.getCONFIGURATION()
                             .getEntitySensorsCount()
                 );
         }
@@ -247,7 +247,7 @@ public abstract class Entity {
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
-        this.directionAngleInRadians += Configuration.getConfiguration()
+        this.directionAngleInRadians += Configuration.getCONFIGURATION()
                 .getEntityMaxRotationSpeed()
                 * calculatedDecision.get(0);
         this.move(this.speed * calculatedDecision.get(1));
@@ -267,7 +267,7 @@ public abstract class Entity {
     public final boolean checkCollisions() {
 
         Arrays.fill(this.sensorsData,
-                Configuration.getConfiguration().getEntitySensorsLength());
+                Configuration.getCONFIGURATION().getEntitySensorsLength());
 
         // The number of nearby grids to check for collisions.
         int nearbyGrids = 1;
@@ -293,7 +293,7 @@ public abstract class Entity {
                                         this.getBodyCenter().getY(),
                                         entity.getBodyCenter().getX(),
                                         entity.getBodyCenter().getY());
-                        if (distance < Configuration.getConfiguration()
+                        if (distance < Configuration.getCONFIGURATION()
                                 .getEntityRadius() * 2) {
                             return true;
                         }
