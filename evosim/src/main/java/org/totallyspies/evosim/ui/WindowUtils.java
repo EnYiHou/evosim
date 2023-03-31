@@ -14,7 +14,7 @@ public final class WindowUtils {
      * Sets the scene for the calling window.
      */
     public static void setSceneRoot() {
-
+        // TODO: implement this method to set the scene of any method
     }
 
 }
