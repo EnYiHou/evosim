@@ -27,12 +27,12 @@ public final class SafeSlider extends VBox {
     /**
      * Spacing to use between all components.
      */
-    private static final double SPACING = 15;
+    private static final double SPACING = 15.0d;
 
     /**
      * Top-left padding to be used for all components.
      */
-    private static final double PADDING = 5;
+    private static final double PADDING = 5.0d;
 
     /**
      * Default minimum value to use for slider.

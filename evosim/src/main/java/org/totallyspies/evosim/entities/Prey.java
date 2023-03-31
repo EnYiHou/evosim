@@ -13,6 +13,7 @@ import org.totallyspies.evosim.geometry.Point;
  */
 public class Prey extends Entity {
 
+
     /**
      * Constructs a new prey.
      *
@@ -27,7 +28,7 @@ public class Prey extends Entity {
         super(
             speed,
             position,
-            Configuration.getConfiguration().getPreyViewAngle(),
+            Configuration.getCONFIGURATION().getPreyViewAngle(),
             rotationAngleInRadians
         );
     }
@@ -35,9 +36,25 @@ public class Prey extends Entity {
     /**
      * Determines if this prey should split or die based on its collision and
      * energy.
+     * <p>
+     * If this Prey has run out of energy or collided a predator, it will die.
+     * If this Prey has enough split energy, it will clone itself.
+     * </p>
      */
     @Override
     public void onUpdate() {
+        // collide with predator
+        if (checkCollisions()) {
+            this.setDeath(true);
+        }
+
+        // passively gain energy
+        this.setSplitEnergy(this.getSplitEnergy()
+                + Configuration.getCONFIGURATION()
+                .getPreySplitEnergyFillingSpeed());
+        this.setEnergy(Math.min(this.getEnergy()
+                + Configuration.getCONFIGURATION()
+                .getPreyEnergyFillingSpeed(), 1));
     }
 
     /**
@@ -50,8 +67,8 @@ public class Prey extends Entity {
         // Mutate the speed of the prey
         Prey prey = new Prey(
             (Math.random()
-                < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                ? Math.random() * Configuration.getConfiguration()
+                < Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
+                ? Math.random() * Configuration.getCONFIGURATION()
                 .getEntityMaxSpeed() : this.getSpeed(),
             new Point(
                 this.getBodyCenter().getX(),
@@ -60,31 +77,11 @@ public class Prey extends Entity {
             this.getDirectionAngleInRadians()
         );
 
-        // TODO copy the brain of the prey
+        // mutate the brain of the predator
+        prey.setBrain(this.getBrain().mutate());
 
         this.setChildCount(this.getChildCount() + 1);
 
         return prey;
-    }
-
-    /**
-     * Handles collision between this prey and another Entity.
-     * <p>
-     * If the prey collides with a predator, it will be eaten and die.
-     * </p>
-     */
-    @Override
-    public void onCollide() {
-        // TODO remove the prey from the list of entities
-    }
-
-    /**
-     * Splits this prey by cloning it and adding the new one to the list
-     * of entities.
-     */
-    @Override
-    public void onSplit() {
-        Prey prey = this.clone();
-        // TODO add the prey to the list of entities
     }
 }
