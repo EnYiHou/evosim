@@ -12,7 +12,7 @@ import org.totallyspies.evosim.utils.Configuration;
  */
 public class ConfigurationTest {
 
-  private Configuration defaultConfiguration = Configuration.getConfiguration();
+  private Configuration defaultConfiguration = Configuration.getCONFIGURATION();
   private Configuration latest = Configuration.getLast();
 
   @Test

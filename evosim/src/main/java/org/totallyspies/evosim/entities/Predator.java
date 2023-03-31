@@ -11,7 +11,7 @@ import org.totallyspies.evosim.geometry.Point;
  *
  * @author EnYi, Matthew
  */
-public class Predator extends Entity {
+public final class Predator extends Entity {
 
     /**
      * Constructs a new predator.
@@ -28,7 +28,7 @@ public class Predator extends Entity {
         super(
             speed,
             position,
-            Configuration.getConfiguration().getPredatorViewAngle(),
+            Configuration.getCONFIGURATION().getPredatorViewAngle(),
             rotationAngleInRadians
         );
     }
@@ -36,9 +36,29 @@ public class Predator extends Entity {
     /**
      * Determines if this predator should split or die based on its collision
      * and energy.
+     * <p>
+     * If this Predator has run out of energy, it will die.
+     * If this Predator has enough split energy, it will clone itself.
+     * </p>
      */
     @Override
     public void onUpdate() {
+        this.setEnergy(this.getEnergy() - Configuration.getCONFIGURATION()
+                .getPredatorEnergyBaseDrainingSpeed());
+
+        // collision with prey
+        if (checkCollisions()) {
+            this.setSplitEnergy(this.getSplitEnergy()
+                    + Configuration.getCONFIGURATION()
+                    .getPredatorSplitEnergyFillingSpeed());
+            this.setEnergy(Math.min(1, this.getEnergy()
+                    + Configuration.getCONFIGURATION()
+                    .getPredatorEnergyFillingSpeed()));
+        }
+
+        if (this.getEnergy() <= 0) {
+            this.setDeath(true);
+        }
     }
 
     /**
@@ -51,8 +71,8 @@ public class Predator extends Entity {
         // Mutate the speed of the predator
         Predator predator = new Predator(
             (Math.random()
-                < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                ? Math.random() * Configuration.getConfiguration()
+                < Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
+                ? Math.random() * Configuration.getCONFIGURATION()
                 .getEntityMaxSpeed() : this.getSpeed(),
             new Point(
                 this.getBodyCenter().getX(),
@@ -60,44 +80,10 @@ public class Predator extends Entity {
             ),
             this.getDirectionAngleInRadians()
         );
-
-        // TODO copy the brain of the prey
+        // mutate the brain of the predator
+        predator.setBrain(this.getBrain().mutate());
 
         this.setChildCount(this.getChildCount() + 1);
         return predator;
-    }
-
-    /**
-     * Handles collision between this predator and another Entity.
-     * <p>
-     * If the predator collides with a prey, it will eat it and
-     * accumulate split energy. If doing so provides enough energy, it will
-     * split.
-     * </p>
-     */
-    @Override
-    public void onCollide() {
-        this.setEnergy(this.getEnergy()
-            + Configuration
-            .getConfiguration()
-            .getPredatorSplitEnergyFillingSpeed()
-        );
-
-        if (this.getEnergy() > 1) {
-            this.setEnergy(this.getEnergy() - 1);
-            this.onSplit();
-        }
-
-    }
-
-    /**
-     * Splits this predator by cloning it and adding the new one to the list
-     * of entities.
-     */
-    @Override
-    public void onSplit() {
-        Predator predator = this.clone();
-        // TODO add the predator to the list of entities
-
     }
 }
