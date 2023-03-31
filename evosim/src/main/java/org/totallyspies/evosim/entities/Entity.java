@@ -129,8 +129,8 @@ public abstract class Entity {
                      final double newRotationAngle) {
 
         // initialize entity properties
-        this.energy = 1.0;
-        this.splitEnergy = 0.0;
+        this.energy = 1d;
+        this.splitEnergy = 0d;
         this.death = false;
         this.split = false;
         this.childCount = 0;
@@ -152,7 +152,7 @@ public abstract class Entity {
             this.sensors[i] = new Line(0, 0, 0, 0);
         }
         this.sensorsData = new Double[sensorCount];
-        adjustSensors();
+        this.adjustSensors();
     }
 
     /**

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+
 /**
  * Configuration class consists of saving the settings the user configurations.
  * If the user close the application without saving the configurations, the
@@ -24,22 +25,22 @@ public final class Configuration {
     /**
      * The maximum speed at which the entity can rotate.
      */
-    public static final double ENTITY_MAX_ROTATION_SPEED = 0.02;
+    public static final double ENTITY_MAX_ROTATION_SPEED = 0.02d;
 
     /**
      * The energy regained passively by a prey for surviving.
      */
-    public static final double PREY_ENERGY_FILLING_SPEED = 0.005;
+    public static final double PREY_ENERGY_FILLING_SPEED = 0.005d;
 
     /**
      * The energy regained by a predator from eating prey.
      */
-    public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.005;
+    public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.005d;
 
     /**
      * The base energy lost rate of a predator.
      */
-    public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.1;
+    public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.1d;
 
     /**
      * The number of sensors each entity has.
@@ -230,6 +231,7 @@ public final class Configuration {
     this.entitySpeedMutationRate = Defaults.ENTITY_SPEED_MUTATION_RATE;
     this.entityEnergyDrainRate = Defaults.ENTITY_ENERGY_DRAIN_RATE;
 
+    // Predator
     this.predatorMaxNumber = Defaults.PREDATOR_MAX_NUMBER;
     this.predatorViewAngle = Defaults.PREDATOR_VIEW_ANGLE;
     this.predatorSplitEnergyFillingSpeed = Defaults.

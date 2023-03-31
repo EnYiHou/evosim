@@ -30,7 +30,7 @@ public class Point {
      * Creates a new point with the coordinates (0, 0).
      */
     public Point() {
-        this(0, 0);
+        this(0d, 0d);
     }
 
     /**

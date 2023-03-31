@@ -1,5 +1,8 @@
 package org.totallyspies.evosim.geometry;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * This class represents a circle in 2D space.
  */
@@ -8,6 +11,7 @@ public class Circle {
     /**
      * The radius of the circle.
      */
+    @Getter @Setter
     private double radius;
 
     /**
