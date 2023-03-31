@@ -23,6 +23,7 @@ public final class ResourceManager {
     public static final String FXML_MAIN_VIEW = FXML_FOLDER + "/main.fxml";
     public static final String FXML_WELCOME_VIEW =
             FXML_FOLDER + "/welcome.fxml";
+    public static final String FXML_ABOUT = FXML_FOLDER + "/about.fxml";
 
     // Images
     public static final String IMAGE_WELCOME = IMAGE_FOLDER + "/welcome.png";
