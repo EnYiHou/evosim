@@ -15,7 +15,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import org.totallyspies.evosim.utils.Configuration;
-import org.totallyspies.evosim.EvosimApplication;
+import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.util.ArrayList;

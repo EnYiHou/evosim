@@ -1,4 +1,4 @@
-package org.totallyspies.evosim;
+package org.totallyspies.evosim.ui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +17,11 @@ public final class EvosimApplication extends Application {
     private Scene scene;
 
     /**
+     * Sole stage of the application.
+     */
+    private Stage stage;
+
+    /**
      * Instance of the application to be kept.
      */
     private static EvosimApplication application;
@@ -24,6 +29,7 @@ public final class EvosimApplication extends Application {
     @Override
     public void start(final Stage primaryStage) {
         application = this;
+        stage = primaryStage;
         this.setRoot(ResourceManager.FXML_WELCOME_VIEW);
         primaryStage.setTitle("Evosim");
         primaryStage.setScene(this.scene);
@@ -70,5 +76,9 @@ public final class EvosimApplication extends Application {
 
     public static EvosimApplication getApplication() {
         return application;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }
