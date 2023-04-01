@@ -2,12 +2,12 @@ package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.totallyspies.evosim.utils.ResourceManager;
 
-import java.io.*;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 /**
  * Controller for the {@code about.fxml} file. Dynamically adds all input
