@@ -1,0 +1,6 @@
+{
+  "about-ui-text": {
+    "txtDevelopers": "Kyle Bouchard (Team Coordinator)\nEdelina Alieva\nEnYi Hou\nMatthew Leprohon",
+    "txtDescription": "Evosim is an evolution/population simulator that simulates a battle between two species; prey and the predators. Using AI and a neural network built on Linear Algebra, the two species will interact with one another and give a semi-realistic demonstration of population control. Each species has a different goal in order to multiply and survive, the prey being to live as long as possible, and the predators to eat as many prey as possible. The user has control over various initial parameters to influence the simulation such as modifying the starting populations and various rates such as entity mutation."
+  }
+}

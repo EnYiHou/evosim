@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -8,7 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import org.totallyspies.evosim.fxml.ResizableCanvas?>
 
-<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -23,9 +25,13 @@
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
+               <items>
+                  <CustomMenuItem mnemonicParsing="false" text="About">
+                     <content>
+                        <Label onMouseClicked="#aboutMenuClicked" text="About" />
+                     </content>
+                  </CustomMenuItem>
+               </items>
           </Menu>
         </menus>
       </MenuBar>
