@@ -18,8 +18,9 @@ public class Circle {
 
     /**
      * Creates a new circle with the given center and radius.
+     *
      * @param centerPoint the center of the circle
-     * @param newRadius the radius of the circle
+     * @param newRadius   the radius of the circle
      */
     public Circle(final Point centerPoint, final double newRadius) {
         this.center = centerPoint;

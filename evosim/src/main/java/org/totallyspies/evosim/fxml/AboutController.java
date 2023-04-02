@@ -10,8 +10,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /**
- * Controller for the {@code about.fxml} file. Dynamically adds all input
- * fields.
+ * Controller for the {@code about.fxml} file. Dynamically adds all input fields.
  *
  * @author mattlep11
  */
@@ -54,13 +53,13 @@ public final class AboutController {
 
     /**
      * Loads the AboutWindow text from the project's json file.
+     * @param path  the file path of the json
      */
     private void addMenuText(final InputStream path) {
         String jsonText = "";
 
         try {
-            try (BufferedReader reader =
-                         new BufferedReader(new InputStreamReader(path))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(path))) {
                 String line = reader.readLine();
 
                 while (line != null) {

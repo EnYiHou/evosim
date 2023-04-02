@@ -18,8 +18,7 @@ import javafx.util.converter.NumberStringConverter;
 import java.util.Optional;
 
 /**
- * Slider that alerts user to confirm when a value is set outside of the range
- * of the slider.
+ * Slider that alerts user to confirm when a value is set outside the range of the slider.
  *
  * @author ptrstr
  */
@@ -127,9 +126,7 @@ public final class SafeSlider extends VBox {
         this.hardMax = new SimpleBooleanProperty(DEFAULT_HARDLIMIT);
 
         this.floatingPoint = new SimpleBooleanProperty(DEFAULT_FLOATING_POINT);
-        this.floatingPoint.addListener(
-            (observable, oldValue, newValue) -> this.initializeValues()
-        );
+        this.floatingPoint.addListener((observable, oldValue, newValue) -> this.initializeValues());
 
         this.name = new SimpleStringProperty(DEFAULT_NAME);
 
@@ -154,18 +151,18 @@ public final class SafeSlider extends VBox {
     }
 
     /**
-     * Constructs a {@link SimpleDoubleProperty} based on {@code baseValue}'s
-     * double value if {@link #floatingPoint} is set to true, or else constructs
-     * a {@link SimpleIntegerProperty} based on {@code baseValue}'s integer
-     * value.
+     * Constructs a {@link SimpleDoubleProperty} based on {@code baseValue}'s double value if
+     * {@link #floatingPoint} is set to true, or else constructs a {@link SimpleIntegerProperty}
+     * based on {@code baseValue}'s integer value.
+     *
      * @param baseValue Value for the property to be based on.
      * @return Property respecting type of {@link #floatingPoint} based on
      * {@code baseValue}.
      */
     private Property<Number> constructProperty(final Number baseValue) {
         return this.floatingPoint.get()
-            ? new SimpleDoubleProperty(baseValue.doubleValue())
-            : new SimpleIntegerProperty(baseValue.intValue());
+                ? new SimpleDoubleProperty(baseValue.doubleValue())
+                : new SimpleIntegerProperty(baseValue.intValue());
     }
 
     private void initializeValues() {
@@ -183,19 +180,18 @@ public final class SafeSlider extends VBox {
         }
 
         this.min = this.constructProperty(
-            this.min == null ? DEFAULT_MIN : this.min.getValue()
+                this.min == null ? DEFAULT_MIN : this.min.getValue()
         );
 
         this.max = this.constructProperty(
-            this.max == null ? DEFAULT_MAX : this.max.getValue()
+                this.max == null ? DEFAULT_MAX : this.max.getValue()
         );
 
         this.value = this.constructProperty(
-            this.value == null ? DEFAULT_SLIDER_VALUE : this.value.getValue()
+                this.value == null ? DEFAULT_SLIDER_VALUE : this.value.getValue()
         );
 
-        this.value.addListener(
-            (observable, oldValue, newValue) ->
+        this.value.addListener((observable, oldValue, newValue) ->
                 onNewValue(this.value, oldValue, newValue)
         );
 
@@ -203,66 +199,51 @@ public final class SafeSlider extends VBox {
         this.slider.maxProperty().bindBidirectional(this.max);
         this.slider.valueProperty().bindBidirectional(this.value);
         this.textField.textProperty().bindBidirectional(
-            this.value, new NumberStringConverter()
+                this.value, new NumberStringConverter()
         );
     }
 
     /**
-     * Event called on new value set for {@link #value}. Verifies if the value
-     * is within the safe range and confirms with the user before using it.
-     * @param valueProperty Property that has been set. Not using class instance
-     *                      so that instances to be garbage collected do not
-     *                      change the real value.
-     * @param oldValue Old value of the property
-     * @param newValue New value of the property to be checked
+     * Event called on new value set for {@link #value}. Verifies if the value is within the safe
+     * range and confirms with the user before using it.
+     *
+     * @param valueProperty Property that has been set. Not using class instance so that
+     *                      instances to be garbage collected do not change the real value.
+     * @param oldValue      Old value of the property
+     * @param newValue      New value of the property to be checked
      */
-    private void onNewValue(
-        final Property<Number> valueProperty,
-        final Number oldValue,
-        final Number newValue
-    ) {
-        if (
-            this.numbersEqual(oldValue, newValue)
-            || (
-                this.getMin().doubleValue() <= newValue.doubleValue()
-                && newValue.doubleValue() <= this.getMax().doubleValue()
-            )
+    private void onNewValue(final Property<Number> valueProperty, final Number oldValue,
+                            final Number newValue) {
+        if (this.numbersEqual(oldValue, newValue)
+                || (this.getMin().doubleValue() <= newValue.doubleValue()
+                && newValue.doubleValue() <= this.getMax().doubleValue())
         ) {
             return;
         }
 
-        boolean isError = (
-            (
-                newValue.doubleValue() < this.getMin().doubleValue()
-                && this.isHardMin()
-            )
-            || (
-                this.getMax().doubleValue() < newValue.doubleValue()
-                && this.isHardMax()
-            )
-        );
+        boolean isError =
+                ((newValue.doubleValue() < this.getMin().doubleValue() && this.isHardMin())
+                || (this.getMax().doubleValue() < newValue.doubleValue() && this.isHardMax()));
 
-        Alert alert = new Alert(
-            isError ? Alert.AlertType.ERROR : Alert.AlertType.CONFIRMATION
-        );
+        Alert alert = new Alert(isError ? Alert.AlertType.ERROR : Alert.AlertType.CONFIRMATION);
 
         alert.setTitle(isError ? "Error" : "Warning");
         alert.setHeaderText("Evosim");
 
         final String rangeText = this.isFloatingPoint()
-            ? String.format(
+                ? String.format(
                 "%.02f to %.02f",
                 this.getMin().doubleValue(),
                 this.getMax().doubleValue()
-            )
-            : String.format(
+        )
+                : String.format(
                 "%d to %d",
                 this.getMin().longValue(),
                 this.getMax().longValue()
-            );
+        );
 
         alert.setContentText(String.format(
-            "Value set falls out of safe range (%s).", rangeText
+                "Value set falls out of safe range (%s).", rangeText
         ));
 
         if (!isError) {
@@ -276,21 +257,22 @@ public final class SafeSlider extends VBox {
     }
 
     /**
-     * Tests equality between two {@link Number} instances with their
-     * {@link Number#doubleValue()} if {@link #floatingPoint}, or else their
-     * {@link Number#longValue()}.
+     * Tests equality between two {@link Number} instances with their {@link Number#doubleValue()}
+     * if {@link #floatingPoint}, or else their {@link Number#longValue()}.
+     *
      * @param n1 First number to compare
      * @param n2 Second number to compare
      * @return Whether both numbers are equal
      */
     private boolean numbersEqual(final Number n1, final Number n2) {
         return this.isFloatingPoint()
-            ? n1.doubleValue() == n2.doubleValue()
-            : n1.longValue() == n2.longValue();
+                ? n1.doubleValue() == n2.doubleValue()
+                : n1.longValue() == n2.longValue();
     }
 
     /**
      * Gets value within {@link #min}.
+     *
      * @return Value within
      */
     public Number getMin() {
@@ -299,6 +281,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #min}.
+     *
      * @param newMin New value to be used
      */
     public void setMin(final Number newMin) {
@@ -307,6 +290,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #min}.
+     *
      * @return {@link #min}
      */
     public Property<Number> minProperty() {
@@ -315,6 +299,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets value within {@link #max}.
+     *
      * @return Value within
      */
     public Number getMax() {
@@ -323,6 +308,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #max}.
+     *
      * @param newMax New value to be used
      */
     public void setMax(final Number newMax) {
@@ -331,6 +317,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #max}.
+     *
      * @return {@link #max}
      */
     public Property<Number> maxProperty() {
@@ -339,6 +326,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets value within {@link #value}.
+     *
      * @return Value within
      */
     public Number getValue() {
@@ -347,6 +335,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #value}.
+     *
      * @param newValue New value to be used
      */
     public void setValue(final Number newValue) {
@@ -355,6 +344,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #value}.
+     *
      * @return {@link #value}
      */
     public Property<Number> valueProperty() {
@@ -363,6 +353,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets value within {@link #name}.
+     *
      * @return Value within
      */
     public String getName() {
@@ -371,6 +362,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #name}.
+     *
      * @param newName New value to be used
      */
     public void setName(final String newName) {
@@ -379,6 +371,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #name}.
+     *
      * @return {@link #name}
      */
     public SimpleStringProperty nameProperty() {
@@ -387,6 +380,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets value within {@link #floatingPoint}.
+     *
      * @return Value within
      */
     public boolean isFloatingPoint() {
@@ -395,6 +389,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #floatingPoint}.
+     *
      * @param newFloatingPoint New value to be used
      */
     public void setFloatingPoint(final boolean newFloatingPoint) {
@@ -403,6 +398,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #floatingPoint}.
+     *
      * @return {@link #floatingPoint}
      */
     public SimpleBooleanProperty floatingPointProperty() {
@@ -411,6 +407,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets value within {@link #hardMin}.
+     *
      * @return Value within
      */
     public boolean isHardMin() {
@@ -419,6 +416,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #hardMin}.
+     *
      * @return {@link #hardMin}
      */
     public SimpleBooleanProperty hardMinProperty() {
@@ -427,6 +425,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #hardMin}.
+     *
      * @param newHardMin New value to be used
      */
     public void setHardMin(final boolean newHardMin) {
@@ -435,6 +434,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets value within {@link #hardMax}.
+     *
      * @return Value within
      */
     public boolean isHardMax() {
@@ -443,6 +443,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Gets {@link #hardMax}.
+     *
      * @return {@link #hardMax}
      */
     public SimpleBooleanProperty hardMaxProperty() {
@@ -451,6 +452,7 @@ public final class SafeSlider extends VBox {
 
     /**
      * Sets value within {@link #hardMax}.
+     *
      * @param newHardMax New value to be used
      */
     public void setHardMax(final boolean newHardMax) {

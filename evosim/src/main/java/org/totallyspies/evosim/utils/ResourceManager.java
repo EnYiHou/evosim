@@ -1,8 +1,7 @@
 package org.totallyspies.evosim.utils;
 
 /**
- * A ResourceManager class provides resources definition used in
- * this application.
+ * A ResourceManager class provides resources definition used in this application.
  *
  * @author edeli
  */
@@ -22,8 +21,7 @@ public final class ResourceManager {
 
     // FXML files
     public static final String FXML_MAIN_VIEW = FXML_FOLDER + "/main.fxml";
-    public static final String FXML_WELCOME_VIEW =
-            FXML_FOLDER + "/welcome.fxml";
+    public static final String FXML_WELCOME_VIEW = FXML_FOLDER + "/welcome.fxml";
     public static final String FXML_ABOUT = FXML_FOLDER + "/about.fxml";
 
     // Images

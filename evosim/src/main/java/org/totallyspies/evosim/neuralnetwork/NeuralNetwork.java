@@ -12,16 +12,14 @@ import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
- * A Neural Network is a series of layers filled with Neuron objects that each
- * store a bias. Between two adjacent layers, each Neuron is connected to one
- * another through a weight represented by a double value that are initially
- * randomly generated. The first layer's Neuron values (input layer) are all
- * data collected by the Entity sensors. Every other layer has their values
- * calculated by taking the dot product of the list of Neuron values and the
- * list of weights. The final layer's values (output layer) determines what the
- * Entity's decision will be.
+ * A Neural Network is a series of layers filled with Neuron objects that each store a bias.
+ * Between two adjacent layers, each Neuron is connected to one another through a weight
+ * represented by a double value that are initially randomly generated. The first layer's Neuron
+ * values (input layer) are all data collected by the Entity sensors. Every other layer has their
+ * values calculated by taking the dot product of the list of Neuron values and the list of
+ * weights. The final layer's values (output layer) determines what the Entity's decision will be.
  *
- * @author Matthew Edelina
+ * @author Matthew, Edelina
  */
 public class NeuralNetwork {
 
@@ -31,19 +29,16 @@ public class NeuralNetwork {
     private List<List<Neuron>> neuronLayers;
 
     /**
-     * Constructs a Neural Network with a set number of layers with specific
-     * sizes.
+     * Constructs a Neural Network with a set number of layers with specific sizes.
      *
-     * @param layerSizes a list of integers representing the size of each layer.
-     *                   the number of elements in the list is the number of
-     *                   layers.
+     * @param layerSizes a list of integers representing the size of each layer. the number of
+     *                   elements in the list is the number of layers.
      */
     public NeuralNetwork(final List<Integer> layerSizes) {
         this.neuronLayers = new ArrayList<>();
 
         Function<Double, Double> activationFunction =
-            Formulas
-                .ACTIVATION_FUNCTIONS
+                Formulas.ACTIVATION_FUNCTIONS
                 .get(Rng.RNG.nextInt(0, Formulas.ACTIVATION_FUNCTIONS.size()));
 
         // populate neural network
@@ -65,8 +60,7 @@ public class NeuralNetwork {
     }
 
     /**
-     * Constructor used internally to not have to initialize the
-     * {@link #neuronLayers} expensively.
+     * Constructor used internally to not have to initialize the {@link #neuronLayers} expensively.
      */
     private NeuralNetwork() {
         this.neuronLayers = null;
@@ -79,9 +73,7 @@ public class NeuralNetwork {
      */
     public static void main(final String[] args) {
         NeuralNetwork neuralNetwork = new NeuralNetwork(List.of(2, 2, 1));
-        System.out.println(neuralNetwork.calcNetworkDecision(
-            List.of(4d, 5d)));
-
+        System.out.println(neuralNetwork.calcNetworkDecision(List.of(4d, 5d)));
         System.out.println(neuralNetwork.neuronLayers);
     }
 
@@ -89,9 +81,8 @@ public class NeuralNetwork {
      * Calculates the network's final decision.
      *
      * @param inputs the original inputs from the Entity sensors
-     * @return a List containing the final computations. the only values of
-     * importance are the elements within the length equal to the number of
-     * neurons in the output layer.
+     * @return a List containing the final computations. the only values of importance are the
+     * elements within the length equal to the number of neurons in the output layer.
      */
     public List<Double> calcNetworkDecision(final List<Double> inputs) {
         Iterator<List<Neuron>> iterator = this.neuronLayers.iterator();
@@ -110,10 +101,7 @@ public class NeuralNetwork {
 
         while (iterator.hasNext()) {
             List<Double> latestOutputs = outputs;
-            outputs = iterator.next()
-                .stream()
-                .map(neuron -> neuron.feed(latestOutputs))
-                .toList();
+            outputs = iterator.next().stream().map(neuron -> neuron.feed(latestOutputs)).toList();
         }
 
         return outputs;
@@ -122,9 +110,8 @@ public class NeuralNetwork {
     /**
      * Clones and mutates the current neural network for another entity.
      * <p>
-     * The neural network is copied for use of new entity. To mutate it, the
-     * values of all the weights and biases are regenerated based on a set
-     * mutation rate.
+     * The neural network is copied for use of new entity. To mutate it, the values of all the
+     * weights and biases are regenerated based on a set mutation rate.
      * </p>
      *
      * @return the mutated brain
@@ -138,10 +125,8 @@ public class NeuralNetwork {
                 .map(neurons -> neurons
                     .stream()
                     .map(neuron -> neuron.mutate(
-                        Configuration
-                            .getCONFIGURATION()
-                            .getEntitySpeedMutationRate()
-                    ))
+                        Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
+                    )
                     .toList()
                 )
                 .toList();
