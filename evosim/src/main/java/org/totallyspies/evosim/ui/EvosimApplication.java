@@ -38,21 +38,19 @@ public final class EvosimApplication extends Application {
 
     /**
      * Sets the root of {@link #scene} to an FXML at {#code path}.
+     *
      * @param path Resource folder path for the new FXMLs
      */
     public void setRoot(final String path) {
-        FXMLLoader loader = new FXMLLoader(
-            this.getClass().getResource(path)
-        );
+        FXMLLoader loader = new FXMLLoader(this.getClass().getResource(path));
 
         try {
             if (scene == null) {
                 this.scene = new Scene(loader.load());
 
                 this.scene.getStylesheets().add(Objects.requireNonNull(
-                    EvosimApplication.class.getResource(
-                        ResourceManager.CSS_GLOBAL
-                    )).toExternalForm()
+                        EvosimApplication.class.getResource(
+                                ResourceManager.CSS_GLOBAL)).toExternalForm()
                 );
             } else {
                 this.scene.setRoot(loader.load());
@@ -68,6 +66,7 @@ public final class EvosimApplication extends Application {
 
     /**
      * Main method of the application.
+     *
      * @param args Command-line arguments passed to the application
      */
     public static void main(final String[] args) {

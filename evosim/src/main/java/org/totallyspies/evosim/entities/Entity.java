@@ -12,11 +12,10 @@ import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
 
 /**
- * An Entity is an abstract member of the evolution simulation that can take
- * the form of a Predator or Prey. Each type have a different set of criteria
- * that must be fulfilled to reproduce or die. Each Entity is controlled by
- * their brains, neural networks designed to learn the best possible option
- * for survival when faced with an enemy.
+ * An Entity is an abstract member of the evolution simulation that can take the form of a
+ * Predator or Prey. Each type have a different set of criteria that must be fulfilled to
+ * reproduce or die. Each Entity is controlled by their brains, neural networks designed to learn
+ * the best possible option for survival when faced with an enemy.
  *
  * @author EnYi, Matthew
  */
@@ -46,14 +45,16 @@ public abstract class Entity {
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     private final double speed;
+
     /**
      * The neural network of the entity.
      * <p>
-     * The network is passed input data from the entity's sensors and outputs
-     * data that will be used to make it's next decision.
+     * The network is passed input data from the entity's sensors and outputs data that will be
+     * used to make it's next decision.
      * </p>
      */
     private NeuralNetwork brain;
+
     /**
      * The position of the entity.
      */
@@ -62,8 +63,8 @@ public abstract class Entity {
     /**
      * The current amount of energy this Entity has left.
      * <p>
-     * Energy is drained slowly whenever the entity moves. It is a double
-     * value within a range of 0 to 1, where at 0 the the entity cannot move.
+     * Energy is drained slowly whenever the entity moves. It is a double value within a range of
+     * 0 to 1, where at 0 the the entity cannot move.
      * </p>
      */
     private double energy;
@@ -71,8 +72,8 @@ public abstract class Entity {
     /**
      * The current amount of split energy this Entity has accumulated.
      * <p>
-     * Split energy determines whether or not the entity can multiply yet. It is
-     * bounded between 0 to 1, where at 1 the entity will multiply.
+     * Split energy determines whether or not the entity can multiply yet. It is bounded between
+     * 0 to 1, where at 1 the entity will multiply.
      * </p>
      */
     private double splitEnergy;
@@ -123,11 +124,8 @@ public abstract class Entity {
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
      */
-    protected Entity(final double entitySpeed,
-                     final Point entityPosition,
-                     final double newViewAngle,
-                     final double newRotationAngle) {
-
+    protected Entity(final double entitySpeed, final Point entityPosition,
+                     final double newViewAngle, final double newRotationAngle) {
         // initialize entity properties
         this.energy = 1d;
         this.splitEnergy = 0d;
@@ -137,14 +135,11 @@ public abstract class Entity {
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
-        this.body = new Circle(entityPosition,
-                Configuration.getCONFIGURATION().getEntityRadius());
+        this.body = new Circle(entityPosition, Configuration.getCONFIGURATION().getEntityRadius());
 
-        int sensorCount = Configuration.getCONFIGURATION()
-                .getEntitySensorsCount();
+        int sensorCount = Configuration.getCONFIGURATION().getEntitySensorsCount();
         // initialize neural network
-        this.brain = new NeuralNetwork(
-               List.of(sensorCount, 10, 2));
+        this.brain = new NeuralNetwork(List.of(sensorCount, 10, 2));
 
         // initialize sensors
         this.sensors = new Line[sensorCount];
@@ -156,11 +151,11 @@ public abstract class Entity {
     }
 
     /**
-     * Moves the entity according to the given movement speed and its current
-     * rotation angle.
-     * If the entity moves off the map, it will wrap around to the other side.
+     * Moves the entity according to the given movement speed and its current rotation angle.
      * <p>
-     * The energy of the entity will be drained by the amount of movement.
+     * If the entity moves off the map, it will wrap around to the other side. The energy of the
+     * entity will be drained by the amount of movement.
+     * </p>
      *
      * @param movementSpeed the speed of the movement.
      */
@@ -168,12 +163,12 @@ public abstract class Entity {
         Point position = this.body.getCenter();
 
         // wrap around the map
-        double positionX = (position.getX()
-                + Math.cos(this.directionAngleInRadians) * movementSpeed)
-                % Simulation.MAP_WIDTH;
-        double positionY = (position.getY()
-                + Math.sin(this.directionAngleInRadians) * movementSpeed)
-                % Simulation.MAP_HEIGHT;
+        double positionX =
+                (position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed)
+                        % Simulation.MAP_WIDTH;
+        double positionY =
+                (position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed)
+                        % Simulation.MAP_HEIGHT;
         if (positionX < 0) {
             positionX += Simulation.MAP_WIDTH;
         }
@@ -185,8 +180,7 @@ public abstract class Entity {
         position.setY(positionY);
 
         // drain energy
-        this.energy -= Configuration.getCONFIGURATION()
-                .getEntityEnergyDrainRate() * movementSpeed;
+        this.energy -= Configuration.getCONFIGURATION().getEntityEnergyDrainRate() * movementSpeed;
     }
 
     /**
@@ -194,48 +188,36 @@ public abstract class Entity {
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
-            / (Configuration.getCONFIGURATION().getEntitySensorsCount() - 1);
+                / (Configuration.getCONFIGURATION().getEntitySensorsCount() - 1);
 
-        for (
-            int i = 0;
-            i < Configuration.getCONFIGURATION().getEntitySensorsCount();
-            i++
-        ) {
+        for (int i = 0; i < Configuration.getCONFIGURATION().getEntitySensorsCount(); i++) {
             double angle = this.directionAngleInRadians
-                + Math.toRadians(-this.fovAngleInDegrees / 2
-                + angleBetweenSensors * i);
+                    + Math.toRadians(-this.fovAngleInDegrees / 2 + angleBetweenSensors * i);
 
             this.sensors[i].getStartPoint()
-                .setCoordinates(
-                    this.getBodyCenter().getX(),
-                    this.getBodyCenter().getY()
-                );
+                    .setCoordinates(this.getBodyCenter().getX(), this.getBodyCenter().getY());
 
-            this.sensors[i].getEndPoint()
-                .setCoordinates(
+            this.sensors[i].getEndPoint().setCoordinates(
                     this.getBodyCenter().getX()
-                        + Math.cos(angle) * Configuration
-                        .getCONFIGURATION()
-                        .getEntitySensorsCount(),
+                            + Math.cos(angle) * Configuration
+                            .getCONFIGURATION()
+                            .getEntitySensorsCount(),
                     this.getBodyCenter().getY()
-                        + Math.sin(angle)
-                        * Configuration.getCONFIGURATION()
+                            + Math.sin(angle)
+                            * Configuration.getCONFIGURATION()
                             .getEntitySensorsCount()
-                );
+            );
         }
     }
 
     /**
-     * Processes data from this entity's sensors and moves according to its
-     * decision.
+     * Processes data from this entity's sensors and moves according to its decision.
      */
     public final void update() {
-
         this.adjustSensors();
 
         // check for collisions and update sensors data;
         this.onUpdate();
-
 
         if (this.splitEnergy > 1) {
             this.splitEnergy -= 1;
@@ -248,35 +230,28 @@ public abstract class Entity {
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
         this.directionAngleInRadians += Configuration.getCONFIGURATION()
-                .getEntityMaxRotationSpeed()
-                * calculatedDecision.get(0);
+                .getEntityMaxRotationSpeed() * calculatedDecision.get(0);
         this.move(this.speed * calculatedDecision.get(1));
 
     }
 
     /**
-     * Checks if this entity is colliding with other entities
-     * within the nearby grids.
+     * Checks if this entity is colliding with other entities within the nearby grids.
      * <p>
-     * Updates the sensors data of this entity by checking the
-     * collisions between each sensor and the entities in the nearby grids.
+     * Updates the sensors data of this entity by checking the collisions between each sensor and
+     * the entities in the nearby grids.
      *
-     * @return true if this entity is colliding with another entity.
-     * false otherwise.
+     * @return true if this entity is colliding with another entity. false otherwise.
      */
     public final boolean checkCollisions() {
-
-        Arrays.fill(this.sensorsData,
-                Configuration.getCONFIGURATION().getEntitySensorsLength());
+        Arrays.fill(this.sensorsData, Configuration.getCONFIGURATION().getEntitySensorsLength());
 
         // The number of nearby grids to check for collisions.
         int nearbyGrids = 1;
-
         int startingGridX = Math.min(this.gridX - nearbyGrids, 0);
         int startingGridY = Math.min(this.gridY - nearbyGrids, 0);
         int endingGridX = Math.max(this.gridX + nearbyGrids, Simulation.GRID_X);
         int endingGridY = Math.max(this.gridY + nearbyGrids, Simulation.GRID_Y);
-
 
         // Loop through the nearby grids and check for collisions.
         for (int x = startingGridX; x < endingGridX; x++) {
@@ -288,13 +263,12 @@ public abstract class Entity {
                     if (!entity.getClass().equals(this.getClass())) {
 
                         // Check if it collides with the entity.
-                        double distance =
-                                Formulas.distance(this.getBodyCenter().getX(),
-                                        this.getBodyCenter().getY(),
-                                        entity.getBodyCenter().getX(),
-                                        entity.getBodyCenter().getY());
-                        if (distance < Configuration.getCONFIGURATION()
-                                .getEntityRadius() * 2) {
+                        double distance = Formulas.distance(
+                                this.getBodyCenter().getX(),
+                                this.getBodyCenter().getY(),
+                                entity.getBodyCenter().getX(),
+                                entity.getBodyCenter().getY());
+                        if (distance < Configuration.getCONFIGURATION().getEntityRadius() * 2) {
                             return true;
                         }
 
@@ -303,11 +277,9 @@ public abstract class Entity {
                                 < this.sensors.length; sensorIndex++) {
                             Line sensor = this.sensors[sensorIndex];
                             Double distanceToEntity =
-                                    Formulas.closestIntersection(sensor,
-                                            entity.getBody());
-                            this.sensorsData[sensorIndex] = Math.min(
-                                    this.sensorsData[sensorIndex],
-                                    distanceToEntity);
+                                    Formulas.closestIntersection(sensor, entity.getBody());
+                            this.sensorsData[sensorIndex] =
+                                    Math.min(this.sensorsData[sensorIndex], distanceToEntity);
                         }
                     }
                 }

@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * This class contains all the activation functions
- * used during the neural-network computation.
+ * This class contains all the activation functions used during the neural-network computation.
  *
  * @author EnYi
  */
@@ -18,6 +17,7 @@ public final class Formulas {
 
     /**
      * Logistic sigmoid activation function.
+     *
      * @param x input value
      * @return activated value
      */
@@ -27,6 +27,7 @@ public final class Formulas {
 
     /**
      * Hyperbolic tangent activation function.
+     *
      * @param x input value
      * @return activated value
      */
@@ -46,6 +47,7 @@ public final class Formulas {
 
     /**
      * ReLU activation function.
+     *
      * @param x input value
      * @return activated value
      */
@@ -66,23 +68,19 @@ public final class Formulas {
 
     /**
      * Calculates the distance between a line and circle.
-     *
-     * If the line is outside the circle,
-     * the distance is the length of the line.
-     *
+     * <p>
+     * If the line is outside the circle, the distance is the length of the line.
+     * <p>
      * If the line is inside the circle, the distance is 0.
+     * <p>
+     * If the line intersects the circle, the distance is the distance between the start of the
+     * line and the closest intersection.
      *
-     * If the line intersects the circle, the distance is the distance
-     * between the start of the line and the closest intersection.
-     *
-     * @param line the line
+     * @param line   the line
      * @param circle the circle
-
      * @return the closest distance between the line and the circle
      */
-    public static Double closestIntersection(final Line line,
-                                             final Circle circle) {
-
+    public static Double closestIntersection(final Line line, final Circle circle) {
         double slope;
         double yInt;
         double lineStartX = line.getStartPoint().getX();
@@ -95,14 +93,12 @@ public final class Formulas {
         double deltaX = lineEndX - lineStartX;
         double length = distance(lineStartX, lineStartY, lineEndX, lineEndY);
 
-
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
                 - circleRadius > length) {
             return length;
         }
 
         if (deltaX == 0) {
-
             double x = lineStartX;
             double sqrt = Math.sqrt(circleRadius * circleRadius
                     - (x - circleCenterX) * (x - circleCenterX));
@@ -113,9 +109,7 @@ public final class Formulas {
 
             return (distance1 <= distance2 ? distance1 : distance2);
 
-
         } else {
-
             //calculate the slope of the line
             slope = (lineEndY - lineStartY) / (deltaX);
             //calculate the y intercept of the line
@@ -124,7 +118,6 @@ public final class Formulas {
             double a;
             double b;
             double c;
-
 
             a = (slope * slope + 1);
             b = (-2 * circleCenterX) + 2 * slope * (yInt - circleCenterY);
@@ -149,8 +142,7 @@ public final class Formulas {
                 return distance(lineStartX, lineStartY,
                         results[1], slope * results[1] + yInt);
             } else {
-                double distance1 = distance(results[0],
-                        slope * results[0] + yInt,
+                double distance1 = distance(results[0], slope * results[0] + yInt,
                         lineStartX, lineStartY);
                 double distance2 = distance(results[1],
                         slope * results[1] + yInt,
@@ -163,7 +155,7 @@ public final class Formulas {
     }
 
     /**
-     *  Calculates the distance between two points.
+     * Calculates the distance between two points.
      *
      * @param x1 x coordinate of the first point
      * @param y1 y coordinate of the first point
@@ -171,13 +163,10 @@ public final class Formulas {
      * @param y2 y coordinate of the second point
      * @return the distance between the two points
      */
-    public static double distance(final double x1,
-                                  final double y1,
-                                  final double x2,
-                                  final double y2) {
+    public static double distance(final double x1, final double y1,
+                                  final double x2, final double y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
-
 
     /**
      * Solves a quadratic equation. a * x^2 + b * x + c = 0
@@ -193,15 +182,16 @@ public final class Formulas {
         double determinant = (b * b) - (4 * a * c);
         if (determinant < 0) {
             return new double[0];
+
         } else {
             double x1 = (-b + Math.sqrt(determinant)) / (2 * a);
             double x2 = (-b - Math.sqrt(determinant)) / (2 * a);
             double[] results = new double[2];
             results[0] = x1;
             results[1] = x2;
+
             return results;
         }
     }
-
 
 }
