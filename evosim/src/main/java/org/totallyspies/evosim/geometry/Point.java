@@ -2,6 +2,7 @@ package org.totallyspies.evosim.geometry;
 
 /**
  * This class represents a point in 2D space.
+ *
  * @author EnYi Hou
  */
 public class Point {
@@ -18,6 +19,7 @@ public class Point {
 
     /**
      * Creates a new point with the given coordinates.
+     *
      * @param positionX the x coordinate of the point
      * @param positionY the y coordinate of the point
      */
@@ -35,11 +37,11 @@ public class Point {
 
     /**
      * Sets the coordinates of the point.
+     *
      * @param positionX the x coordinate of the point
      * @param positionY the y coordinate of the point
      */
-    public final void setCoordinates(final double positionX,
-                                     final double positionY) {
+    public final void setCoordinates(final double positionX, final double positionY) {
         this.x = positionX;
         this.y = positionY;
     }

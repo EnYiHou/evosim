@@ -11,9 +11,8 @@ import java.io.IOException;
 
 
 /**
- * The AboutWindow is a small, locked modal window that displays basic
- * information about the project and team members. It must be closed before
- * the main application can be accessed again.
+ * The AboutWindow is a small, locked modal window that displays basic information about the
+ * project and team members. It must be closed before the main application can be accessed again.
  *
  * @author mattlep11
  */
@@ -58,8 +57,8 @@ public final class AboutWindow {
 
     /**
      * Sets the root of {@link #scene} to an FXML at {#code path}.
-     * @param path Resource folder path for the new FXMLs
      *
+     * @param path Resource folder path for the new FXMLs
      * @author ptrstr
      */
     private void setRoot(final String path) {
@@ -69,8 +68,7 @@ public final class AboutWindow {
 
         try {
             if (scene == null) {
-                this.scene = new Scene(loader.load(),
-                        ABT_WINDOW_WIDTH, ABT_WINDOW_HEIGHT);
+                this.scene = new Scene(loader.load(), ABT_WINDOW_WIDTH, ABT_WINDOW_HEIGHT);
             } else {
                 this.scene.setRoot(loader.load());
             }

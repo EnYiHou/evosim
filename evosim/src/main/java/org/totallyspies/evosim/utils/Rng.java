@@ -3,15 +3,13 @@ package org.totallyspies.evosim.utils;
 import java.util.Random;
 
 /**
- * A utility class with a final Random object used for generating random values
- * with the same seed.
+ * A utility class with a final Random object used for generating random values with the same seed.
  *
  * @author Matthew
  */
 public final class Rng {
 
-    private Rng() {
-    }
+    private Rng() { }
 
     /**
      * A <code>Random</code> used for generating randomly generated values.
