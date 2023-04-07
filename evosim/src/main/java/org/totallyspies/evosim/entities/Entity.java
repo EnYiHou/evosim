@@ -1,15 +1,16 @@
 package org.totallyspies.evosim.entities;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
+import org.totallyspies.evosim.ui.Map;
+import org.totallyspies.evosim.utils.Configuration;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * An Entity is an abstract member of the evolution simulation that can take the form of a
@@ -165,15 +166,15 @@ public abstract class Entity {
         // wrap around the map
         double positionX =
                 (position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed)
-                        % Simulation.MAP_WIDTH;
+                        % Map.MAP_SIZE;
         double positionY =
                 (position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed)
-                        % Simulation.MAP_HEIGHT;
+                        % Map.MAP_SIZE;
         if (positionX < 0) {
-            positionX += Simulation.MAP_WIDTH;
+            positionX += Map.MAP_SIZE;
         }
         if (positionY < 0) {
-            positionY += Simulation.MAP_HEIGHT;
+            positionY += Map.MAP_SIZE;
         }
 
         position.setX(positionX);
@@ -248,10 +249,10 @@ public abstract class Entity {
 
         // The number of nearby grids to check for collisions.
         int nearbyGrids = 1;
-        int startingGridX = Math.min(this.gridX - nearbyGrids, 0);
-        int startingGridY = Math.min(this.gridY - nearbyGrids, 0);
-        int endingGridX = Math.max(this.gridX + nearbyGrids, Simulation.GRID_X);
-        int endingGridY = Math.max(this.gridY + nearbyGrids, Simulation.GRID_Y);
+        int startingGridX = Math.max(this.gridX - nearbyGrids, 0);
+        int startingGridY = Math.max(this.gridY - nearbyGrids, 0);
+        int endingGridX = Math.min(this.gridX + nearbyGrids, Map.ROW_COLUMN_COUNT - 1);
+        int endingGridY = Math.min(this.gridY + nearbyGrids, Map.ROW_COLUMN_COUNT - 1);
 
         // Loop through the nearby grids and check for collisions.
         for (int x = startingGridX; x < endingGridX; x++) {
