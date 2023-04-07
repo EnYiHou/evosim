@@ -5,6 +5,7 @@ import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.ui.Map;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
 
@@ -27,36 +28,6 @@ public final class Simulation {
      * The list of grids that the entities are stored in.
      */
     public static final List<List<List<Entity>>> GRIDS = new ArrayList<>();
-
-    /**
-     * The height of a single grid.
-     */
-    public static final double GRID_HEIGHT = 500.0d;
-
-    /**
-     * The width of a single grid.
-     */
-    public static final double GRID_WIDTH = 500.0d;
-
-    /**
-     * The height of the whole map.
-     */
-    public static final double MAP_HEIGHT = 5000.0d;
-
-    /**
-     * The width of the whole map.
-     */
-    public static final double MAP_WIDTH = 5000.0d;
-
-    /**
-     * The number of grids in the x direction.
-     */
-    public static final int GRID_X = (int) (Simulation.MAP_WIDTH / Simulation.GRID_WIDTH);
-
-    /**
-     * The number of grids in the y direction.
-     */
-    public static final int GRID_Y = (int) (Simulation.MAP_HEIGHT / Simulation.GRID_HEIGHT);
 
     /**
      * The singleton instance of the simulation.
@@ -99,15 +70,13 @@ public final class Simulation {
      * Generate the grids for the simulation.
      */
     private void generateGrids() {
-        final int x = (int) (Simulation.MAP_WIDTH / Simulation.GRID_WIDTH);
-        final int y = (int) (Simulation.MAP_HEIGHT / Simulation.GRID_HEIGHT);
 
-        for (int i = 0; i < x; i++) {
+        for (int i = 0; i < Map.ROW_COLUMN_COUNT; i++) {
             final List<List<Entity>> grid = new ArrayList<>();
-            for (int j = 0; j < y; j++) {
+            Simulation.GRIDS.add(grid);
+            for (int j = 0; j < Map.ROW_COLUMN_COUNT; j++) {
                 grid.add(new ArrayList<>());
             }
-            Simulation.GRIDS.add(grid);
         }
     }
 
@@ -126,8 +95,8 @@ public final class Simulation {
             Simulation.ENTITY_LIST.add(new Prey(
                     Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
-                            Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
-                            Rng.RNG.nextDouble(0, Simulation.MAP_HEIGHT)
+                            Rng.RNG.nextDouble(0, Map.MAP_SIZE),
+                            Rng.RNG.nextDouble(0, Map.MAP_SIZE)
                     ),
                     Rng.RNG.nextDouble(0, 2 * Math.PI)
             ));
@@ -137,8 +106,8 @@ public final class Simulation {
             Simulation.ENTITY_LIST.add(new Predator(
                     Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
-                            Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
-                            Rng.RNG.nextDouble(0, Simulation.MAP_HEIGHT)
+                            Rng.RNG.nextDouble(0, Map.MAP_SIZE),
+                            Rng.RNG.nextDouble(0, Map.MAP_SIZE)
                     ),
                     Rng.RNG.nextDouble(0, 2 * Math.PI)
             ));
@@ -158,8 +127,8 @@ public final class Simulation {
         }
 
         for (final Entity entity : Simulation.ENTITY_LIST) {
-            final int x = (int) (entity.getBodyCenter().getX() / Simulation.GRID_WIDTH);
-            final int y = (int) (entity.getBodyCenter().getY() / Simulation.GRID_WIDTH);
+            final int x = (int) (entity.getBodyCenter().getX() / Map.GRID_SIZE);
+            final int y = x;
             Simulation.GRIDS.get(x).get(y).add(entity);
             entity.setGridX(x);
             entity.setGridY(y);
