@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.entities;
 
+import javafx.scene.paint.Color;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -106,6 +107,11 @@ public abstract class Entity {
     private int gridY;
 
     /**
+     * The color of the entity.
+     */
+    private Color color;
+
+    /**
      * Clones this entity and mutates some of its properties.
      *
      * @return the cloned entity.
@@ -202,11 +208,11 @@ public abstract class Entity {
                     this.getBodyCenter().getX()
                             + Math.cos(angle) * Configuration
                             .getCONFIGURATION()
-                            .getEntitySensorsCount(),
+                            .getEntitySensorsLength(),
                     this.getBodyCenter().getY()
                             + Math.sin(angle)
                             * Configuration.getCONFIGURATION()
-                            .getEntitySensorsCount()
+                            .getEntitySensorsLength()
             );
         }
     }
@@ -310,7 +316,11 @@ public abstract class Entity {
     }
 
     public final boolean getDeath() {
-        return death;
+        return this.death;
+    }
+
+    public final Color getColor() {
+        return this.color;
     }
 
     public final void setDeath(final boolean isDead) {
@@ -363,5 +373,13 @@ public abstract class Entity {
 
     public final void setGridY(final int entityGridY) {
         this.gridY = entityGridY;
+    }
+
+    public final void setColor(final Color entityColor) {
+        this.color = entityColor;
+    }
+
+    public final void setDirectionAngleInRadians(final double entityDirectionAngleInRadians) {
+        this.directionAngleInRadians = entityDirectionAngleInRadians;
     }
 }

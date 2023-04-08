@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.entities;
 
+import javafx.scene.paint.Color;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
@@ -22,6 +23,7 @@ public final class Predator extends Entity {
     public Predator(final double speed, final Point position, final double rotationAngleInRadians) {
         super(speed, position, Configuration.getCONFIGURATION().getPredatorViewAngle(),
                 rotationAngleInRadians);
+        this.setColor(Color.RED);
     }
 
     /**

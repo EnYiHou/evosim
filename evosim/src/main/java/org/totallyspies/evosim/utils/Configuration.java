@@ -55,7 +55,7 @@ public final class Configuration {
     /**
      * The length of an entity's sensors.
      */
-    public static final double ENTITY_SENSORS_LENGTH = 1000.0d;
+    public static final double ENTITY_SENSORS_LENGTH = 300.0d;
 
     /**
      * The maximum speed of an entity.
