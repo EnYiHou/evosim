@@ -10,6 +10,7 @@ import org.totallyspies.evosim.utils.Configuration;
 /**
  * This class represents the map of the simulation, on which entities will be drawn.
  */
+@SuppressWarnings("ClassEscapesDefinedScope")
 public final class Map extends ResizableCanvas {
 
     /**
@@ -62,7 +63,6 @@ public final class Map extends ResizableCanvas {
      * Draw the grid lines on the map.
      */
     public void drawGrids() {
-        double zoom = camera.getZoom();
         this.getGraphicsContext2D().setStroke(Color.BLACK);
 
 
@@ -110,7 +110,9 @@ public final class Map extends ResizableCanvas {
         double zoom = camera.getZoom();
         this.getGraphicsContext2D().setFill(entity.getColor());
 
-        Point position = computePointPosition(entity.getBodyCenter().getX(), entity.getBodyCenter().getY());
+        Point position = computePointPosition(entity.getBodyCenter().getX(),
+                entity.getBodyCenter().getY());
+
         this.getGraphicsContext2D().fillOval(
                 position.getX() - radius * zoom,
                 position.getY() - radius * zoom,
@@ -126,8 +128,13 @@ public final class Map extends ResizableCanvas {
     public void drawEntitySensors(final Entity entity) {
         this.getGraphicsContext2D().setStroke(Color.HOTPINK);
         for (Line sensor : entity.getSensors()) {
-            Point startPoint = computePointPosition(sensor.getStartPoint().getX(), sensor.getStartPoint().getY());
-            Point endPoint = computePointPosition(sensor.getEndPoint().getX(), sensor.getEndPoint().getY());
+
+            Point startPoint = computePointPosition(sensor.getStartPoint().getX(),
+                    sensor.getStartPoint().getY());
+
+            Point endPoint = computePointPosition(sensor.getEndPoint().getX(),
+                    sensor.getEndPoint().getY());
+
             this.getGraphicsContext2D().strokeLine(
                     startPoint.getX(), startPoint.getY(),
                     endPoint.getX(), endPoint.getY());
