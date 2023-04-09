@@ -2,6 +2,8 @@ package org.totallyspies.evosim.ui;
 
 import org.totallyspies.evosim.geometry.Point;
 
+import com.google.common.util.concurrent.AtomicDouble;
+
 public final class Camera {
 
     /**
@@ -40,7 +42,7 @@ public final class Camera {
     /**
      * The zoom level of the camera.
      */
-    private double zoom;
+    private AtomicDouble zoom;
 
     /**
      * Creates a new camera with the given position and zoom level.
@@ -50,7 +52,7 @@ public final class Camera {
      */
     public Camera(final Point newPoint, final double newZoom) {
         this.point = newPoint;
-        this.zoom = newZoom;
+        this.zoom = new AtomicDouble(newZoom);
     }
 
     /**
@@ -92,7 +94,7 @@ public final class Camera {
     }
 
     public double getZoom() {
-        return this.zoom;
+        return this.zoom.get();
     }
 
     /**
@@ -122,6 +124,6 @@ public final class Camera {
      *               (positive values to zoom in the camera)
      */
     public void zoom(final double increment) {
-        this.zoom += increment;
+        this.zoom.getAndAdd(increment);
     }
 }
