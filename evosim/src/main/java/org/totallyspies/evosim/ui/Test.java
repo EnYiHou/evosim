@@ -9,8 +9,8 @@ import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.utils.Rng;
 
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 
 /**
  * This class represents the map of the simulation, on which entities will be drawn.
@@ -24,21 +24,6 @@ public class Test extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
 
-//        ResizableCanvas canvas = new ResizableCanvas();
-//        canvas.getGraphicsContext2D().setFill(Color.GREEN);
-//        canvas.getGraphicsContext2D().fillRect(0, 0, 1000, 1000);
-//        primaryStage.setScene(new Scene(canvas));
-
-//        StackPane root = new StackPane();
-//        Canvas canvas1 = new Canvas();
-//        canvas1.setHeight(800);
-//        canvas1.setWidth(800);
-//        root.getChildren().add(canvas1);
-//        canvas1.getGraphicsContext2D().setFill(Color.RED);
-//        canvas1.getGraphicsContext2D().fillRect(0, 0, 100, 100);
-//        primaryStage.setScene(new Scene(root));
-
-
         Map map = Map.getInstance();
         Scene scene = new Scene(map);
         primaryStage.setScene(scene);
@@ -47,46 +32,34 @@ public class Test extends Application {
 
         Predator predator = new Predator(3, new Point(2, 3), 2);
 
-        AtomicBoolean wPressed = new AtomicBoolean(false);
-        AtomicBoolean aPressed = new AtomicBoolean(false);
-        AtomicBoolean sPressed = new AtomicBoolean(false);
-        AtomicBoolean dPressed = new AtomicBoolean(false);
-        AtomicBoolean zoomInPressed = new AtomicBoolean(false);
-        AtomicBoolean zoomOutPressed = new AtomicBoolean(false);
 
-        scene.setOnKeyPressed((e) -> {
-                    if (e.getCode() == KeyCode.W) {
-                        wPressed.set(true);
-                    } else if (e.getCode() == KeyCode.A) {
-                        aPressed.set(true);
-                    } else if (e.getCode() == KeyCode.S) {
-                        sPressed.set(true);
-                    } else if (e.getCode() == KeyCode.D) {
-                        dPressed.set(true);
-                    } else if (e.getCode() == KeyCode.EQUALS) {
-                        zoomInPressed.set(true);
-                    } else if (e.getCode() == KeyCode.MINUS) {
-                        zoomOutPressed.set(true);
-                    }
-                }
-        );
+        AtomicBoolean follow = new AtomicBoolean(false);
 
-        scene.setOnKeyReleased((e) -> {
-                    if (e.getCode() == KeyCode.W) {
-                        wPressed.set(false);
-                    } else if (e.getCode() == KeyCode.A) {
-                        aPressed.set(false);
-                    } else if (e.getCode() == KeyCode.S) {
-                        sPressed.set(false);
-                    } else if (e.getCode() == KeyCode.D) {
-                        dPressed.set(false);
-                    } else if (e.getCode() == KeyCode.EQUALS) {
-                        zoomInPressed.set(false);
-                    } else if (e.getCode() == KeyCode.MINUS) {
-                        zoomOutPressed.set(false);
-                    }
+        LinkedList<KeyCode> pressedKeys = new LinkedList<>();
+        scene.setOnKeyPressed(event -> {
+            KeyCode code = event.getCode();
+            if (code == KeyCode.ESCAPE) {
+                System.exit(0);
+            }
+            if (code == KeyCode.SPACE) {
+                if (follow.get()) {
+                    map.unfollowEntity(predator);
+                } else {
+                    map.followEntity(predator);
                 }
-        );
+                follow.set(!follow.get());
+
+            } else {
+                if (!pressedKeys.contains(code)) {
+                    pressedKeys.push(code);
+                }
+            }
+        });
+
+
+        scene.setOnKeyReleased(event ->
+                pressedKeys.remove(event.getCode()));
+
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -98,34 +71,46 @@ public class Test extends Application {
                 map.drawEntity(predator);
                 predator.move(1);
                 // rotate the predator by a random angle sometimes
-                if (Rng.RNG.nextInt(100) < 5) {
-                    predator.setDirectionAngleInRadians(predator.getDirectionAngleInRadians() + Rng.RNG.nextDouble() * 2 * Math.PI);
+                if (Rng.RNG.nextInt(100) < 1) {
+                    predator.setDirectionAngleInRadians(
+                            predator.getDirectionAngleInRadians()
+                                    + Rng.RNG.nextDouble() * 2 * Math.PI);
                 }
+                if (!pressedKeys.isEmpty()) {
+                    if (!follow.get()) {
+                        for (KeyCode code : pressedKeys) {
+                            switch (code) {
+                                case W:
+                                    map.getCamera().translateY(1);
+                                    break;
+                                case S:
+                                    map.getCamera().translateY(-1);
+                                    break;
+                                case D:
+                                    map.getCamera().translateX(1);
+                                    break;
+                                case A:
+                                    map.getCamera().translateX(-1);
+                                    break;
+                                case EQUALS:
+                                    map.getCamera().zoom(0.005);
+                                    break;
+                                case MINUS:
 
-                if (zoomInPressed.get()) {
-                    map.getCamera().zoom(map.getCamera().getZoom() * 0.01);
-                }
-                if (zoomOutPressed.get()) {
-                    map.getCamera().zoom(-map.getCamera().getZoom() * 0.01);
-                }
-                if (wPressed.get()) {
-                    map.getCamera().translateY(1);
-                }
-                if (aPressed.get()) {
-                    map.getCamera().translateX(-1);
-                }
-                if (sPressed.get()) {
-                    map.getCamera().translateY(-1);
-                }
-                if (dPressed.get()) {
-                    map.getCamera().translateX(1);
+                                    if (map.getCamera().getZoom() > 0.005) {
+                                        map.getCamera().zoom(-0.005);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                 }
             }
         };
 
-
         timer.start();
-        primaryStage.setTitle("Evosim");
         primaryStage.show();
 
 

@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'org.totallyspies.evosim'
-    mainClass = 'org.totallyspies.evosim.ui.EvosimApplication'
+    mainClass = 'org.totallyspies.evosim.ui.EvoSimApplication'
 }
 
 javafx {
@@ -38,6 +38,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
     implementation group: 'org.json', name: 'json', version: '20230227'
+
+    implementation 'com.google.guava:guava:31.0.1-jre'
 }
 
 test {

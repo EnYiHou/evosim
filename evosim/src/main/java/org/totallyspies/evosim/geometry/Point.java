@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.geometry;
 
+import com.google.common.util.concurrent.AtomicDouble;
+
 /**
  * This class represents a point in 2D space.
  *
@@ -10,12 +12,12 @@ public class Point {
     /**
      * The x coordinate of the point.
      */
-    private double x;
+    private AtomicDouble x;
 
     /**
      * The y coordinate of the point.
      */
-    private double y;
+    private AtomicDouble y;
 
     /**
      * Creates a new point with the given coordinates.
@@ -24,8 +26,8 @@ public class Point {
      * @param positionY the y coordinate of the point
      */
     public Point(final double positionX, final double positionY) {
-        this.x = positionX;
-        this.y = positionY;
+        this.x = new AtomicDouble(positionX);
+        this.y = new AtomicDouble(positionY);
     }
 
     /**
@@ -42,23 +44,51 @@ public class Point {
      * @param positionY the y coordinate of the point
      */
     public final void setCoordinates(final double positionX, final double positionY) {
-        this.x = positionX;
-        this.y = positionY;
+        this.x.set(positionX);
+        this.y.set(positionY);
     }
 
     public final double getX() {
-        return x;
+        return this.x.get();
+    }
+
+    /**
+     * Sets the x coordinate of the point.
+     *
+     * @param positionX the x coordinate of the point
+     */
+    public final void setX(final double positionX) {
+        this.x.set(positionX);
     }
 
     public final double getY() {
-        return y;
+        return this.y.get();
     }
 
-    public final void setX(final double positionX) {
-        this.x = positionX;
-    }
-
+    /**
+     * Sets the y coordinate of the point.
+     *
+     * @param positionY the y coordinate of the point
+     */
     public final void setY(final double positionY) {
-        this.y = positionY;
+        this.y.set(positionY);
+    }
+
+    /**
+     * Returns X Property.
+     *
+     * @return X Property
+     */
+    public final AtomicDouble getXProperty() {
+        return this.x;
+    }
+
+    /**
+     * Returns Y Property.
+     *
+     * @return Y Property
+     */
+    public final AtomicDouble getYProperty() {
+        return this.y;
     }
 }

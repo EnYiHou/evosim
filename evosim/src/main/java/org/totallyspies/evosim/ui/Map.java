@@ -5,6 +5,7 @@ import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.math.Assert;
 import org.totallyspies.evosim.utils.Configuration;
 
 /**
@@ -16,12 +17,12 @@ public final class Map extends ResizableCanvas {
     /**
      * The height of the whole map.
      */
-    public static final int MAP_SIZE = 500;
+    public static final int MAP_SIZE = 5000;
 
     /**
      * The height of a single grid.
      */
-    public static final int GRID_SIZE = 50;
+    public static final int GRID_SIZE = 500;
 
     /**
      * The color of the map.
@@ -141,7 +142,53 @@ public final class Map extends ResizableCanvas {
         }
     }
 
-    // Getters and setters
+    /**
+     * Follow an entity on the map.
+     *
+     * @param entity The entity to be followed
+     */
+    public void followEntity(final Entity entity) {
+        //Set the camera's position to the entity's position.
+        this.camera.setPoint(entity.getBodyCenter());
+        autoZoom(1.2d);
+    }
+
+    /**
+     * Unfollow an entity on the map.
+     *
+     * @param entity The entity to be unfollowed
+     */
+    public void unfollowEntity(final Entity entity) {
+
+        this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
+                entity.getBodyCenter().getY()));
+        autoZoom(0.5);
+
+    }
+
+    /**
+     * Automatic zoom in and zoom out to a specific value.
+     * This effect will be a smooth transition.
+     *
+     * @param value The value to be zoomed to
+     */
+    public void autoZoom(final double value) {
+        Thread thread = new Thread(() -> {
+            double minIncrement = Math.signum(value - this.camera.getZoom()) * 0.003;
+            while (!Assert.assertEquals(this.camera.getZoom(), value, 0.01d)) {
+
+                this.camera.zoom(
+                        minIncrement);
+
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
 
     /**
      * Delete all drawings on the map.
