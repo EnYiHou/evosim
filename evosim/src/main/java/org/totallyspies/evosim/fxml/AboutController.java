@@ -2,7 +2,6 @@ package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.json.JSONObject;
 import org.totallyspies.evosim.utils.ResourceManager;
@@ -57,6 +56,8 @@ public final class AboutController {
 
     /**
      * Loads the AboutWindow text from the project's json file.
+     *
+     * @param path The input stream path
      */
     private void addMenuText(final InputStream path) {
         String jsonText = "";

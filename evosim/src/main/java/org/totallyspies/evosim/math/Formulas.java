@@ -15,6 +15,7 @@ import java.util.function.Function;
  * @author EnYi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public final class Formulas {
 
     /**

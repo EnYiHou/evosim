@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
  * @author edeli
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public final class ResourceManager {
 
     private static final String RESOURCE_FOLDER = "/org/totallyspies/evosim";
