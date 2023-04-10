@@ -1,9 +1,14 @@
 package org.totallyspies.evosim.geometry;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * This class represents a circle in 2D space.
  */
+@Getter
+@AllArgsConstructor
 public class Circle {
 
     /**
@@ -15,22 +20,4 @@ public class Circle {
      * The center of the circle.
      */
     private Point center;
-
-    /**
-     * Creates a new circle with the given center and radius.
-     * @param centerPoint the center of the circle
-     * @param newRadius the radius of the circle
-     */
-    public Circle(final Point centerPoint, final double newRadius) {
-        this.center = centerPoint;
-        this.radius = newRadius;
-    }
-
-    public final Point getCenter() {
-        return this.center;
-    }
-
-    public final double getRadius() {
-        return this.radius;
-    }
 }

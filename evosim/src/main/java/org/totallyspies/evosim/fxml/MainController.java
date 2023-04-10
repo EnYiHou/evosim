@@ -1,6 +1,7 @@
 package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
+import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
 
@@ -8,6 +9,7 @@ import org.totallyspies.evosim.ui.EvosimApplication;
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input
  * fields.
  */
+@NoArgsConstructor
 public final class MainController {
 
     /**

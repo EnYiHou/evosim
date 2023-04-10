@@ -1,6 +1,8 @@
 package org.totallyspies.evosim.simulation;
 
 import javafx.animation.AnimationTimer;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
@@ -79,10 +81,10 @@ public final class Simulation {
             while (iterator.hasNext()) {
                 final Entity entity = iterator.next();
                 entity.update();
-                if (entity.getDeath()) {
+                if (entity.isDeath()) {
                     iterator.remove();
                 }
-                if (entity.getSplit()) {
+                if (entity.isSplit()) {
                     iterator.add(entity.clone());
                     entity.setSplitEnergy(entity.getSplitEnergy() - 1);
                     entity.setChildCount(entity.getChildCount() + 1);

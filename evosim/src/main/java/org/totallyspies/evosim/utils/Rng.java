@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import java.util.Random;
 
 /**
@@ -8,11 +10,8 @@ import java.util.Random;
  *
  * @author Matthew
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Rng {
-
-    private Rng() {
-    }
-
     /**
      * A <code>Random</code> used for generating randomly generated values.
      */
