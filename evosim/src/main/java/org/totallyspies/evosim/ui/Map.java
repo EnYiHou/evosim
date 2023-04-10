@@ -174,7 +174,8 @@ public final class Map extends ResizableCanvas {
      */
     public void autoZoom(final double value) {
         Thread thread = new Thread(() -> {
-            double minIncrement = Math.signum(value - this.camera.getZoom()) * 0.003;
+            double minIncrement = Math.signum(
+                    value - this.camera.getZoom()) * Camera.DEFAULT_ZOOMING_SPEED;
             while (!Assert.assertEquals(this.camera.getZoom(), value, 0.01d)) {
 
                 this.camera.zoom(
@@ -197,7 +198,7 @@ public final class Map extends ResizableCanvas {
     public void clearMap() {
         this.getGraphicsContext2D().setFill(Map.MAP_COLOR);
         this.getGraphicsContext2D().fillRect(
-                0, 0, this.getWidth(), this.getHeight());
+                0d, 0d, this.getWidth(), this.getHeight());
     }
 
     /**

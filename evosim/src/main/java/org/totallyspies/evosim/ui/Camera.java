@@ -14,22 +14,22 @@ public final class Camera {
     /**
      * The default position of the camera.
      */
-    public static final Point DEFAULT_POINT = new Point(0, 0);
+    public static final Point DEFAULT_POINT = new Point(0d, 0d);
 
     /**
      * The maximum zoom level of the camera.
      */
-    public static final double MAX_ZOOM = 2.0d;
+    public static final double MAX_ZOOM = 10.0d;
 
     /**
      * The minimum zoom level of the camera.
      */
-    public static final double MIN_ZOOM = 0.5d;
+    public static final double MIN_ZOOM = 0.05d;
 
     /**
      * The default zooming speed of the camera.
      */
-    public static final double DEFAULT_ZOOMING_SPEED = 0.1d;
+    public static final double DEFAULT_ZOOMING_SPEED = 0.003d;
 
 
     /**
@@ -60,6 +60,39 @@ public final class Camera {
      */
     public Camera() {
         this(DEFAULT_POINT, DEFAULT_ZOOM);
+    }
+
+    /**
+     * Translates the camera by the given amount in x direction.
+     *
+     * @param x the amount to translate the camera in x direction
+     *          (positive values move the camera to the right)
+     */
+    public void translateX(final double x) {
+        this.point.setX(this.point.getX() + x);
+    }
+
+    /**
+     * Translates the camera by the given amount in y direction.
+     *
+     * @param y the amount to translate the camera in y direction
+     *          (positive values move the camera down)
+     */
+    public void translateY(final double y) {
+        this.point.setY(this.point.getY() + y);
+    }
+
+    /**
+     * Zoom the camera by the given amount.
+     *
+     * @param increment the amount to zoom the camera
+     *                  (positive values to zoom in the camera)
+     */
+    public void zoom(final double increment) {
+        if (this.zoom.addAndGet(increment) >= Camera.MIN_ZOOM
+                && this.zoom.addAndGet(increment) <= Camera.MAX_ZOOM) {
+            this.zoom.getAndAdd(increment);
+        }
     }
 
     /**
@@ -97,33 +130,4 @@ public final class Camera {
         return this.zoom.get();
     }
 
-    /**
-     * Translates the camera by the given amount in x direction.
-     *
-     * @param x the amount to translate the camera in x direction
-     *          (positive values move the camera to the right)
-     */
-    public void translateX(final double x) {
-        this.point.setX(this.point.getX() + x);
-    }
-
-    /**
-     * Translates the camera by the given amount in y direction.
-     *
-     * @param y the amount to translate the camera in y direction
-     *          (positive values move the camera down)
-     */
-    public void translateY(final double y) {
-        this.point.setY(this.point.getY() + y);
-    }
-
-    /**
-     * Zoom the camera by the given amount.
-     *
-     * @param increment the amount to zoom the camera
-     *               (positive values to zoom in the camera)
-     */
-    public void zoom(final double increment) {
-        this.zoom.getAndAdd(increment);
-    }
 }
