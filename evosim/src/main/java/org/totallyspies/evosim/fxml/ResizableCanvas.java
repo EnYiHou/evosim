@@ -2,8 +2,6 @@ package org.totallyspies.evosim.fxml;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 /**
  * This class consists of a StackPane containing the

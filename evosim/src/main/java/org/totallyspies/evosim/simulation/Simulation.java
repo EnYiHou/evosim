@@ -1,8 +1,6 @@
 package org.totallyspies.evosim.simulation;
 
 import javafx.animation.AnimationTimer;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;

@@ -14,7 +14,6 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
-import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.ResourceManager;

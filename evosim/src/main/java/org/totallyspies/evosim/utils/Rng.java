@@ -11,6 +11,7 @@ import java.util.Random;
  * @author Matthew
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public final class Rng {
     /**
      * A <code>Random</code> used for generating randomly generated values.
