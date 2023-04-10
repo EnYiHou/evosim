@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'org.totallyspies.evosim'
-    mainClass = 'org.totallyspies.evosim.ui.EvoSimApplication'
+    mainClass = 'org.totallyspies.evosim.ui.EvosimApplication'
 }
 
 javafx {
