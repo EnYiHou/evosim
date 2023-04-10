@@ -52,11 +52,7 @@ public class Point {
         return this.x.get();
     }
 
-    /**
-     * Sets the x coordinate of the point.
-     *
-     * @param positionX the x coordinate of the point
-     */
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public final void setX(final double positionX) {
         this.x.set(positionX);
     }
@@ -65,30 +61,9 @@ public class Point {
         return this.y.get();
     }
 
-    /**
-     * Sets the y coordinate of the point.
-     *
-     * @param positionY the y coordinate of the point
-     */
+
+    @SuppressWarnings("checkstyle:MissingJavadocMethod")
     public final void setY(final double positionY) {
         this.y.set(positionY);
-    }
-
-    /**
-     * Returns X Property.
-     *
-     * @return X Property
-     */
-    public final AtomicDouble getXProperty() {
-        return this.x;
-    }
-
-    /**
-     * Returns Y Property.
-     *
-     * @return Y Property
-     */
-    public final AtomicDouble getYProperty() {
-        return this.y;
     }
 }
