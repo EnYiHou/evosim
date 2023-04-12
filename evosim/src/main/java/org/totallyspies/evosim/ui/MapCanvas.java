@@ -1,6 +1,9 @@
 package org.totallyspies.evosim.ui;
 
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.animation.AnimationTimer;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
@@ -35,18 +38,47 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private Simulation simulation;
 
+
+    /**
+     * A list of keycodes being pressed.
+     */
+    private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
+
+    /**
+     * Whether the camera is following an entity or not.
+     */
+    private AtomicBoolean followingEntity;
+
+    /**
+     * The entity currently being followed.
+     */
+    private Entity followedEntity;
+
+    public static LinkedList<KeyCode> getPressedKeys() {
+        return PRESSED_KEYS;
+    }
+
     /**
      * Construct an instance of MapCanvas.
      */
     public MapCanvas() {
         super();
-        this.camera = new Camera();
+        this.camera = new Camera(
+            new Point(0, 0),
+            new Point(
+                Simulation.MAP_SIZE_X * Simulation.GRID_SIZE,
+                Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
+            )
+        );
+
         this.anim = new AnimationTimer() {
             @Override
             public void handle(final long now) {
                 update(now);
             }
         };
+
+        this.followingEntity =new AtomicBoolean(false);
     }
 
     /**
@@ -215,10 +247,41 @@ public final class MapCanvas extends ResizableCanvas {
     private void update(final long now) {
         clearMap();
         drawGrids();
+
+
+        final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
+        final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
+        if (!PRESSED_KEYS.isEmpty()) {
+            if (!followingEntity.get()) { // cannot control camera when tracking
+                for (KeyCode code : PRESSED_KEYS) {
+                    switch (code) { // camera controls
+                        case W -> this.getCamera().translateY(camTranslateSpeed);
+                        case S -> this.getCamera().translateY(-camTranslateSpeed);
+                        case D -> this.getCamera().translateX(camTranslateSpeed);
+                        case A -> this.getCamera().translateX(-camTranslateSpeed);
+                        case C -> this.getCamera().center();
+                        case EQUALS -> this.getCamera().zoom();
+                        case MINUS -> {
+                            if (this.getCamera().getZoom() > camZoomIncrement) {
+                                this.getCamera().unzoom();
+                            }
+                        }
+                        default -> { }
+                    }
+                }
+            } else {
+                if (PRESSED_KEYS.contains(KeyCode.SPACE)) {
+                    this.unfollowEntity(followedEntity);
+                }
+            }
+        }
+
         for (int x = 0; x < Simulation.MAP_SIZE_X; ++x) {
             for (int y = 0; y < Simulation.MAP_SIZE_Y; ++y) {
                 simulation.getGridEntities(x, y).forEach(this::drawEntity);
             }
         }
     }
+
+
 }
