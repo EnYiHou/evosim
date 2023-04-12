@@ -1,22 +1,26 @@
 package org.totallyspies.evosim.simulation;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.input.KeyCode;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.ui.Camera;
 import org.totallyspies.evosim.ui.Map;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The class in which the bulk of the simulation loop is managed.
  *
- * @author Matthew
+ * @author mattlep11, EnYi
  */
 public final class Simulation {
     /**
@@ -35,17 +39,65 @@ public final class Simulation {
     private static final Simulation INSTANCE = new Simulation();
 
     /**
+     * A list of keycodes being pressed.
+     */
+    private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
+
+    /**
+     * Whether the camera is following an entity or not.
+     */
+    private AtomicBoolean followingEntity;
+
+    /**
+     * The entity currently being followed.
+     */
+    private Entity followedEntity;
+
+    /**
      * The animation loop of the simulation that runs every frame.
      */
     private final AnimationTimer animationLoop = new AnimationTimer() {
+        private final Map map = Map.getInstance();
+        private final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
+        private final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
+
         @Override
         public void handle(final long now) {
+            map.clearMap();
+            map.drawGrids();
             updateGrids();
+
+            if (!PRESSED_KEYS.isEmpty()) {
+                if (!followingEntity.get()) { // cannot control camera when tracking
+                    for (KeyCode code : PRESSED_KEYS) {
+                        switch (code) { // camera controls
+                            case W -> map.getCamera().translateY(camTranslateSpeed);
+                            case S -> map.getCamera().translateY(-camTranslateSpeed);
+                            case D -> map.getCamera().translateX(camTranslateSpeed);
+                            case A -> map.getCamera().translateX(-camTranslateSpeed);
+                            case C -> map.getCamera().center();
+                            case EQUALS -> map.getCamera().zoom(camZoomIncrement);
+                            case MINUS -> {
+                                if (map.getCamera().getZoom() > camZoomIncrement) {
+                                    map.getCamera().zoom(-camZoomIncrement);
+                                }
+                            }
+                            default -> { }
+                        }
+                    }
+                } else {
+                    if (PRESSED_KEYS.contains(KeyCode.SPACE)) {
+                        map.unfollowEntity(followedEntity);
+                    }
+                }
+            }
+
 
             ListIterator<Entity> iterator = Simulation.ENTITY_LIST.listIterator();
             while (iterator.hasNext()) {
                 final Entity entity = iterator.next();
-                entity.update();
+                map.drawEntity(entity);
+//                entity.update();
                 if (entity.getDeath()) {
                     iterator.remove();
                 }
@@ -59,10 +111,15 @@ public final class Simulation {
         }
     };
 
-    private Simulation() {
+    /**
+     * Creates a new simulation and generates the grids and entities.
+     */
+    public Simulation() {
         this.generateGrids();
         // TODO add initial population (add config for initial population)
         this.populateEntityList(100, 100);
+        followingEntity = new AtomicBoolean(false);
+        followedEntity = null;
         this.updateGrids();
     }
 
@@ -70,7 +127,6 @@ public final class Simulation {
      * Generate the grids for the simulation.
      */
     private void generateGrids() {
-
         for (int i = 0; i < Map.ROW_COLUMN_COUNT; i++) {
             final List<List<Entity>> grid = new ArrayList<>();
             Simulation.GRIDS.add(grid);
@@ -133,5 +189,13 @@ public final class Simulation {
             entity.setGridX(x);
             entity.setGridY(y);
         }
+    }
+
+    public AnimationTimer getAnimationLoop() {
+        return animationLoop;
+    }
+
+    public static LinkedList<KeyCode> getPressedKeys() {
+        return PRESSED_KEYS;
     }
 }

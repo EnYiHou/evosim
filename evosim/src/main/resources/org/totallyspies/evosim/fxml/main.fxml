@@ -8,7 +8,10 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import org.totallyspies.evosim.fxml.ResizableCanvas?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
@@ -37,14 +40,31 @@
       </MenuBar>
    </top>
    <left>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Graphs" />
-          <Tab text="Entity Information" />
-        </tabs>
-      </TabPane>
+      <VBox style="-fx-border-color: black; -fx-border-width: 0 3px 0 0;" BorderPane.alignment="CENTER">
+         <children>
+            <TabPane maxWidth="200.0" prefHeight="593.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+              <tabs>
+                <Tab text="Graphs" />
+                <Tab text="Entity Information" />
+              </tabs>
+            </TabPane>
+            <VBox alignment="CENTER" prefHeight="274.0" prefWidth="200.0" style="-fx-border-width: 3px 0 0 0; -fx-border-color: black; -fx-spacing: 5;" VBox.vgrow="NEVER">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Camera Controls" underline="true" VBox.vgrow="NEVER">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Text>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[WASD]&#13;Translate Camera&#13;[+/-]&#13;Zoom Camera&#13;[C]&#13;Center Camera&#13;[SPACE]&#13;Unfollow Entity&#13;[ESC]&#13;Exit Application" textAlignment="CENTER" wrappingWidth="178.55859375">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Text>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
    </left>
    <center>
-      <ResizableCanvas prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <StackPane fx:id="centerStack" prefHeight="150.0" prefWidth="997.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
