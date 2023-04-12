@@ -9,14 +9,13 @@ import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The class in which the bulk of the simulation loop is managed.
  *
- * @author Matthew
+ * @author mattlep11, EnYi
  */
 public final class Simulation {
   private static List<Simulation> simulations = new LinkedList<>();
