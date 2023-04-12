@@ -4,33 +4,52 @@ import org.totallyspies.evosim.geometry.Point;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
+/**
+ * This class represents a moveable camera.
+ *
+ * @author EnYi
+ */
 public final class Camera {
-
-    /**
-     * The default zoom level of the camera.
-     */
-    public static final double DEFAULT_ZOOM = 1.0d;
 
     /**
      * The default position of the camera.
      */
-    public static final Point DEFAULT_POINT = new Point(0d, 0d);
+    public static final Point DEFAULT_POINT =
+            new Point(Map.MAP_SIZE / 2.0, Map.MAP_SIZE / 2.0);
 
     /**
      * The maximum zoom level of the camera.
+     * <p>
+     * This value indicates the maximum scale constant when the camera is zoomed out to its min.
      */
-    public static final double MAX_ZOOM = 10.0d;
+    public static final double MAX_ZOOM = 1.55;
 
     /**
      * The minimum zoom level of the camera.
+     * <p>
+     * This value indicates the minimum scale constant when the camera is zoomed out to its max.
      */
-    public static final double MIN_ZOOM = 0.05d;
+    public static final double MIN_ZOOM = 0.145;
+
+    /**
+     * The default zoom level of the camera.
+     */
+    public static final double DEFAULT_ZOOM = MAX_ZOOM;
 
     /**
      * The default zooming speed of the camera.
      */
     public static final double DEFAULT_ZOOMING_SPEED = 0.003d;
 
+    /**
+     * The speed at which the camera translates.
+     */
+    public static final double CAMERA_TRANSLATE_SPEED = 5.0;
+
+    /**
+     * The increment value of the camera's zoom.
+     */
+    public static final double CAMERA_ZOOM_INCREMENT = 0.01;
 
     /**
      * The position of the camera.
@@ -63,13 +82,23 @@ public final class Camera {
     }
 
     /**
+     * Sets the camera back to the position.
+     */
+    public void center() {
+        this.point.setX(Map.MAP_SIZE / 2.0);
+        this.point.setY(Map.MAP_SIZE / 2.0);
+    }
+
+    /**
      * Translates the camera by the given amount in x direction.
      *
      * @param x the amount to translate the camera in x direction
      *          (positive values move the camera to the right)
      */
     public void translateX(final double x) {
-        this.point.setX(this.point.getX() + x);
+        if (this.point.getX() + x >= 0 && this.point.getX() + x <= Map.MAP_SIZE) {
+            this.point.setX(this.point.getX() + x);
+        }
     }
 
     /**
@@ -79,7 +108,9 @@ public final class Camera {
      *          (positive values move the camera down)
      */
     public void translateY(final double y) {
-        this.point.setY(this.point.getY() + y);
+        if (this.point.getY() + y <= Map.MAP_SIZE && this.point.getY() + y >= 0) {
+            this.point.setY(this.point.getY() + y);
+        }
     }
 
     /**
@@ -89,8 +120,8 @@ public final class Camera {
      *                  (positive values to zoom in the camera)
      */
     public void zoom(final double increment) {
-        if (this.zoom.addAndGet(increment) >= Camera.MIN_ZOOM
-                && this.zoom.addAndGet(increment) <= Camera.MAX_ZOOM) {
+        if (this.zoom.get() + increment >= Camera.MIN_ZOOM
+                && this.zoom.get() + increment <= Camera.MAX_ZOOM) {
             this.zoom.getAndAdd(increment);
         }
     }
