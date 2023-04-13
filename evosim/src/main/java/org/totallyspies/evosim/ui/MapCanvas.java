@@ -1,28 +1,19 @@
 package org.totallyspies.evosim.ui;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Assert;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 
 /**
  * This class represents the map of the simulation, on which entities will be drawn.
  */
-@SuppressWarnings("ClassEscapesDefinedScope")
-public final class Map extends ResizableCanvas {
-
-    /**
-     * The height of the whole map.
-     */
-    public static final int MAP_SIZE = 5000;
-
-    /**
-     * The height of a single grid.
-     */
-    public static final int GRID_SIZE = 500;
+public final class MapCanvas extends ResizableCanvas {
 
     /**
      * The color of the map.
@@ -30,34 +21,32 @@ public final class Map extends ResizableCanvas {
     public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
 
     /**
-     * The number of grids columns on the map.
-     */
-    public static final int ROW_COLUMN_COUNT = Map.MAP_SIZE / Map.GRID_SIZE;
-    /**
-     * The instance of the map.
-     */
-    private static final Map INSTANCE = new Map();
-    /**
-     * /**
      * The camera of the map.
      */
     private final Camera camera;
 
     /**
-     * Construct an instance of Map.
+     * The loop to render the map.
      */
-    private Map() {
-        super();
-        this.camera = new Camera();
-    }
+    private final AnimationTimer anim;
 
     /**
-     * Returns the instance of the map.
-     *
-     * @return the instance of the map
+     * The simulation that is being rendered by the map.
      */
-    public static Map getInstance() {
-        return INSTANCE;
+    private Simulation simulation;
+
+    /**
+     * Construct an instance of MapCanvas.
+     */
+    public MapCanvas() {
+        super();
+        this.camera = new Camera();
+        this.anim = new AnimationTimer() {
+            @Override
+            public void handle(final long now) {
+                update(now);
+            }
+        };
     }
 
     /**
@@ -66,12 +55,16 @@ public final class Map extends ResizableCanvas {
     public void drawGrids() {
         this.getGraphicsContext2D().setStroke(Color.BLACK);
 
+        for (int i = 0; i <= Simulation.MAP_SIZE_X; i++) {
+            Point verticalStartingPoint = computePointPosition(i * Simulation.GRID_SIZE, 0);
+            Point verticalEndingPoint = computePointPosition(
+                i * Simulation.GRID_SIZE, Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y
+            );
 
-        for (int i = 0; i <= Map.ROW_COLUMN_COUNT; i++) {
-            Point verticalStartingPoint = computePointPosition(i * Map.GRID_SIZE, 0);
-            Point verticalEndingPoint = computePointPosition(i * Map.GRID_SIZE, Map.MAP_SIZE);
-            Point horizontalStartingPoint = computePointPosition(0, i * Map.GRID_SIZE);
-            Point horizontalEndingPoint = computePointPosition(Map.MAP_SIZE, i * Map.GRID_SIZE);
+            Point horizontalStartingPoint = computePointPosition(0, i * Simulation.GRID_SIZE);
+            Point horizontalEndingPoint = computePointPosition(
+                Simulation.GRID_SIZE * Simulation.MAP_SIZE_X, i * Simulation.GRID_SIZE
+            );
 
             // draw vertical grids lines
             this.getGraphicsContext2D().strokeLine(
@@ -107,7 +100,7 @@ public final class Map extends ResizableCanvas {
      * @param entity The entity to be drawn on the map
      */
     public void drawEntity(final Entity entity) {
-        double radius = Configuration.getCONFIGURATION().getEntityRadius();
+        double radius = Configuration.getConfiguration().getEntityRadius();
         double zoom = camera.getZoom();
         this.getGraphicsContext2D().setFill(entity.getColor());
 
@@ -196,7 +189,7 @@ public final class Map extends ResizableCanvas {
      * Prepare to draw a new frame.
      */
     public void clearMap() {
-        this.getGraphicsContext2D().setFill(Map.MAP_COLOR);
+        this.getGraphicsContext2D().setFill(MapCanvas.MAP_COLOR);
         this.getGraphicsContext2D().fillRect(
                 0d, 0d, this.getWidth(), this.getHeight());
     }
@@ -208,5 +201,24 @@ public final class Map extends ResizableCanvas {
      */
     public Camera getCamera() {
         return this.camera;
+    }
+
+    /**
+     * Attaches a simulation to this map.
+     * @param newSimulation Simulation to be attached.
+     */
+    public void attach(final Simulation newSimulation) {
+        this.simulation = newSimulation;
+        this.anim.start();
+    }
+
+    private void update(final long now) {
+        clearMap();
+        drawGrids();
+        for (int x = 0; x < Simulation.MAP_SIZE_X; ++x) {
+            for (int y = 0; y < Simulation.MAP_SIZE_Y; ++y) {
+                simulation.getGridEntities(x, y).forEach(this::drawEntity);
+            }
+        }
     }
 }

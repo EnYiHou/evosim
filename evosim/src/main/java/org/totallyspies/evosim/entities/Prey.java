@@ -11,7 +11,7 @@ import org.totallyspies.evosim.geometry.Point;
  *
  * @author EnYi, Matthew
  */
-public class Prey extends Entity {
+public final class Prey extends Entity {
 
     /**
      * Constructs a new prey.
@@ -21,7 +21,7 @@ public class Prey extends Entity {
      * @param rotationAngleInRadians the rotation angle of the prey
      */
     public Prey(final double speed, final Point position, final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getCONFIGURATION().getPreyViewAngle(),
+        super(speed, position, Configuration.getConfiguration().getPreyViewAngle(),
                 rotationAngleInRadians
         );
         this.setColor(Color.GREEN);
@@ -37,16 +37,11 @@ public class Prey extends Entity {
      */
     @Override
     public void onUpdate() {
-        // collide with predator
-        if (checkCollisions()) {
-            this.setDeath(true);
-        }
-
         // passively gain energy
         this.setSplitEnergy(this.getSplitEnergy()
-                + Configuration.getCONFIGURATION().getPreySplitEnergyFillingSpeed());
+                + Configuration.getConfiguration().getPreySplitEnergyFillingSpeed());
         this.setEnergy(Math.min(this.getEnergy()
-                + Configuration.getCONFIGURATION().getPreyEnergyFillingSpeed(), 1));
+                + Configuration.getConfiguration().getPreyEnergyFillingSpeed(), 1));
     }
 
     /**
@@ -59,8 +54,8 @@ public class Prey extends Entity {
         // Mutate the speed of the prey
         Prey prey = new Prey(
                 (Math.random()
-                        < Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
-                        ? Math.random() * Configuration.getCONFIGURATION().getEntityMaxSpeed()
+                        < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                        ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
                         : this.getSpeed(),
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
                 this.getDirectionAngleInRadians()
@@ -71,5 +66,10 @@ public class Prey extends Entity {
         this.setChildCount(this.getChildCount() + 1);
 
         return prey;
+    }
+
+    @Override
+    protected void onCollideHandler(final Entity other) {
+        this.setDeath(true);
     }
 }

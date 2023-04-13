@@ -40,7 +40,7 @@ public final class Configuration {
     /**
      * The base energy lost rate of a predator.
      */
-    public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.1d;
+    public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01d;
 
     /**
      * The number of sensors each entity has.
@@ -105,7 +105,7 @@ public final class Configuration {
     /**
      * The split energy that a prey will gain when it is not moving.
      */
-    public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+    public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.05d;
 
     /**
      * The number of layers the neural network will contain.
@@ -357,7 +357,7 @@ public final class Configuration {
    *
    * @return Configuration saved from a Json File
    */
-  public static Configuration getCONFIGURATION() {
+  public static Configuration getConfiguration() {
     return Configuration.CONFIGURATION;
   }
 
