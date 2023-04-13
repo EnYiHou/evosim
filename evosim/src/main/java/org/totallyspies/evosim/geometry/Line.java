@@ -6,7 +6,7 @@ import lombok.Getter;
 /**
  * This class represents a line in 2D space.
  *
- * @author EnYi Hou
+ * @author EnYi
  */
 @Getter
 @AllArgsConstructor

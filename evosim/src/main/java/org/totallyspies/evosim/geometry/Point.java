@@ -6,7 +6,7 @@ import lombok.Setter;
 
 /**
  * This class represents a point in 2D space.
- * @author EnYi Hou
+ * @author EnYi
  */
 @Getter
 @Setter

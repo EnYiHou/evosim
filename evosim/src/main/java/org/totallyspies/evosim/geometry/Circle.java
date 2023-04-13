@@ -6,6 +6,8 @@ import lombok.Getter;
 
 /**
  * This class represents a circle in 2D space.
+ *
+ * @author EnYi
  */
 @Getter
 @AllArgsConstructor

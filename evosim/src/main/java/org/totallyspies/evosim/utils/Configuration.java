@@ -9,14 +9,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-
+import java.io.IOException;
 
 /**
  * Configuration class consists of saving the settings the user configurations.
  * If the user close the application without saving the configurations, the
  * applications will remember them and will load them if needed.
  *
- * @author edeli
+ * @author niakouu
  */
 @Getter
 @Setter
@@ -121,7 +121,7 @@ public final class Configuration {
     /**
      * The default name of a configuration file.
      */
-    private static final String DEFAULT_CONFIGURATION_FILE_NAME =
+    public static final String DEFAULT_CONFIGURATION_FILE_NAME =
             "defaultConfigurations.json";
   }
 
@@ -291,25 +291,17 @@ public final class Configuration {
   /**
    * Saves the default files that the user didn't have time to save.
    *
-   * @return "Saved!" if the last configuration has saved.
    */
-  public String saveLastConfiguration() {
-    try {
-      saveFileConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
-    } catch (Exception e) {
-      e.getMessage();
-    }
-    return "Saved!";
+  public void saveConfiguration() throws IOException {
+    saveConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
   }
 
   /**
    * Saves a Configuration file in the temporary files of the user's computer.
    *
    * @param fileName a new file name for the save file
-   * @return "Saved!" if the file was saved without any issues
    */
-  public String saveFileConfiguration(final String fileName) {
-    try {
+  public void saveConfiguration(final String fileName) throws IOException {
       JSONObject jsonText = getJSONObject();
 
       File jsonFile = new File(System.getProperty("java.io.tmpdir"),
@@ -321,11 +313,6 @@ public final class Configuration {
       try (FileWriter writer = new FileWriter(jsonFile)) {
         jsonText.write(writer);
       }
-
-    } catch (Exception e) {
-      return e.getMessage();
-    }
-    return "Saved!";
   }
 
   /**
