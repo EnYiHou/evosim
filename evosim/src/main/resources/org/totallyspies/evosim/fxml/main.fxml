@@ -19,11 +19,12 @@
                   <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Save Configuration" />
                   <Menu mnemonicParsing="false" text="Load">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="Saved Configuration" />
-                        <MenuItem mnemonicParsing="false" text="Previous Configuration" />
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadDefault" text="Default Configuration" />
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoad" text="Saved Configuration" />
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadLatest" text="Previous Configuration" />
                      </items>
                   </Menu>
-              <MenuItem mnemonicParsing="false" text="Exit" />
+              <MenuItem mnemonicParsing="false" onAction="#clickOnExit" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
