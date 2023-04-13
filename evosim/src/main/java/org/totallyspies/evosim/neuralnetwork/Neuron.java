@@ -77,11 +77,16 @@ public final class Neuron {
     /**
      * Creates a Neuron with a predefined bias.
      *
-     * @param neuronBias    the bias used to shift the activation function
-     * @param neuronWeights the weights used to do the computations
+     * @param neuronBias            the bias used to shift the activation function
+     * @param newActivationFunction the function to initialize the value
+     * @param neuronWeights         the weights used to do the computations
      */
-    public Neuron(final double neuronBias, final List<Double> neuronWeights) {
+    public Neuron(
+            final double neuronBias,
+            final Function<Double, Double> newActivationFunction,
+            final List<Double> neuronWeights) {
         this.bias = neuronBias;
+        this.activationFunction = newActivationFunction;
         this.weights = neuronWeights;
     }
 
@@ -120,7 +125,7 @@ public final class Neuron {
                 ? Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX)
                 : this.bias;
 
-        return new Neuron(newBias, this.weights.stream().map(
+        return new Neuron(newBias, this.activationFunction, this.weights.stream().map(
                 w -> Rng.RNG.nextDouble() < mutationRate
                         ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
                         : w
