@@ -65,7 +65,7 @@ public class NeuralNetwork {
     }
 
     /**
-     * Constructor used intenrally to not have to initialize the
+     * Constructor used internally to not have to initialize the
      * {@link #neuronLayers} expensively.
      */
     private NeuralNetwork() {
@@ -94,7 +94,6 @@ public class NeuralNetwork {
             .boxed()
             .toList();
 
-        System.out.println(outputs);
 
         while (iterator.hasNext()) {
             List<Double> latestOutputs = outputs;
@@ -102,7 +101,6 @@ public class NeuralNetwork {
                 .stream()
                 .map(neuron -> neuron.feed(latestOutputs))
                 .toList();
-            System.out.println(outputs);
         }
 
         return outputs;
@@ -118,7 +116,7 @@ public class NeuralNetwork {
      *
      * @return the mutated brain
      */
-    private NeuralNetwork mutate() {
+    public NeuralNetwork mutate() {
         NeuralNetwork mutatedNeuralNetwork = new NeuralNetwork();
 
         mutatedNeuralNetwork.neuronLayers =
@@ -128,7 +126,7 @@ public class NeuralNetwork {
                     .stream()
                     .map(neuron -> neuron.mutate(
                         Configuration
-                            .getConfiguration()
+                            .getCONFIGURATION()
                             .getEntitySpeedMutationRate()
                     ))
                     .toList()

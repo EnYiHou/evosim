@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import lombok.ToString;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -14,6 +15,7 @@ import org.totallyspies.evosim.utils.Rng;
  *
  * @author Matthew, niakouu
  */
+@ToString
 public final class Neuron {
 
     /**
@@ -58,11 +60,11 @@ public final class Neuron {
         final boolean randomizeWeights
     ) {
 
-        this.bias = Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX);
+        this.bias = Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX);
 
         this.weights = Stream
             .generate(() -> randomizeWeights ? 1
-                : Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX))
+                : Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX))
             .limit(inputs)
             .toList();
 
@@ -78,14 +80,6 @@ public final class Neuron {
     public Neuron(final double neuronBias, final List<Double> neuronWeights) {
         this.bias = neuronBias;
         this.weights = neuronWeights;
-    }
-
-    @Override
-    public String toString() {
-        return "\nNeuron{"
-            + "bias=" + this.bias
-            + ", weights=" + this.weights
-            + "}\n";
     }
 
     /**
@@ -116,14 +110,14 @@ public final class Neuron {
      */
     public Neuron mutate(final double mutationRate) {
         final double newBias = Rng.RNG.nextDouble() < mutationRate
-            ? Rng.RNG.nextDouble(BIAS_MIN, BIAS_MAX)
+            ? Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX)
             : this.bias;
 
         return new Neuron(
             newBias,
             this.weights.stream().map(
                 w -> Rng.RNG.nextDouble() < mutationRate
-                    ? Rng.RNG.nextDouble(WEIGHT_MIN, WEIGHT_MAX)
+                    ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
                     : w
             ).toList()
         );

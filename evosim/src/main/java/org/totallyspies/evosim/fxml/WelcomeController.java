@@ -15,7 +15,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
 import org.totallyspies.evosim.utils.Configuration;
-import org.totallyspies.evosim.EvosimApplication;
+import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.util.ArrayList;
@@ -62,14 +62,14 @@ public final class WelcomeController {
      */
     public void initialize() {
         this.splitPane.setBackground(new Background(new BackgroundImage(
-            new Image(ResourceManager.IMAGE_WELCOME),
+            new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toString()),
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,
             new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
         )));
 
-        Configuration config = Configuration.getConfiguration();
+        Configuration config = Configuration.getCONFIGURATION();
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(

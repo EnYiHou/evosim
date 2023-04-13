@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.math;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 
@@ -12,9 +14,9 @@ import java.util.function.Function;
  *
  * @author EnYi
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public final class Formulas {
-    private Formulas() {
-    }
 
     /**
      * Logistic sigmoid activation function.
@@ -80,7 +82,7 @@ public final class Formulas {
 
      * @return the closest distance between the line and the circle
      */
-    public static double closestIntersection(final Line line,
+    public static Double closestIntersection(final Line line,
                                              final Circle circle) {
 
         double slope;

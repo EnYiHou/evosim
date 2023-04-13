@@ -1,4 +1,4 @@
-package org.totallyspies.evosim;
+package org.totallyspies.evosim.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,7 +15,7 @@ import org.totallyspies.evosim.utils.Configuration.Defaults;
  */
 public class ConfigurationTest {
 
-  private Configuration configuration = Configuration.getConfiguration();
+  private Configuration configuration = Configuration.getCONFIGURATION();
 
   @Test
   public void saveConfiguration() throws IOException {

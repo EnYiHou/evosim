@@ -27,12 +27,12 @@ public final class SafeSlider extends VBox {
     /**
      * Spacing to use between all components.
      */
-    private static final double SPACING = 15;
+    private static final double SPACING = 15.0d;
 
     /**
      * Top-left padding to be used for all components.
      */
-    private static final double PADDING = 5;
+    private static final double PADDING = 5.0d;
 
     /**
      * Default minimum value to use for slider.
@@ -306,14 +306,6 @@ public final class SafeSlider extends VBox {
     }
 
     /**
-     * Gets {@link #min}.
-     * @return {@link #min}
-     */
-    public Property<Number> minProperty() {
-        return min;
-    }
-
-    /**
      * Gets value within {@link #max}.
      * @return Value within
      */
@@ -327,14 +319,6 @@ public final class SafeSlider extends VBox {
      */
     public void setMax(final Number newMax) {
         this.max.setValue(newMax);
-    }
-
-    /**
-     * Gets {@link #max}.
-     * @return {@link #max}
-     */
-    public Property<Number> maxProperty() {
-        return max;
     }
 
     /**
@@ -354,14 +338,6 @@ public final class SafeSlider extends VBox {
     }
 
     /**
-     * Gets {@link #value}.
-     * @return {@link #value}
-     */
-    public Property<Number> valueProperty() {
-        return value;
-    }
-
-    /**
      * Gets value within {@link #name}.
      * @return Value within
      */
@@ -375,14 +351,6 @@ public final class SafeSlider extends VBox {
      */
     public void setName(final String newName) {
         this.name.set(newName);
-    }
-
-    /**
-     * Gets {@link #name}.
-     * @return {@link #name}
-     */
-    public SimpleStringProperty nameProperty() {
-        return name;
     }
 
     /**
@@ -402,27 +370,11 @@ public final class SafeSlider extends VBox {
     }
 
     /**
-     * Gets {@link #floatingPoint}.
-     * @return {@link #floatingPoint}
-     */
-    public SimpleBooleanProperty floatingPointProperty() {
-        return floatingPoint;
-    }
-
-    /**
      * Gets value within {@link #hardMin}.
      * @return Value within
      */
     public boolean isHardMin() {
         return hardMin.get();
-    }
-
-    /**
-     * Gets {@link #hardMin}.
-     * @return {@link #hardMin}
-     */
-    public SimpleBooleanProperty hardMinProperty() {
-        return hardMin;
     }
 
     /**
@@ -439,14 +391,6 @@ public final class SafeSlider extends VBox {
      */
     public boolean isHardMax() {
         return hardMax.get();
-    }
-
-    /**
-     * Gets {@link #hardMax}.
-     * @return {@link #hardMax}
-     */
-    public SimpleBooleanProperty hardMaxProperty() {
-        return hardMax;
     }
 
     /**
