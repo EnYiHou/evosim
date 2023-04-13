@@ -5,14 +5,16 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import lombok.ToString;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
  * A Neuron is a single node of the greater Neural Network system storing a double valued bias. Each
  * layer of the network is made up of many Neuron objects.
  *
- * @author Matthew, Edelina
+ * @author Matthew, niakouu
  */
+@ToString
 public final class Neuron {
 
   /**
@@ -24,7 +26,7 @@ public final class Neuron {
    * The lower bound used to generate random weights.
    */
   private static final double WEIGHT_MIN = -0.99d;
-
+  
   /**
    * The upper bound for generating random biases.
    */
