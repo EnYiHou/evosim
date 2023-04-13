@@ -254,7 +254,6 @@ public final class Configuration {
     /**
      * Render the default configuration.
      *
-     * @return Configuration object with the default configuration
      */
     public void loadDefaultConfiguration() {
         restoreToDefaults();
@@ -263,8 +262,6 @@ public final class Configuration {
     /**
      * Render the last configuration the user used before closing the
      * application.
-     *
-     * @return Configuration object with the last Configuration the user used.
      */
     public void loadLastConfiguration() {
         try {
@@ -278,7 +275,6 @@ public final class Configuration {
      * Get a saved configuration in the temp file.
      *
      * @param jsonFile file we want to load.
-     * @return Configuration saved from a Json File.
      */
     public void loadConfiguration(final File jsonFile) {
         JSONObject jsonObject = loadSavedConfiguration(jsonFile);

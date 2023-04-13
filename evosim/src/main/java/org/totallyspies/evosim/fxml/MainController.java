@@ -18,9 +18,19 @@ import java.nio.file.Paths;
  */
 public final class MainController {
 
+    /**
+     *  In order to explore the user's files.
+     */
     private FileChooser fileChooser;
+
+    /**
+     * The global configuration of the application.
+     */
     private static Configuration configuration;
 
+    /**
+     * Constructor to create the MainController object.
+     */
     public MainController() {
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getCONFIGURATION();
@@ -36,7 +46,7 @@ public final class MainController {
                 System.getProperty("user.home"), "Documents", "Evosim").toString();
         File evosimFolder = new File(evosimDir);
 
-        if(!evosimFolder.exists()) {
+        if (!evosimFolder.exists()) {
             evosimFolder.mkdir();
         }
 
@@ -59,7 +69,7 @@ public final class MainController {
     }
 
     @FXML
-    private void clickOnSave(ActionEvent event) throws IOException {
+    private void clickOnSave(final ActionEvent event) throws IOException {
         fileChooser.setTitle("Save Configuration");
         File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
 
@@ -69,7 +79,7 @@ public final class MainController {
     }
 
     @FXML
-    private void clickOnLoad(ActionEvent event) throws IOException {
+    private void clickOnLoad(final ActionEvent event) throws IOException {
         fileChooser.setTitle("Load Configuration");
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
 
@@ -83,19 +93,19 @@ public final class MainController {
     }
 
     @FXML
-    private void clickOnLoadLatest(ActionEvent event) {
+    private void clickOnLoadLatest(final ActionEvent event) {
         configuration.loadLastConfiguration();
         System.out.println(configuration.toString());
     }
 
     @FXML
-    private void clickOnLoadDefault(ActionEvent event) {
+    private void clickOnLoadDefault(final ActionEvent event) {
         configuration.loadDefaultConfiguration();
         System.out.println(configuration.toString());
     }
 
     @FXML
-    private void clickOnExit(ActionEvent event) throws IOException {
+    private void clickOnExit(final ActionEvent event) throws IOException {
         configuration.saveLatestConfiguration();
         Platform.exit();
     }

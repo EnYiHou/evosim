@@ -81,18 +81,20 @@ public final class EvosimApplication extends Application {
     }
 
     private static void createTempDirectory()
-            throws IOException
-    {
+            throws IOException {
         final File temp;
         temp = File.createTempFile("temp", "evosim/");
 
-        if(!temp.exists())
+        if (!temp.exists()) {
             throw new IOException("Folder already exists: " + temp.getAbsolutePath());
+        }
 
-        if(!temp.delete())
+        if (!temp.delete()) {
             throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+        }
 
-        if(!temp.mkdir())
+        if (!temp.mkdir()) {
             throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+        }
     }
 }
