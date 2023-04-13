@@ -39,12 +39,12 @@ public final class Camera {
     /**
      * The default zooming speed of the camera.
      */
-    public static final double DEFAULT_ZOOMING_SPEED = 0.003d;
+    public static final double DEFAULT_ZOOMING_SPEED = 0.003;
 
     /**
      * The speed at which the camera translates.
      */
-    public static final double CAMERA_TRANSLATE_SPEED = 5.0;
+    public static final double CAMERA_TRANSLATE_SPEED = 7.5;
 
     /**
      * The increment value of the camera's zoom.
