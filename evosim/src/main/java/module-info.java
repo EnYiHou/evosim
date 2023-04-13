@@ -3,6 +3,7 @@ module org.totallyspies.evosim {
     requires javafx.fxml;
     requires org.json;
     requires com.google.common;
+    requires static lombok;
 
     opens org.totallyspies.evosim.fxml to javafx.fxml;
     opens org.totallyspies.evosim.ui to javafx.fxml;

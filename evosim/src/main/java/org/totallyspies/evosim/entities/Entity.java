@@ -1,6 +1,12 @@
 package org.totallyspies.evosim.entities;
 
 import javafx.scene.paint.Color;
+import java.util.Arrays;
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -35,16 +41,21 @@ public abstract class Entity {
     /**
      * If the entity is dead or not.
      */
+    @Getter
+    @Setter
     private boolean death;
 
     /**
      * If the entity split.
      */
+    @Getter
+    @Setter
     private boolean split;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
+    @Getter
     private final double speed;
 
     /**
@@ -54,6 +65,8 @@ public abstract class Entity {
      * used to make it's next decision.
      * </p>
      */
+    @Getter
+    @Setter
     private NeuralNetwork brain;
 
     /**
@@ -68,6 +81,8 @@ public abstract class Entity {
      * 0 to 1, where at 0 the the entity cannot move.
      * </p>
      */
+    @Getter
+    @Setter
     private double energy;
 
     /**
@@ -77,16 +92,21 @@ public abstract class Entity {
      * 0 to 1, where at 1 the entity will multiply.
      * </p>
      */
+    @Getter
+    @Setter
     private double splitEnergy;
 
     /**
      * The direction the entity is facing in radians.
      */
+    @Getter
     private double directionAngleInRadians;
 
     /**
      * The number of children born from this entity.
      */
+    @Getter
+    @Setter
     private int childCount;
 
     /**
@@ -98,11 +118,13 @@ public abstract class Entity {
     /**
      * The x index of the grid this entity is in.
      */
+    @Setter
     private int gridX;
 
     /**
      * The y index of the grid this entity is in.
      */
+    @Setter
     private int gridY;
 
     /**
@@ -277,91 +299,8 @@ public abstract class Entity {
         this.onCollideHandler(other);
     }
 
-    public final Line[] getSensors() {
-        return this.sensors;
-    }
-
-    public final double getEnergy() {
-        return this.energy;
-    }
-
-    public final double getSplitEnergy() {
-        return this.splitEnergy;
-    }
-
-    public final int getChildCount() {
-        return this.childCount;
-    }
-
-    public final double getDirectionAngleInRadians() {
-        return this.directionAngleInRadians;
-    }
-
-    public final boolean getDeath() {
-        return this.death;
-    }
-
-    public final Color getColor() {
-        return this.color;
-    }
-
-    public final void setDeath(final boolean isDead) {
-        this.death = isDead;
-    }
-
-    public final boolean getSplit() {
-        return split;
-    }
-
-    public final void setSplit(final boolean isSplit) {
-        this.split = isSplit;
-    }
-
-    public final double getSpeed() {
-        return this.speed;
-    }
 
     public final Point getBodyCenter() {
         return this.body.getCenter();
-    }
-
-    public final Circle getBody() {
-        return this.body;
-    }
-
-    public final NeuralNetwork getBrain() {
-        return this.brain;
-    }
-
-    public final void setBrain(final NeuralNetwork entityBrain) {
-        this.brain = entityBrain;
-    }
-
-    protected final void setEnergy(final double entityEnergy) {
-        this.energy = entityEnergy;
-    }
-
-    public final void setSplitEnergy(final double entitySplitEnergy) {
-        this.splitEnergy = entitySplitEnergy;
-    }
-
-    public final void setChildCount(final int entityChildCount) {
-        this.childCount = entityChildCount;
-    }
-
-    public final void setGridX(final int entityGridX) {
-        this.gridX = entityGridX;
-    }
-
-    public final void setGridY(final int entityGridY) {
-        this.gridY = entityGridY;
-    }
-
-    public final void setColor(final Color entityColor) {
-        this.color = entityColor;
-    }
-
-    public final void setDirectionAngleInRadians(final double entityDirectionAngleInRadians) {
-        this.directionAngleInRadians = entityDirectionAngleInRadians;
     }
 }
