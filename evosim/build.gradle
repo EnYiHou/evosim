@@ -14,6 +14,7 @@ repositories {
 
 ext {
     junitVersion = '5.9.2'
+    lombokVersion = '1.18.26'
 }
 
 sourceCompatibility = '17'
@@ -38,6 +39,12 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
     implementation group: 'org.json', name: 'json', version: '20230227'
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 test {
