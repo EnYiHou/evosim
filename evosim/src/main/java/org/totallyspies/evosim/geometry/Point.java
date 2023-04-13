@@ -37,7 +37,7 @@ public class Point {
      * @param positionY the y coordinate of the point
      */
     public final void setCoordinates(final double positionX, final double positionY) {
-        this.x.set(positionX);
-        this.y.set(positionY);
+        this.x = positionX;
+        this.y = positionY;
     }
 }

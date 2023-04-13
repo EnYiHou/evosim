@@ -13,10 +13,6 @@ import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.utils.Configuration;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * An Entity is an abstract member of the evolution simulation that can take the form of a
@@ -31,6 +27,7 @@ public abstract class Entity {
     /**
      * An array of sensors represented by custom Line objects.
      */
+    @Getter
     private final Line[] sensors;
 
     /**
@@ -43,7 +40,7 @@ public abstract class Entity {
      */
     @Getter
     @Setter
-    private boolean death;
+    private boolean dead;
 
     /**
      * If the entity split.
@@ -72,6 +69,7 @@ public abstract class Entity {
     /**
      * The position of the entity.
      */
+    @Getter
     private final Circle body;
 
     /**
@@ -114,23 +112,11 @@ public abstract class Entity {
      */
     private final double fovAngleInDegrees;
 
-
-    /**
-     * The x index of the grid this entity is in.
-     */
-    @Setter
-    private int gridX;
-
-    /**
-     * The y index of the grid this entity is in.
-     */
-    @Setter
-    private int gridY;
-
     /**
      * The color of the entity.
      */
-    private Color color;
+    @Getter
+    private final Color color;
 
     /**
      * Clones this entity and mutates some of its properties.
@@ -151,13 +137,15 @@ public abstract class Entity {
      * @param entityPosition   The position of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
+     * @param color            The color of the entity
      */
     protected Entity(final double entitySpeed, final Point entityPosition,
-                     final double newViewAngle, final double newRotationAngle) {
+                     final double newViewAngle, final double newRotationAngle, Color color) {
+        this.color = color;
         // initialize entity properties
         this.energy = 1d;
         this.splitEnergy = 0d;
-        this.death = false;
+        this.dead = false;
         this.split = false;
         this.childCount = 0;
         this.speed = entitySpeed;

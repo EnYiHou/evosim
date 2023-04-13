@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import lombok.Getter;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.io.IOException;
@@ -73,8 +74,14 @@ public final class EvosimApplication extends Application {
      *
      * @param args Command-line arguments passed to the application
      */
-    public static void main(
-            final String[] args) {
+    public static void main(final String[] args) {
         launch();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+        Simulation.stopAll();
     }
 }

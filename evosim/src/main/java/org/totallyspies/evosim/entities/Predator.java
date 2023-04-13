@@ -22,8 +22,7 @@ public final class Predator extends Entity {
      */
     public Predator(final double speed, final Point position, final double rotationAngleInRadians) {
         super(speed, position, Configuration.getConfiguration().getPredatorViewAngle(),
-                rotationAngleInRadians);
-        this.setColor(Color.RED);
+                rotationAngleInRadians, Color.RED);
     }
 
     /**
@@ -39,7 +38,7 @@ public final class Predator extends Entity {
                 .getPredatorEnergyBaseDrainingSpeed());
 
         if (this.getEnergy() <= 0) {
-            this.setDeath(true);
+            this.setDead(true);
         }
     }
 

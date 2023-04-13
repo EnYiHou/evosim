@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.simulation;
 
+import java.util.LinkedList;
 import javafx.animation.AnimationTimer;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
@@ -18,6 +19,11 @@ import java.util.List;
  * @author Matthew
  */
 public final class Simulation {
+  private static List<Simulation> simulations = new LinkedList<>();
+
+  public static void stopAll() {
+    simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
+  }
 
   /**
    * The width of the whole map.
@@ -65,6 +71,9 @@ public final class Simulation {
     };
 
     this.animationLoop.start();
+    this.entityGrids.startWorkers();
+
+    simulations.add(this);
   }
 
   /**
@@ -161,9 +170,9 @@ public final class Simulation {
         for (int j = chunk.size() - 1; j >= 0; --j) {
           final Entity entity = chunk.get(j);
           entity.update();
-          if (entity.getDeath()) {
+          if (entity.isDead()) {
             chunk.remove(j);
-          } else if (entity.getSplit()) {
+          } else if (entity.isSplit()) {
             chunk.add(entity.clone());
             entity.setSplitEnergy(0);
             entity.setChildCount(entity.getChildCount() + 1);
