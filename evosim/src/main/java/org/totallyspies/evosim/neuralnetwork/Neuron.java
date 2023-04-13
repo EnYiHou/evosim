@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import lombok.ToString;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -14,6 +15,7 @@ import org.totallyspies.evosim.utils.Rng;
  *
  * @author Matthew Edelina
  */
+@ToString
 public final class Neuron {
 
     /**
@@ -78,14 +80,6 @@ public final class Neuron {
     public Neuron(final double neuronBias, final List<Double> neuronWeights) {
         this.bias = neuronBias;
         this.weights = neuronWeights;
-    }
-
-    @Override
-    public String toString() {
-        return "\nNeuron{"
-            + "bias=" + this.bias
-            + ", weights=" + this.weights
-            + "}\n";
     }
 
     /**

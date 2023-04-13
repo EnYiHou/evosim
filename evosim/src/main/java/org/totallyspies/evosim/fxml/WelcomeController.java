@@ -62,7 +62,7 @@ public final class WelcomeController {
      */
     public void initialize() {
         this.splitPane.setBackground(new Background(new BackgroundImage(
-            new Image(ResourceManager.IMAGE_WELCOME),
+            new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toString()),
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,

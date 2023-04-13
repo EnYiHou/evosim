@@ -1,5 +1,8 @@
 package org.totallyspies.evosim.utils;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -15,6 +18,9 @@ import java.io.FileWriter;
  *
  * @author edeli
  */
+@Getter
+@Setter
+@ToString
 public final class Configuration {
 
   /**
@@ -282,32 +288,6 @@ public final class Configuration {
             "neuralNetworkLayersNumber");
   }
 
-  @Override
-  public String toString() {
-    return "Configuration{"
-            + "preyEnergyFillingSpeed=" + preyEnergyFillingSpeed
-            + ", predatorEnergyFillingSpeed=" + predatorEnergyFillingSpeed
-            + ", predatorEnergyBaseDrainingSpeed="
-            + predatorEnergyBaseDrainingSpeed
-            + ", entityMaxRotationSpeed=" + entityMaxRotationSpeed
-            + ", entitySensorsCount=" + entitySensorsCount
-            + ", entityRadius=" + entityRadius
-            + ", entitySensorsLength=" + entitySensorsLength
-            + ", entityMaxSpeed=" + entityMaxSpeed
-            + ", entityMinSpeed=" + entityMinSpeed
-            + ", entitySpeedMutationRate=" + entitySpeedMutationRate
-            + ", entityEnergyDrainRate=" + entityEnergyDrainRate
-            + ", predatorMaxNumber=" + predatorMaxNumber
-            + ", predatorViewAngle=" + predatorViewAngle
-            + ", predatorSplitEnergyFillingSpeed="
-            + predatorSplitEnergyFillingSpeed
-            + ", preyMaxNumber=" + preyMaxNumber
-            + ", preyViewAngle=" + preyViewAngle
-            + ", preySplitEnergyFillingSpeed=" + preySplitEnergyFillingSpeed
-            + ", neuralNetworkLayersNumber=" + neuralNetworkLayersNumber
-            + '}';
-  }
-
   /**
    * Saves the default files that the user didn't have time to save.
    *
@@ -442,170 +422,5 @@ public final class Configuration {
     jsonObject.put("preyViewAngle", this.preyViewAngle);
     jsonObject.put("neuralNetworkLayersNumber", this.neuralNetworkLayersNumber);
     return jsonObject;
-  }
-
-  // Setters
-  public void setEntityMaxRotationSpeed(
-          final double newEntityMaxRotationSpeed) {
-    this.entityMaxRotationSpeed = newEntityMaxRotationSpeed;
-  }
-
-  public void setPreyEnergyFillingSpeed(
-          final double newPreyEnergyFillingSpeed) {
-    this.preyEnergyFillingSpeed = newPreyEnergyFillingSpeed;
-  }
-
-  public void setPredatorEnergyFillingSpeed(
-          final double newPredatorEnergyFillingSpeed) {
-    this.predatorEnergyFillingSpeed = newPredatorEnergyFillingSpeed;
-  }
-
-  public void setPredatorEnergyBaseDrainingSpeed(
-          final double newPredatorEnergyBaseDrainingSpeed) {
-    this.predatorEnergyBaseDrainingSpeed = newPredatorEnergyBaseDrainingSpeed;
-  }
-
-  public void setEntitySensorsCount(
-          final int newEntitySensorsCount) {
-    this.entitySensorsCount = newEntitySensorsCount;
-  }
-
-  public void setEntityRadius(
-          final double newEntityRadius) {
-    this.entityRadius = newEntityRadius;
-  }
-
-  public void setEntitySensorsLength(
-          final double newEntitySensorsLength) {
-    this.entitySensorsLength = newEntitySensorsLength;
-  }
-
-  public void setEntityMaxSpeed(
-          final double newEntityMaxSpeed) {
-    this.entityMaxSpeed = newEntityMaxSpeed;
-  }
-
-  public void setEntityMinSpeed(
-          final double newEntityMinSpeed) {
-    this.entityMinSpeed = newEntityMinSpeed;
-  }
-
-  public void setEntitySpeedMutationRate(
-          final double newEntitySpeedMutationRate) {
-    this.entitySpeedMutationRate = newEntitySpeedMutationRate;
-  }
-
-  public void setEntityEnergyDrainRate(
-          final double newEntityEnergyDrainRate) {
-    this.entityEnergyDrainRate = newEntityEnergyDrainRate;
-  }
-
-  public void setPredatorMaxNumber(
-          final double newPredatorMaxNumber) {
-    this.predatorMaxNumber = newPredatorMaxNumber;
-  }
-
-  public void setPredatorViewAngle(
-          final double newPredatorViewAngle) {
-    this.predatorViewAngle = newPredatorViewAngle;
-  }
-
-  public void setPredatorSplitEnergyFillingSpeed(
-          final double newPredatorSplitEnergyFillingSpeed) {
-    this.predatorSplitEnergyFillingSpeed = newPredatorSplitEnergyFillingSpeed;
-  }
-
-  public void setPreyMaxNumber(
-          final double newPreyMaxNumber
-  ) {
-    this.preyMaxNumber = newPreyMaxNumber;
-  }
-
-  public void setPreyViewAngle(
-          final double newPreyViewAngle) {
-    this.preyViewAngle = newPreyViewAngle;
-  }
-
-  public void setPreySplitEnergyFillingSpeed(
-          final double newPreySplitEnergyFillingSpeed) {
-    this.preySplitEnergyFillingSpeed = newPreySplitEnergyFillingSpeed;
-  }
-
-  public void setNeuralNetworkLayersNumber(
-          final int newNeuralNetworkLayersNumber) {
-    this.neuralNetworkLayersNumber = newNeuralNetworkLayersNumber;
-  }
-
-  // Getters
-  public double getEntityMaxRotationSpeed() {
-    return this.entityMaxRotationSpeed;
-  }
-
-  public double getPreyEnergyFillingSpeed() {
-    return this.preyEnergyFillingSpeed;
-  }
-
-  public double getPredatorEnergyFillingSpeed() {
-    return this.predatorEnergyFillingSpeed;
-  }
-
-  public double getPredatorEnergyBaseDrainingSpeed() {
-    return this.predatorEnergyBaseDrainingSpeed;
-  }
-
-  public int getEntitySensorsCount() {
-    return this.entitySensorsCount;
-  }
-
-  public double getEntityRadius() {
-    return this.entityRadius;
-  }
-
-  public double getEntitySensorsLength() {
-    return this.entitySensorsLength;
-  }
-
-  public double getEntityMaxSpeed() {
-    return this.entityMaxSpeed;
-  }
-
-  public double getEntityMinSpeed() {
-    return this.entityMinSpeed;
-  }
-
-  public double getEntitySpeedMutationRate() {
-    return this.entitySpeedMutationRate;
-  }
-
-  public double getEntityEnergyDrainRate() {
-    return this.entityEnergyDrainRate;
-  }
-
-  public double getPredatorMaxNumber() {
-    return this.predatorMaxNumber;
-  }
-
-  public double getPredatorViewAngle() {
-    return this.predatorViewAngle;
-  }
-
-  public double getPredatorSplitEnergyFillingSpeed() {
-    return this.predatorSplitEnergyFillingSpeed;
-  }
-
-  public double getPreyMaxNumber() {
-    return this.preyMaxNumber;
-  }
-
-  public double getPreyViewAngle() {
-    return this.preyViewAngle;
-  }
-
-  public double getPreySplitEnergyFillingSpeed() {
-    return this.preySplitEnergyFillingSpeed;
-  }
-
-  public int getNeuralNetworkLayersNumber() {
-    return this.neuralNetworkLayersNumber;
   }
 }
