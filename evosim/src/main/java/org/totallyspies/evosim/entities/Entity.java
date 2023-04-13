@@ -7,7 +7,6 @@ import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.ui.Map;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.util.Arrays;
@@ -26,12 +25,12 @@ public abstract class Entity {
     /**
      * An array of sensors represented by custom Line objects.
      */
-    private Line[] sensors;
+    private final Line[] sensors;
 
     /**
      * A list of detected distances from the sensors.
      */
-    private Double[] sensorsData;
+    private final Double[] sensorsData;
 
     /**
      * If the entity is dead or not.
@@ -142,9 +141,9 @@ public abstract class Entity {
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
-        this.body = new Circle(entityPosition, Configuration.getCONFIGURATION().getEntityRadius());
+        this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
 
-        int sensorCount = Configuration.getCONFIGURATION().getEntitySensorsCount();
+        int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
         // initialize neural network
         this.brain = new NeuralNetwork(List.of(sensorCount, 10, 2));
 
@@ -154,6 +153,7 @@ public abstract class Entity {
             this.sensors[i] = new Line(0, 0, 0, 0);
         }
         this.sensorsData = new Double[sensorCount];
+        Arrays.fill(this.sensorsData, Configuration.getConfiguration().getEntitySensorsLength());
         this.adjustSensors();
     }
 
@@ -170,24 +170,21 @@ public abstract class Entity {
         Point position = this.body.getCenter();
 
         // wrap around the map
-        double positionX =
-                (position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed)
-                        % Map.MAP_SIZE;
-        double positionY =
-                (position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed)
-                        % Map.MAP_SIZE;
-        if (positionX < 0) {
-            positionX += Map.MAP_SIZE;
-        }
-        if (positionY < 0) {
-            positionY += Map.MAP_SIZE;
-        }
+        double positionX = Math.max(0, Math.min(
+            position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
+            Simulation.MAP_SIZE_X * Simulation.GRID_SIZE
+        ));
+
+        double positionY = Math.max(0, Math.min(
+            position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
+            Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
+        ));
 
         position.setX(positionX);
         position.setY(positionY);
 
         // drain energy
-        this.energy -= Configuration.getCONFIGURATION().getEntityEnergyDrainRate() * movementSpeed;
+        this.energy -= Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed;
     }
 
     /**
@@ -195,9 +192,9 @@ public abstract class Entity {
      */
     public void adjustSensors() {
         double angleBetweenSensors = this.fovAngleInDegrees
-                / (Configuration.getCONFIGURATION().getEntitySensorsCount() - 1);
+                / (Configuration.getConfiguration().getEntitySensorsCount() - 1);
 
-        for (int i = 0; i < Configuration.getCONFIGURATION().getEntitySensorsCount(); i++) {
+        for (int i = 0; i < Configuration.getConfiguration().getEntitySensorsCount(); i++) {
             double angle = this.directionAngleInRadians
                     + Math.toRadians(-this.fovAngleInDegrees / 2 + angleBetweenSensors * i);
 
@@ -207,11 +204,11 @@ public abstract class Entity {
             this.sensors[i].getEndPoint().setCoordinates(
                     this.getBodyCenter().getX()
                             + Math.cos(angle) * Configuration
-                            .getCONFIGURATION()
+                            .getConfiguration()
                             .getEntitySensorsLength(),
                     this.getBodyCenter().getY()
                             + Math.sin(angle)
-                            * Configuration.getCONFIGURATION()
+                            * Configuration.getConfiguration()
                             .getEntitySensorsLength()
             );
         }
@@ -236,63 +233,48 @@ public abstract class Entity {
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
-        this.directionAngleInRadians += Configuration.getCONFIGURATION()
+        this.directionAngleInRadians += Configuration.getConfiguration()
                 .getEntityMaxRotationSpeed() * calculatedDecision.get(0);
         this.move(this.speed * calculatedDecision.get(1));
 
     }
 
     /**
-     * Checks if this entity is colliding with other entities within the nearby grids.
-     * <p>
-     * Updates the sensors data of this entity by checking the collisions between each sensor and
-     * the entities in the nearby grids.
-     *
-     * @return true if this entity is colliding with another entity. false otherwise.
+     * Determines if this entity collides with another entity.
+     * @param other Entity to be checked.
+     * @return If both entities collide.
      */
-    public final boolean checkCollisions() {
-        Arrays.fill(this.sensorsData, Configuration.getCONFIGURATION().getEntitySensorsLength());
-
-        // The number of nearby grids to check for collisions.
-        int nearbyGrids = 1;
-        int startingGridX = Math.max(this.gridX - nearbyGrids, 0);
-        int startingGridY = Math.max(this.gridY - nearbyGrids, 0);
-        int endingGridX = Math.min(this.gridX + nearbyGrids, Map.ROW_COLUMN_COUNT - 1);
-        int endingGridY = Math.min(this.gridY + nearbyGrids, Map.ROW_COLUMN_COUNT - 1);
-
-        // Loop through the nearby grids and check for collisions.
-        for (int x = startingGridX; x < endingGridX; x++) {
-            for (int y = startingGridY; y < endingGridY; y++) {
-
-                for (Entity entity : Simulation.GRIDS.get(x).get(y)) {
-
-                    // Check if the entity is the same class as this entity.
-                    if (!entity.getClass().equals(this.getClass())) {
-
-                        // Check if it collides with the entity.
-                        double distance = Formulas.distance(
-                                this.getBodyCenter().getX(),
-                                this.getBodyCenter().getY(),
-                                entity.getBodyCenter().getX(),
-                                entity.getBodyCenter().getY());
-                        if (distance < Configuration.getCONFIGURATION().getEntityRadius() * 2) {
-                            return true;
-                        }
-
-                        // Update the sensors data according to the entity.
-                        for (int sensorIndex = 0; sensorIndex
-                                < this.sensors.length; sensorIndex++) {
-                            Line sensor = this.sensors[sensorIndex];
-                            Double distanceToEntity =
-                                    Formulas.closestIntersection(sensor, entity.getBody());
-                            this.sensorsData[sensorIndex] =
-                                    Math.min(this.sensorsData[sensorIndex], distanceToEntity);
-                        }
-                    }
-                }
-            }
+    public boolean collidesWith(final Entity other) {
+        if (other.getClass().equals(this.getClass())) {
+            return false;
         }
-        return false;
+
+        double distance = Formulas.distance(
+            this.getBodyCenter().getX(),
+            this.getBodyCenter().getY(),
+            other.getBodyCenter().getX(),
+            other.getBodyCenter().getY()
+        );
+
+        return distance < Configuration.getConfiguration().getEntityRadius() * 2;
+    }
+
+    protected abstract void onCollideHandler(Entity other);
+
+    /**
+     * Event when this entity collides with another.
+     * @param other The entity that has been collided into.
+     */
+    public void onCollide(final Entity other) {
+        for (int sensorIndex = 0; sensorIndex < this.sensors.length; sensorIndex++) {
+            Line sensor = this.sensors[sensorIndex];
+            Double distanceToEntity =
+                Formulas.closestIntersection(sensor, other.getBody());
+            this.sensorsData[sensorIndex] =
+                Math.min(this.sensorsData[sensorIndex], distanceToEntity);
+        }
+
+        this.onCollideHandler(other);
     }
 
     public final Line[] getSensors() {

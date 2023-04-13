@@ -1,8 +1,10 @@
 package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
+import org.totallyspies.evosim.ui.MapCanvas;
 
 /**
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
@@ -10,10 +12,23 @@ import org.totallyspies.evosim.ui.EvosimApplication;
 public final class MainController {
 
     /**
+     * FXML reference to the map where simulation is rendered.
+     */
+    @FXML
+    private MapCanvas mapCanvas;
+
+    /**
+     * The simulation to be rendered.
+     */
+    private Simulation simulation;
+
+    /**
      * Initializes {@code main.fxml}.
      */
     public void initialize() {
-        // initialize main.fxml
+        this.simulation = new Simulation();
+
+        this.mapCanvas.attach(simulation);
     }
 
     /**

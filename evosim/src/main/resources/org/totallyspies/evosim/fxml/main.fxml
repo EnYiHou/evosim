@@ -8,7 +8,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import org.totallyspies.evosim.fxml.ResizableCanvas?>
+<?import org.totallyspies.evosim.ui.MapCanvas?>
 
 <BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
@@ -45,6 +45,6 @@
       </TabPane>
    </left>
    <center>
-      <ResizableCanvas prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <MapCanvas fx:id="mapCanvas" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
