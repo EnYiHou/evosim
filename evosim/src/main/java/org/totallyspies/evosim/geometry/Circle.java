@@ -12,14 +12,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Circle {
+    /**
+     * The center of the circle.
+     */
+    private Point center;
 
     /**
      * The radius of the circle.
      */
     private double radius;
-
-    /**
-     * The center of the circle.
-     */
-    private Point center;
 }

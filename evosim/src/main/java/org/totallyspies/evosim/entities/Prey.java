@@ -22,9 +22,8 @@ public final class Prey extends Entity {
      */
     public Prey(final double speed, final Point position, final double rotationAngleInRadians) {
         super(speed, position, Configuration.getConfiguration().getPreyViewAngle(),
-                rotationAngleInRadians
+                rotationAngleInRadians, Color.GREEN
         );
-        this.setColor(Color.GREEN);
 
     }
 
@@ -70,6 +69,6 @@ public final class Prey extends Entity {
 
     @Override
     protected void onCollideHandler(final Entity other) {
-        this.setDeath(true);
+        this.setDead(true);
     }
 }

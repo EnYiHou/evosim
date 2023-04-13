@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.utils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.function.BiConsumer;
  * @author ptrstr
  */
 public final class ChunkedListWorkerManager<T> {
-
   /**
    * Group to which all threads belong. Allows simple closing and managing of the threads.
    */
@@ -62,8 +62,6 @@ public final class ChunkedListWorkerManager<T> {
           ),
           String.format("Worker-%d", i)
       );
-
-      this.workers[i].start();
     }
   }
 
@@ -73,9 +71,15 @@ public final class ChunkedListWorkerManager<T> {
       final BiConsumer<Integer, List<T>> task
   ) {
     return () -> {
-      while (!Thread.currentThread().isInterrupted()) {
+      while (true) {
         for (int i = firstChunk; i < lastChunk; ++i) {
           task.accept(i, this.chunks[i]);
+        }
+
+        try {
+          Thread.sleep(1);
+        } catch (InterruptedException ex) {
+          break;
         }
       }
     };
@@ -151,9 +155,16 @@ public final class ChunkedListWorkerManager<T> {
   }
 
   /**
-   * Interrupts and stops all workers.
+   * Stops all workers.
    */
-  public void interrupt() {
+  public void stopWorkers() {
     this.workerGroup.interrupt();
+  }
+
+  /**
+   * Starts all workers.
+   */
+  public void startWorkers() {
+    Arrays.stream(this.workers).forEach(Thread::start);
   }
 }
