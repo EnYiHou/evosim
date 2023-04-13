@@ -13,7 +13,7 @@ import org.totallyspies.evosim.utils.Rng;
  * double valued bias. Each layer of the network is made up of many Neuron
  * objects.
  *
- * @author Matthew Edelina
+ * @author Matthew, niakouu
  */
 @ToString
 public final class Neuron {

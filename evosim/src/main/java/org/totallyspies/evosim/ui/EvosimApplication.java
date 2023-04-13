@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public final class EvosimApplication extends Application {
+
     /**
      * Sole scene used by the stage.
      */
