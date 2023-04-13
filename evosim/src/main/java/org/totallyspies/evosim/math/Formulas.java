@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.math;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 
@@ -11,9 +13,9 @@ import java.util.function.Function;
  *
  * @author EnYi
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public final class Formulas {
-    private Formulas() {
-    }
 
     /**
      * Logistic sigmoid activation function.
@@ -96,8 +98,8 @@ public final class Formulas {
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
                 - circleRadius > length) {
             return length;
-        }
 
+        }
         if (deltaX == 0) {
             double x = lineStartX;
             double sqrt = Math.sqrt(circleRadius * circleRadius
@@ -108,7 +110,10 @@ public final class Formulas {
                     + circleCenterY, lineStartX, lineStartY);
 
             return (distance1 <= distance2 ? distance1 : distance2);
-
+        }
+        if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
+            - circleRadius < 0) {
+            return 0d;
         } else {
             //calculate the slope of the line
             slope = (lineEndY - lineStartY) / (deltaX);
@@ -193,5 +198,4 @@ public final class Formulas {
             return results;
         }
     }
-
 }

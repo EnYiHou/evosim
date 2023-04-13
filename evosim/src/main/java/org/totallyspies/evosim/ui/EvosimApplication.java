@@ -3,9 +3,11 @@ package org.totallyspies.evosim.ui;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.Getter;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 public final class EvosimApplication extends Application {
+
     /**
      * Sole scene used by the stage.
      */
@@ -14,11 +16,13 @@ public final class EvosimApplication extends Application {
     /**
      * Sole stage of the application.
      */
+    @Getter
     private Stage stage;
 
     /**
      * Instance of the application to be kept.
      */
+    @Getter
     private static EvosimApplication application;
 
     @Override
@@ -37,15 +41,8 @@ public final class EvosimApplication extends Application {
      *
      * @param args Command-line arguments passed to the application
      */
-    public static void main(final String[] args) {
+    public static void main(
+            final String[] args) {
         launch();
-    }
-
-    public static EvosimApplication getApplication() {
-        return application;
-    }
-
-    public Stage getStage() {
-        return stage;
     }
 }

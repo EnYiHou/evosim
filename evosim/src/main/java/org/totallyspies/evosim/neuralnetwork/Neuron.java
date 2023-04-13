@@ -5,14 +5,16 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import lombok.ToString;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
  * A Neuron is a single node of the greater Neural Network system storing a double valued bias.
  * Each layer of the network is made up of many Neuron objects.
  *
- * @author Matthew, Edelina
+ * @author mattlep11, niakouu
  */
+@ToString
 public final class Neuron {
 
     /**
@@ -83,11 +85,6 @@ public final class Neuron {
     public Neuron(final double neuronBias, final List<Double> neuronWeights) {
         this.bias = neuronBias;
         this.weights = neuronWeights;
-    }
-
-    @Override
-    public String toString() {
-        return "\nNeuron{" + "bias=" + this.bias + ", weights=" + this.weights + "}\n";
     }
 
     /**

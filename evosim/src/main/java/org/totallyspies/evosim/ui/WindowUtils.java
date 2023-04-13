@@ -9,15 +9,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * WindowUtils contains various methods useful for creating new windows within Evosim.
  *
  * @author mattlep11
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public final class WindowUtils {
-
-    private WindowUtils() {
-    }
 
     /**
      * Sets the root of the {@code stage}'s scene to an FXML at {@code path}.

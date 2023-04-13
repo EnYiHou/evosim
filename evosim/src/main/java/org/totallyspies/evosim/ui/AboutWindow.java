@@ -3,6 +3,9 @@ package org.totallyspies.evosim.ui;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 /**
@@ -11,6 +14,7 @@ import org.totallyspies.evosim.utils.ResourceManager;
  *
  * @author mattlep11
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AboutWindow {
 
     /**
@@ -26,14 +30,13 @@ public final class AboutWindow {
     /**
      * The sole stage used for the "about" window.
      */
+    @Getter
     private Stage abtStage;
 
     /**
      * The JavaFX scene for the stage.
      */
     private Scene scene;
-
-    private AboutWindow() { };
 
     /**
      * Constructs a new modal AboutWindow.
@@ -49,9 +52,5 @@ public final class AboutWindow {
         WindowUtils.setSceneRoot(this.abtStage,
                 this.getClass().getResource(ResourceManager.FXML_ABOUT),
                 "");
-    }
-
-    public Stage getAbtStage() {
-        return abtStage;
     }
 }

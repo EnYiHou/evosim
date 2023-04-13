@@ -2,6 +2,7 @@ package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
+import lombok.NoArgsConstructor;
 import org.json.JSONObject;
 import org.totallyspies.evosim.utils.ResourceManager;
 
@@ -14,6 +15,7 @@ import java.io.InputStreamReader;
  *
  * @author mattlep11
  */
+@NoArgsConstructor
 public final class AboutController {
 
     /**

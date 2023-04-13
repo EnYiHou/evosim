@@ -60,11 +60,11 @@ public final class WelcomeController {
      */
     public void initialize() {
         this.splitPane.setBackground(new Background(new BackgroundImage(
-                new Image(ResourceManager.IMAGE_WELCOME),
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER,
-                new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
+            new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toString()),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
         )));
 
         Configuration config = Configuration.getCONFIGURATION();
