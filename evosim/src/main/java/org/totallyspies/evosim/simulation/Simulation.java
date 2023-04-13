@@ -92,12 +92,14 @@ public final class Simulation {
                 }
             }
 
-
             ListIterator<Entity> iterator = Simulation.ENTITY_LIST.listIterator();
             while (iterator.hasNext()) {
                 final Entity entity = iterator.next();
                 map.drawEntity(entity);
-//                entity.update();
+                entity.update();
+
+                // TODO re-balance configuration to make the simulation usable.
+
                 if (entity.getDeath()) {
                     iterator.remove();
                 }
@@ -116,8 +118,10 @@ public final class Simulation {
      */
     public Simulation() {
         this.generateGrids();
-        // TODO add initial population (add config for initial population)
-        this.populateEntityList(100, 100);
+        this.populateEntityList(
+                Configuration.getCONFIGURATION().getPreyInitialPopulation(),
+                Configuration.getCONFIGURATION().getPredatorInitialPopulation()
+        );
         followingEntity = new AtomicBoolean(false);
         followedEntity = null;
         this.updateGrids();
@@ -145,11 +149,11 @@ public final class Simulation {
      */
     private void populateEntityList(final int initPrey, final int initPredator) {
         double maxSpeed = Configuration.getCONFIGURATION().getEntityMaxSpeed();
+        double minSpeed = Configuration.getCONFIGURATION().getEntityMinSpeed();
 
-        // TODO add min speed to config
         for (int i = 0; i < initPrey; i++) {
             Simulation.ENTITY_LIST.add(new Prey(
-                    Rng.RNG.nextDouble(1, maxSpeed),
+                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, Map.MAP_SIZE),
                             Rng.RNG.nextDouble(0, Map.MAP_SIZE)
@@ -160,7 +164,7 @@ public final class Simulation {
 
         for (int i = 0; i < initPredator; i++) {
             Simulation.ENTITY_LIST.add(new Predator(
-                    Rng.RNG.nextDouble(1, maxSpeed),
+                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, Map.MAP_SIZE),
                             Rng.RNG.nextDouble(0, Map.MAP_SIZE)
