@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import org.totallyspies.evosim.utils.ResourceManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -77,5 +78,21 @@ public final class EvosimApplication extends Application {
     public static void main(
             final String[] args) {
         launch();
+    }
+
+    private static void createTempDirectory()
+            throws IOException
+    {
+        final File temp;
+        temp = File.createTempFile("temp", "evosim/");
+
+        if(!temp.exists())
+            throw new IOException("Folder already exists: " + temp.getAbsolutePath());
+
+        if(!temp.delete())
+            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+
+        if(!temp.mkdir())
+            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
     }
 }

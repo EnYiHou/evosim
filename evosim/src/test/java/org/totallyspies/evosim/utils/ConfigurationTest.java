@@ -44,15 +44,6 @@ public class ConfigurationTest {
     deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
   }
 
-  @Test
-  public void loadNamedFile() throws IOException {
-    configuration.setNeuralNetworkLayersNumber(8);
-    configuration.setEntityMaxSpeed(34d);
-    configuration.saveConfiguration("testConfiguration.json");
-
-    deleteFile("testConfiguration.json");
-  }
-
   public void deleteFile(String fileName) {
     File file = new File(System.getProperty("java.io.tmpdir"),
         fileName);

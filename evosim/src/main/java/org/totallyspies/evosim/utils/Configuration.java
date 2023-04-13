@@ -293,19 +293,19 @@ public final class Configuration {
    *
    */
   public void saveConfiguration() throws IOException {
-    saveConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    File jsonFile = new File(System.getProperty("java.io.tmpdir"),
+            Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    saveConfiguration(jsonFile);
   }
 
   /**
    * Saves a Configuration file in the temporary files of the user's computer.
    *
-   * @param fileName a new file name for the save file
+   * @param jsonFile location of the new file place.
    */
-  public void saveConfiguration(final String fileName) throws IOException {
+  public void saveConfiguration(final File jsonFile) throws IOException {
       JSONObject jsonText = getJSONObject();
 
-      File jsonFile = new File(System.getProperty("java.io.tmpdir"),
-              fileName);
       if (jsonFile.exists()) {
         jsonFile.createNewFile();
       }
