@@ -12,9 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Configuration class consists of saving the settings the user configurations.
- * If the user close the application without saving the configurations, the
- * applications will remember them and will load them if needed.
+ * Configuration class consists of saving the settings the user configurations. If the user close
+ * the application without saving the configurations, the applications will remember them and
+ * will load them if needed.
  *
  * @author niakouu
  */
@@ -121,8 +121,8 @@ public final class Configuration {
     /**
      * The default name of a configuration file.
      */
-    public static final String DEFAULT_CONFIGURATION_FILE_NAME =
-            "defaultConfigurations.json";
+    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "defaultConfigurations.json";
+
   }
 
   /**
@@ -227,8 +227,7 @@ public final class Configuration {
     this.entityMaxRotationSpeed = Defaults.ENTITY_MAX_ROTATION_SPEED;
     this.preyEnergyFillingSpeed = Defaults.PREY_ENERGY_FILLING_SPEED;
     this.predatorEnergyFillingSpeed = Defaults.PREDATOR_ENERGY_FILLING_SPEED;
-    this.predatorEnergyBaseDrainingSpeed = Defaults.
-            PREDATOR_ENERGY_BASE_DRAINING_SPEED;
+    this.predatorEnergyBaseDrainingSpeed = Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED;
     this.entitySensorsCount = Defaults.ENTITY_SENSORS_COUNT;
     this.entityRadius = Defaults.ENTITY_RADIUS;
     this.entitySensorsLength = Defaults.ENTITY_SENSORS_LENGTH;
@@ -240,9 +239,9 @@ public final class Configuration {
     // Predator
     this.predatorMaxNumber = Defaults.PREDATOR_MAX_NUMBER;
     this.predatorViewAngle = Defaults.PREDATOR_VIEW_ANGLE;
-    this.predatorSplitEnergyFillingSpeed = Defaults.
-            PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
+    this.predatorSplitEnergyFillingSpeed = Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
 
+    // Prey
     this.preyMaxNumber = Defaults.PREY_MAX_NUMBER;
     this.preyViewAngle = Defaults.PREY_VIEW_ANGLE;
     this.preySplitEnergyFillingSpeed = Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED;
@@ -256,36 +255,27 @@ public final class Configuration {
    * @param jsonObject JSONObject loaded from a json file.
    */
   private Configuration(final JSONObject jsonObject) {
-    this.preyEnergyFillingSpeed = jsonObject.getDouble(
-            "preyEnergyFillingSpeed");
-    this.predatorEnergyFillingSpeed = jsonObject.getDouble(
-            "predatorEnergyFillingSpeed");
-    this.predatorEnergyBaseDrainingSpeed = jsonObject.getDouble(
-            "predatorEnergyBaseDrainingSpeed");
-    this.entityMaxRotationSpeed = jsonObject.getDouble(
-            "entityMaxRotationSpeed");
+    this.preyEnergyFillingSpeed = jsonObject.getDouble("preyEnergyFillingSpeed");
+    this.predatorEnergyFillingSpeed = jsonObject.getDouble("predatorEnergyFillingSpeed");
+    this.predatorEnergyBaseDrainingSpeed = jsonObject.getDouble("predatorEnergyBaseDrainingSpeed");
+    this.entityMaxRotationSpeed = jsonObject.getDouble("entityMaxRotationSpeed");
     this.entitySensorsCount = jsonObject.getInt("entitySensorsCount");
     this.entityRadius = jsonObject.getDouble("entityRadius");
     this.entitySensorsLength = jsonObject.getDouble("entitySensorsLength");
     this.entityMaxSpeed = jsonObject.getDouble("entityMaxSpeed");
     this.entityMinSpeed = jsonObject.getDouble("entityMinSpeed");
-    this.entitySpeedMutationRate = jsonObject.getDouble(
-            "entitySpeedMutationRate");
-    this.entityEnergyDrainRate = jsonObject.getDouble(
-            "entityEnergyDrainRate");
+    this.entitySpeedMutationRate = jsonObject.getDouble("entitySpeedMutationRate");
+    this.entityEnergyDrainRate = jsonObject.getDouble("entityEnergyDrainRate");
 
     this.predatorMaxNumber = jsonObject.getInt("predatorMaxNumber");
     this.predatorViewAngle = jsonObject.getDouble("predatorViewAngle");
-    this.predatorSplitEnergyFillingSpeed = jsonObject.getDouble(
-            "predatorSplitEnergyFillingSpeed");
+    this.predatorSplitEnergyFillingSpeed = jsonObject.getDouble("predatorSplitEnergyFillingSpeed");
 
     this.preyMaxNumber = jsonObject.getInt("preyMaxNumber");
     this.preyViewAngle = jsonObject.getDouble("preyViewAngle");
-    this.preySplitEnergyFillingSpeed = jsonObject.getDouble(
-            "preySplitEnergyFillingSpeed");
+    this.preySplitEnergyFillingSpeed = jsonObject.getDouble("preySplitEnergyFillingSpeed");
 
-    this.neuralNetworkLayersNumber = jsonObject.getInt(
-            "neuralNetworkLayersNumber");
+    this.neuralNetworkLayersNumber = jsonObject.getInt("neuralNetworkLayersNumber");
   }
 
   /**
@@ -304,8 +294,7 @@ public final class Configuration {
   public void saveConfiguration(final String fileName) throws IOException {
       JSONObject jsonText = getJSONObject();
 
-      File jsonFile = new File(System.getProperty("java.io.tmpdir"),
-              fileName);
+      File jsonFile = new File(System.getProperty("java.io.tmpdir"), fileName);
       if (jsonFile.exists()) {
         jsonFile.createNewFile();
       }
@@ -341,8 +330,7 @@ public final class Configuration {
   }
 
   /**
-   * Render the last configuration the user used before closing the
-   * application.
+   * Render the last configuration the user used before closing the application.
    *
    * @return Configuration object with the last Configuration the user used.
    */
@@ -367,8 +355,7 @@ public final class Configuration {
       String tmpdir = System.getProperty("java.io.tmpdir");
       File jsonFile = new File(tmpdir, fileName);
 
-      try (BufferedReader reader = new BufferedReader(
-              new FileReader(jsonFile))) {
+      try (BufferedReader reader = new BufferedReader(new FileReader(jsonFile))) {
         jsonText = reader.readLine();
       }
 
@@ -387,10 +374,8 @@ public final class Configuration {
   private JSONObject getJSONObject() {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("preyEnergyFillingSpeed", this.preyEnergyFillingSpeed);
-    jsonObject.put("predatorEnergyFillingSpeed",
-            this.predatorEnergyFillingSpeed);
-    jsonObject.put("predatorEnergyBaseDrainingSpeed",
-            this.predatorEnergyBaseDrainingSpeed);
+    jsonObject.put("predatorEnergyFillingSpeed", this.predatorEnergyFillingSpeed);
+    jsonObject.put("predatorEnergyBaseDrainingSpeed", this.predatorEnergyBaseDrainingSpeed);
     jsonObject.put("entityMaxRotationSpeed", this.entityMaxRotationSpeed);
     jsonObject.put("entitySensorsCount", this.entitySensorsCount);
     jsonObject.put("entityRadius", this.entityRadius);
@@ -401,11 +386,9 @@ public final class Configuration {
     jsonObject.put("entityEnergyDrainRate", this.entityEnergyDrainRate);
     jsonObject.put("predatorMaxNumber", this.predatorMaxNumber);
     jsonObject.put("predatorViewAngle", this.predatorViewAngle);
-    jsonObject.put("predatorSplitEnergyFillingSpeed",
-            this.predatorSplitEnergyFillingSpeed);
+    jsonObject.put("predatorSplitEnergyFillingSpeed", this.predatorSplitEnergyFillingSpeed);
     jsonObject.put("preyMaxNumber", this.preyMaxNumber);
-    jsonObject.put("preySplitEnergyFillingSpeed",
-            this.preySplitEnergyFillingSpeed);
+    jsonObject.put("preySplitEnergyFillingSpeed", this.preySplitEnergyFillingSpeed);
     jsonObject.put("preyViewAngle", this.preyViewAngle);
     jsonObject.put("neuralNetworkLayersNumber", this.neuralNetworkLayersNumber);
     return jsonObject;

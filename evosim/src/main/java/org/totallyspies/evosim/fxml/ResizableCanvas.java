@@ -4,8 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 
 /**
- * This class consists of a StackPane containing the
- * Canvas in which the simulation is rendered.
+ * This class consists of a StackPane containing the Canvas in which the simulation is rendered.
  * The Canvas will be automatically resized when this is resized.
  */
 public class ResizableCanvas extends StackPane {

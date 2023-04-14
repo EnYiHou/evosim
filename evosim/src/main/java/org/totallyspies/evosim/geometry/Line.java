@@ -26,11 +26,10 @@ public class Line {
      * Creates a new line with the given start and end points.
      * @param startX the x coordinate of the start point
      * @param startY the y coordinate of the start point
-     * @param endX the x coordinate of the end point
-     * @param endY the y coordinate of the end point
+     * @param endX   the x coordinate of the end point
+     * @param endY   the y coordinate of the end point
      */
-    public Line(final double startX, final double startY,
-                final double endX, final double endY) {
+    public Line(final double startX, final double startY, final double endX, final double endY) {
         this(new Point(startX, startY), new Point(endX, endY));
     }
 }
