@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.math;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.totallyspies.evosim.math.Formulas.*;
 
 import org.junit.jupiter.api.Test;
 import org.totallyspies.evosim.geometry.Circle;
