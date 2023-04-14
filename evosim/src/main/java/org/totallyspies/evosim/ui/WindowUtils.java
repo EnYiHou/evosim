@@ -11,14 +11,15 @@ import java.util.Objects;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 /**
  * WindowUtils contains various methods useful for creating new windows within Evosim.
  *
  * @author mattlep11
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({
+        "checkstyle:HideUtilityClassConstructor",
+        "checkstyle:TodoComment"})
 public final class WindowUtils {
 
     /**

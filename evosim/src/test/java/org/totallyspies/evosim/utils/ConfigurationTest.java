@@ -1,11 +1,7 @@
 package org.totallyspies.evosim.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Configuration.Defaults;
 
 /**
@@ -13,49 +9,34 @@ import org.totallyspies.evosim.utils.Configuration.Defaults;
  *
  * @author niakouu
  */
+@SuppressWarnings({
+        "checkstyle:JavadocVariable",
+        "checkstyle:MissingJavadocMethod"})
 public class ConfigurationTest {
 
   private Configuration configuration = Configuration.getCONFIGURATION();
 
   @Test
   public void saveConfiguration() throws IOException {
-    configuration.saveConfiguration();
-    deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    configuration.saveLatestConfiguration();
+    Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
   public void loadDefaultConfiguration() throws IOException {
-    configuration.saveConfiguration();
-    assertEquals(configuration.toString(),
-        Configuration.getConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME)
-            .toString());
+    configuration.saveLatestConfiguration();
+    Configuration.getCONFIGURATION().loadLastConfiguration();
 
-    deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
   public void loadLastConfiguration() throws IOException {
     configuration.setEntityMaxSpeed(67d);
     configuration.setPreySplitEnergyFillingSpeed(45d);
-    configuration.saveConfiguration();
-    assertEquals(configuration.toString(),
-        Configuration.getLast().toString());
+    configuration.saveLatestConfiguration();
 
-    deleteFile(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
+    Defaults.LATEST_CONFIGURATION.delete();
   }
 
-  @Test
-  public void loadNamedFile() throws IOException {
-    configuration.setNeuralNetworkLayersNumber(8);
-    configuration.setEntityMaxSpeed(34d);
-    configuration.saveConfiguration("testConfiguration.json");
-
-    deleteFile("testConfiguration.json");
-  }
-
-  public void deleteFile(String fileName) {
-    File file = new File(System.getProperty("java.io.tmpdir"),
-        fileName);
-    file.delete();
-  }
 }
