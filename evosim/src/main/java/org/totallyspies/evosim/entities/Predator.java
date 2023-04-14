@@ -4,6 +4,8 @@ import javafx.scene.paint.Color;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
+import java.util.Date;
+
 /**
  * A Predator is a member of the evolution simulation that survives by hunting prey. To multiply,
  * a predator must eat a certain number of prey by colliding with them to accumulate split energy.
@@ -20,8 +22,8 @@ public final class Predator extends Entity {
      * @param position               the position of the predator
      * @param rotationAngleInRadians the rotation angle of the predator
      */
-    public Predator(final double speed, final Point position, final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getConfiguration().getPredatorViewAngle(),
+    public Predator(final double speed, final Point position, final double rotationAngleInRadians, final long birthTime) {
+        super(speed, position, birthTime, Configuration.getConfiguration().getPredatorViewAngle(),
                 rotationAngleInRadians, Color.RED);
     }
 
@@ -57,8 +59,7 @@ public final class Predator extends Entity {
                         : this.getSpeed(),
 
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians()
-        );
+                this.getDirectionAngleInRadians(), System.currentTimeMillis());
         // mutate the brain of the predator
         predator.setBrain(this.getBrain().mutate());
 
@@ -69,8 +70,8 @@ public final class Predator extends Entity {
     @Override
     protected void onCollideHandler(final Entity other) {
         this.setSplitEnergy(this.getSplitEnergy()
-            + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
+                + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
         this.setEnergy(Math.min(1, this.getEnergy()
-            + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
+                + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
     }
 }

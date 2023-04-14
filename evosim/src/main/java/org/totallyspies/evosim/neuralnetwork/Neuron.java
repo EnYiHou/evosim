@@ -14,7 +14,6 @@ import org.totallyspies.evosim.utils.Rng;
  *
  * @author Matthew, niakouu
  */
-@ToString
 public final class Neuron {
 
   /**
@@ -26,7 +25,7 @@ public final class Neuron {
    * The lower bound used to generate random weights.
    */
   private static final double WEIGHT_MIN = -0.99d;
-  
+
   /**
    * The upper bound for generating random biases.
    */

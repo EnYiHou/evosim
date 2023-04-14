@@ -111,7 +111,7 @@ public final class Configuration {
     /**
      * The split energy that a prey will gain when it is not moving.
      */
-    public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.05d;
+    public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005d;
 
     /**
      * The number of layers the neural network will contain.
