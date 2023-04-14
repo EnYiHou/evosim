@@ -51,14 +51,12 @@ public final class Simulation {
     /**
      * The number of grids in the x direction.
      */
-    public static final int GRID_X = (int) (Simulation.MAP_WIDTH
-            / Simulation.GRID_WIDTH);
+    public static final int GRID_X = (int) (Simulation.MAP_WIDTH / Simulation.GRID_WIDTH);
 
     /**
      * The number of grids in the y direction.
      */
-    public static final int GRID_Y = (int) (Simulation.MAP_HEIGHT
-            / Simulation.GRID_HEIGHT);
+    public static final int GRID_Y = (int) (Simulation.MAP_HEIGHT / Simulation.GRID_HEIGHT);
 
     /**
      * The singleton instance of the simulation.
@@ -68,14 +66,12 @@ public final class Simulation {
     /**
      * The animation loop of the simulation that runs every frame.
      */
-    private  final AnimationTimer animationLoop = new AnimationTimer() {
+    private final AnimationTimer animationLoop = new AnimationTimer() {
         @Override
         public void handle(final long now) {
-
             updateGrids();
 
-            ListIterator<Entity> iterator = Simulation
-                    .ENTITY_LIST.listIterator();
+            ListIterator<Entity> iterator = Simulation.ENTITY_LIST.listIterator();
             while (iterator.hasNext()) {
                 final Entity entity = iterator.next();
                 entity.update();
@@ -116,14 +112,13 @@ public final class Simulation {
     }
 
     /**
-     * Populates the entity list by constructing all initial entities based
-     * on user given initial populations.
+     * Populates the entity list by constructing all initial entities based on user given initial
+     * populations.
      *
      * @param initPrey      the initial number of prey spawned
      * @param initPredator  the initial number of predators spawned
      */
-    private void populateEntityList(final int initPrey,
-                                          final int initPredator) {
+    private void populateEntityList(final int initPrey, final int initPredator) {
         double maxSpeed = Configuration.getCONFIGURATION().getEntityMaxSpeed();
 
         // TODO add min speed to config
@@ -163,10 +158,8 @@ public final class Simulation {
         }
 
         for (final Entity entity : Simulation.ENTITY_LIST) {
-            final int x = (int) (entity.getBodyCenter().getX()
-                    / Simulation.GRID_WIDTH);
-            final int y = (int) (entity.getBodyCenter().getY()
-                    / Simulation.GRID_WIDTH);
+            final int x = (int) (entity.getBodyCenter().getX() / Simulation.GRID_WIDTH);
+            final int y = (int) (entity.getBodyCenter().getY() / Simulation.GRID_WIDTH);
             Simulation.GRIDS.get(x).get(y).add(entity);
             entity.setGridX(x);
             entity.setGridY(y);
