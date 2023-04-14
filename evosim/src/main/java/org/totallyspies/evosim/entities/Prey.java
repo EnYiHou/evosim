@@ -4,6 +4,8 @@ import javafx.scene.paint.Color;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
+import java.util.Date;
+
 /**
  * A Prey is member of the evolution simulation that survives by evading collision with predators.
  * To multiply, a prey must remain stationary to accumulate split energy. To die, a prey must
@@ -20,12 +22,13 @@ public final class Prey extends Entity {
      * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
      */
-    public Prey(final double speed, final Point position, final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getConfiguration().getPreyViewAngle(),
+    public Prey(final double speed, final Point position, final double rotationAngleInRadians, final long birthTime) {
+        super(speed, position, birthTime, Configuration.getConfiguration().getPreyViewAngle(),
                 rotationAngleInRadians, Color.GREEN
         );
 
     }
+
 
     /**
      * Determines if this prey should split or die based on its collision and energy.
@@ -57,8 +60,8 @@ public final class Prey extends Entity {
                         ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
                         : this.getSpeed(),
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians()
-        );
+                this.getDirectionAngleInRadians(),
+                System.currentTimeMillis());
 
         // mutate the brain of the prey
         prey.setBrain(this.getBrain().mutate());

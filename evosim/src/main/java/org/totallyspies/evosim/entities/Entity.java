@@ -2,6 +2,7 @@ package org.totallyspies.evosim.entities;
 
 import javafx.scene.paint.Color;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import lombok.Getter;
@@ -119,6 +120,12 @@ public abstract class Entity {
     private final Color color;
 
     /**
+     * The birth time of the entity.
+     */
+    @Getter
+    private final long birthTime;
+
+    /**
      * Clones this entity and mutates some of its properties.
      *
      * @return the cloned entity.
@@ -139,8 +146,9 @@ public abstract class Entity {
      * @param newRotationAngle The rotation angle of the entity.
      * @param color            The color of the entity
      */
-    protected Entity(final double entitySpeed, final Point entityPosition,
+    protected Entity(final double entitySpeed, final Point entityPosition, final long birthTime,
                      final double newViewAngle, final double newRotationAngle, Color color) {
+        this.birthTime = birthTime;
         this.color = color;
         // initialize entity properties
         this.energy = 1d;
@@ -290,5 +298,15 @@ public abstract class Entity {
 
     public final Point getBodyCenter() {
         return this.body.getCenter();
+    }
+
+    /**
+     * Returns the living time of this entity.
+     *
+     * @param currentTime The current time.
+     * @return The living time of this entity.
+     */
+    public final int getLivingTime(final long currentTime) {
+        return (int)((currentTime - this.birthTime) / 1000d);
     }
 }
