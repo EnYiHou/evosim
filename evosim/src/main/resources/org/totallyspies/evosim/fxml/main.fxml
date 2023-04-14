@@ -113,8 +113,9 @@
                <content>
                   <VBox alignment="TOP_CENTER" prefHeight="710.0" prefWidth="233.0" spacing="35.0">
                      <children>
-                        <VBox alignment="CENTER" prefHeight="389.0" prefWidth="234.0" spacing="10.0">
+                        <VBox alignment="CENTER" prefHeight="234.0" prefWidth="234.0" spacing="10.0">
                            <children>
+                              <Label fx:id="entityInfoLabel" prefHeight="44.0" prefWidth="178.0" text="Label" />
                               <Label fx:id="speedLabel" prefHeight="17.0" prefWidth="171.0" text="Speed : ">
                                  <font>
                                     <Font size="14.0" />

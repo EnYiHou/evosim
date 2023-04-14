@@ -1,13 +1,11 @@
 package org.totallyspies.evosim.fxml;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,8 +20,6 @@ import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
-
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -56,19 +52,19 @@ public final class MainController {
     private Button pauseBtn;
 
     /**
-     * Total population chart
+     * Total population chart.
      */
     @FXML
     private LineChart totalPopulationChart;
 
     /**
-     * Prey population chart
+     * Prey population chart.
      */
     @FXML
     private LineChart preyPopulationChart;
 
     /**
-     * Predator population chart
+     * Predator population chart.
      */
     @FXML
     private LineChart predatorPopulationChart;
@@ -110,11 +106,17 @@ public final class MainController {
     private Label livingTimeLabel;
 
     /**
-     * Entity information tab
+     * Entity information tab.
      */
     @Getter
     @FXML
     private Tab entityInfoTab;
+
+    /**
+     * Entity information label.
+     */
+    @FXML
+    private Label entityInfoLabel;
 
     /**
      * The chosen Entity.
@@ -149,7 +151,8 @@ public final class MainController {
         this.setChart(predatorPopulationChart);
         this.setTimer();
         this.chosenEntityProperty = new SimpleObjectProperty<>();
-        this.chosenEntityProperty.set(new Predator(1, new Point(0, 0), 1, System.currentTimeMillis()));
+        this.chosenEntityProperty.set(new Predator(1, new Point(0, 0),
+                1, System.currentTimeMillis()));
         this.setEntityInfoTab();
         this.mapCanvas.attach(simulation);
     }
@@ -158,25 +161,33 @@ public final class MainController {
      * Sets the play and pause buttons.
      */
     private void setEntityInfoTab() {
+
+        this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
         this.energyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Energy: %.2f", this.chosenEntityProperty.getValue().getEnergy()),
+                () -> String.format("Energy: %.2f",
+                        this.chosenEntityProperty.getValue().getEnergy()),
                 this.chosenEntityProperty));
         this.splitEnergyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Split Energy: %.2f", this.chosenEntityProperty.getValue().getSplitEnergy()),
+                () -> String.format("Split Energy: %.2f",
+                        this.chosenEntityProperty.getValue().getSplitEnergy()),
                 this.chosenEntityProperty));
         this.speedLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Speed: %.2f", this.chosenEntityProperty.getValue().getSpeed()),
+                () -> String.format("Speed: %.2f",
+                        this.chosenEntityProperty.getValue().getSpeed()),
                 this.chosenEntityProperty));
         this.childCountLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Child Count: %d", this.chosenEntityProperty.getValue().getChildCount()),
+                () -> String.format("Child Count: %d",
+                        this.chosenEntityProperty.getValue().getChildCount()),
                 this.chosenEntityProperty));
 
     }
 
     /**
      * Sets the charts of the simulation.
+     *
+     * @param chart the chart to be set
      */
-    private void setChart(LineChart chart) {
+    private void setChart(final LineChart chart) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         chart.getData().add(series);
         chart.getXAxis().setTickMarkVisible(false);
@@ -197,18 +208,36 @@ public final class MainController {
                         () -> String.format("%02d:%02d:%02d",
                                 timerProperty.getValue().toHoursPart(),
                                 timerProperty.getValue().toMinutesPart(),
-                                timerProperty.getValue().toSecondsPart())
-                        , this.timerProperty));
+                                timerProperty.getValue().toSecondsPart()),
+                        this.timerProperty));
         this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(Duration.millis(100), e -> {
             this.timerProperty.set(this.timerProperty.get().plusMillis(100));
-            XYChart.Series<String, Number> totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart.getData().get(0);
-            totalPopulationChartSeries.getData().add(new XYChart.Data<>(counter.toString(), this.simulation.getPreyCount() + this.simulation.getPredatorCount()));
-            XYChart.Series<String, Number> preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart.getData().get(0);
-            preyPopulationChartSeries.getData().add(new XYChart.Data<>(counter.toString(), this.simulation.getPreyCount()));
-            XYChart.Series<String, Number> predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart.getData().get(0);
-            predatorPopulationChartSeries.getData().add(new XYChart.Data<>(counter.toString(), this.simulation.getPredatorCount()));
 
-            livingTimeLabel.setText(String.format("Living Time: %d s", this.chosenEntityProperty.getValue().getLivingTime(System.currentTimeMillis())));
+            XYChart.Series<String, Number> totalPopulationChartSeries;
+            totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
+                    .getData().get(0);
+            totalPopulationChartSeries.getData().add(
+                    new XYChart.Data<>(counter.toString(),
+                            this.simulation.getPreyCount() + this.simulation.getPredatorCount()));
+
+            XYChart.Series<String, Number> preyPopulationChartSeries;
+            preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
+                    .getData().get(0);
+            preyPopulationChartSeries.getData().add(
+                    new XYChart.Data<>(
+                            counter.toString(), this.simulation.getPreyCount()));
+
+            XYChart.Series<String, Number> predatorPopulationChartSeries;
+            predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
+                    .getData().get(0);
+            predatorPopulationChartSeries.getData().add(
+                    new XYChart.Data<>(counter.toString(),
+                            this.simulation.getPredatorCount()));
+
+            livingTimeLabel.setText(
+                    String.format("Living Time: %d s",
+                            this.chosenEntityProperty.getValue()
+                                    .getLivingTime(System.currentTimeMillis())));
             checkChartSize(totalPopulationChartSeries);
             checkChartSize(preyPopulationChartSeries);
             checkChartSize(predatorPopulationChartSeries);
@@ -219,7 +248,7 @@ public final class MainController {
         this.timerTimeLine.play();
     }
 
-    private void checkChartSize(XYChart.Series<String, Number> series) {
+    private void checkChartSize(final XYChart.Series<String, Number> series) {
         if (series.getData().size() > MAX_CHART_POINTS) {
             series.getData().remove(0);
         }

@@ -4,7 +4,6 @@ import javafx.scene.paint.Color;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
-import java.util.Date;
 
 /**
  * A Prey is member of the evolution simulation that survives by evading collision with predators.
@@ -21,8 +20,12 @@ public final class Prey extends Entity {
      * @param speed                  the speed of the prey
      * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
+     * @param birthTime              the time the prey was born
      */
-    public Prey(final double speed, final Point position, final double rotationAngleInRadians, final long birthTime) {
+    public Prey(final double speed,
+                final Point position,
+                final double rotationAngleInRadians,
+                final long birthTime) {
         super(speed, position, birthTime, Configuration.getConfiguration().getPreyViewAngle(),
                 rotationAngleInRadians, Color.GREEN
         );
@@ -73,5 +76,10 @@ public final class Prey extends Entity {
     @Override
     protected void onCollideHandler(final Entity other) {
         this.setDead(true);
+    }
+
+    @Override
+    public String toString() {
+        return "Prey";
     }
 }

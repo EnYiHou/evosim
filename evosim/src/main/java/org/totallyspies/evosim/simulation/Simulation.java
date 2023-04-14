@@ -1,6 +1,5 @@
 package org.totallyspies.evosim.simulation;
 
-import java.util.Date;
 import java.util.LinkedList;
 
 import javafx.animation.AnimationTimer;
@@ -13,7 +12,6 @@ import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +33,10 @@ public final class Simulation {
      * The x and y size of a single grid.
      */
     public static final int GRID_SIZE = 500;
+
+    /**
+     * The list of all simulations.
+     */
     private static List<Simulation> simulations = new LinkedList<>();
     /**
      * Grids of entities.
@@ -87,6 +89,9 @@ public final class Simulation {
         simulations.add(this);
     }
 
+    /**
+     * Stops all workers of all simulations.
+     */
     public static void stopAll() {
         simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
