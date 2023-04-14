@@ -15,7 +15,7 @@ public final class Camera {
      * The default position of the camera.
      */
     public static final Point DEFAULT_POINT =
-            new Point(Map.MAP_SIZE / 2.0, Map.MAP_SIZE / 2.0);
+            new Point(0, 0);
 
     /**
      * The maximum zoom level of the camera.
@@ -64,29 +64,41 @@ public final class Camera {
     private AtomicDouble zoom;
 
     /**
+     * Top left limit of pan.
+     */
+    final Point topLeft;
+
+    /**
+     * Bottom right limit of pan.
+     */
+    final Point bottomRight;
+
+    /**
      * Creates a new camera with the given position and zoom level.
      *
      * @param newPoint the position of the camera
      * @param newZoom  the zoom level of the camera
      */
-    public Camera(final Point newPoint, final double newZoom) {
+    public Camera(final Point newPoint, final double newZoom, final Point newTopLeft, final Point newBottomRight) {
         this.point = newPoint;
         this.zoom = new AtomicDouble(newZoom);
+        this.topLeft = newTopLeft;
+        this.bottomRight = newBottomRight;
     }
 
     /**
      * Creates a new camera with a default point and a default zoom level of 1.
      */
-    public Camera() {
-        this(DEFAULT_POINT, DEFAULT_ZOOM);
+    public Camera(final Point topLeft, final Point bottomRight) {
+        this(DEFAULT_POINT, DEFAULT_ZOOM, topLeft, bottomRight);
     }
 
     /**
      * Sets the camera back to the position.
      */
     public void center() {
-        this.point.setX(Map.MAP_SIZE / 2.0);
-        this.point.setY(Map.MAP_SIZE / 2.0);
+        this.point.setX((this.bottomRight.getX() - this.topLeft.getX()) / 2.0);
+        this.point.setY((this.bottomRight.getY() - this.topLeft.getY()) / 2.0);
     }
 
     /**
@@ -96,7 +108,7 @@ public final class Camera {
      *          (positive values move the camera to the right)
      */
     public void translateX(final double x) {
-        if (this.point.getX() + x >= 0 && this.point.getX() + x <= Map.MAP_SIZE) {
+        if (this.point.getX() + x >= this.topLeft.getX() && this.point.getX() + x <= this.bottomRight.getX()) {
             this.point.setX(this.point.getX() + x);
         }
     }
@@ -108,7 +120,7 @@ public final class Camera {
      *          (positive values move the camera down)
      */
     public void translateY(final double y) {
-        if (this.point.getY() + y <= Map.MAP_SIZE && this.point.getY() + y >= 0) {
+        if (this.point.getY() + y <= this.bottomRight.getY() && this.point.getY() + y >= this.topLeft.getY()) {
             this.point.setY(this.point.getY() + y);
         }
     }
@@ -121,9 +133,23 @@ public final class Camera {
      */
     public void zoom(final double increment) {
         if (this.zoom.get() + increment >= Camera.MIN_ZOOM
-                && this.zoom.get() + increment <= Camera.MAX_ZOOM) {
+            && this.zoom.get() + increment <= Camera.MAX_ZOOM) {
             this.zoom.getAndAdd(increment);
         }
+    }
+
+    /**
+     * Zoom the camera by the default amount.
+     */
+    public void zoom() {
+        this.zoom(CAMERA_ZOOM_INCREMENT);
+    }
+
+    /**
+     * Unzoom the camera by the default amount.
+     */
+    public void unzoom() {
+        this.zoom(-CAMERA_ZOOM_INCREMENT);
     }
 
     /**
