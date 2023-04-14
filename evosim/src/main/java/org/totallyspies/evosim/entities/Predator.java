@@ -4,7 +4,6 @@ import javafx.scene.paint.Color;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
-import java.util.Date;
 
 /**
  * A Predator is a member of the evolution simulation that survives by hunting prey. To multiply,
@@ -21,8 +20,12 @@ public final class Predator extends Entity {
      * @param speed                  the speed of the predator
      * @param position               the position of the predator
      * @param rotationAngleInRadians the rotation angle of the predator
+     * @param birthTime              the time the predator was born
      */
-    public Predator(final double speed, final Point position, final double rotationAngleInRadians, final long birthTime) {
+    public Predator(final double speed,
+                    final Point position,
+                    final double rotationAngleInRadians,
+                    final long birthTime) {
         super(speed, position, birthTime, Configuration.getConfiguration().getPredatorViewAngle(),
                 rotationAngleInRadians, Color.RED);
     }
@@ -73,5 +76,10 @@ public final class Predator extends Entity {
                 + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
         this.setEnergy(Math.min(1, this.getEnergy()
                 + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
+    }
+
+    @Override
+    public String toString() {
+        return "Predator";
     }
 }
