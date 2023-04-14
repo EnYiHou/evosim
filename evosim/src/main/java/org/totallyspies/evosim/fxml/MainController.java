@@ -1,15 +1,16 @@
 package org.totallyspies.evosim.fxml;
 
 import javafx.fxml.FXML;
+import org.totallyspies.evosim.simulation.Simulation;
+import lombok.NoArgsConstructor;
+import org.totallyspies.evosim.ui.AboutWindow;
+import org.totallyspies.evosim.ui.EvosimApplication;
+import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
-import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.ui.AboutWindow;
-import org.totallyspies.evosim.ui.EvosimApplication;
-import org.totallyspies.evosim.ui.Map;
 
 import java.util.Optional;
 
@@ -18,7 +19,19 @@ import java.util.Optional;
  *
  * @author mattlep11
  */
+@NoArgsConstructor
 public final class MainController {
+
+    /**
+     * FXML reference to the map where simulation is rendered.
+     */
+    @FXML
+    private MapCanvas mapCanvas;
+
+    /**
+     * The simulation to be rendered.
+     */
+    private Simulation simulation;
 
     /**
      * The StackPane within the center of the root BorderPane.
@@ -30,26 +43,26 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() {
+        this.simulation = new Simulation();
+
+        this.mapCanvas.attach(simulation);
+
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
-        centerStack.getChildren().add(Map.getInstance());
 
         scene.setOnKeyPressed(event -> {
             KeyCode code = event.getCode();
             if (code == KeyCode.ESCAPE) {
                 escapeClicked();
             }
-            if (!Simulation.getPressedKeys().contains(code)) {
-                Simulation.getPressedKeys().push(code);
+            if (!this.mapCanvas.getPressedKeys().contains(code)) {
+                this.mapCanvas.getPressedKeys().push(code);
             }
         });
 
         scene.setOnKeyReleased(event ->
-                Simulation.getPressedKeys().remove(event.getCode()));
+                this.mapCanvas.getPressedKeys().remove(event.getCode()));
 
         // TODO add on click event to track and follow entities.
-
-        Simulation sim = new Simulation();
-        sim.getAnimationLoop().start();
     }
 
     /**

@@ -1,20 +1,26 @@
 package org.totallyspies.evosim.utils;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-
+import java.io.IOException;
 
 /**
  * Configuration class consists of saving the settings the user configurations. If the user close
  * the application without saving the configurations, the applications will remember them and
  * will load them if needed.
  *
- * @author edeli
+ * @author niakouu
  */
+@Getter
+@Setter
+@ToString
 public final class Configuration {
 
   /**
@@ -40,7 +46,7 @@ public final class Configuration {
     /**
      * The base energy lost rate of a predator.
      */
-    public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.1d;
+    public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01d;
 
     /**
      * The number of sensors each entity has.
@@ -125,7 +131,8 @@ public final class Configuration {
     /**
      * The default name of a configuration file.
      */
-    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "defaultConfigurations.json";
+    public static final String DEFAULT_CONFIGURATION_FILE_NAME =
+            "defaultConfigurations.json";
   }
 
   /**
@@ -295,56 +302,20 @@ public final class Configuration {
     this.neuralNetworkLayersNumber = jsonObject.getInt("neuralNetworkLayersNumber");
   }
 
-  @Override
-  public String toString() {
-    return "Configuration{"
-            + "preyEnergyFillingSpeed=" + preyEnergyFillingSpeed
-            + ", predatorEnergyFillingSpeed=" + predatorEnergyFillingSpeed
-            + ", predatorEnergyBaseDrainingSpeed="
-            + predatorEnergyBaseDrainingSpeed
-            + ", entityMaxRotationSpeed=" + entityMaxRotationSpeed
-            + ", entitySensorsCount=" + entitySensorsCount
-            + ", entityRadius=" + entityRadius
-            + ", entitySensorsLength=" + entitySensorsLength
-            + ", entityMaxSpeed=" + entityMaxSpeed
-            + ", entityMinSpeed=" + entityMinSpeed
-            + ", entitySpeedMutationRate=" + entitySpeedMutationRate
-            + ", entityEnergyDrainRate=" + entityEnergyDrainRate
-            + ", predatorMaxNumber=" + predatorMaxNumber
-            + ", predatorInitialPopulation=" + predatorInitialPopulation
-            + ", predatorViewAngle=" + predatorViewAngle
-            + ", predatorSplitEnergyFillingSpeed="
-            + predatorSplitEnergyFillingSpeed
-            + ", preyMaxNumber=" + preyMaxNumber
-            + ", preyInitialPopulation=" + preyInitialPopulation
-            + ", preyViewAngle=" + preyViewAngle
-            + ", preySplitEnergyFillingSpeed=" + preySplitEnergyFillingSpeed
-            + ", neuralNetworkLayersNumber=" + neuralNetworkLayersNumber
-            + '}';
-  }
-
   /**
    * Saves the default files that the user didn't have time to save.
    *
-   * @return "Saved!" if the last configuration has saved.
    */
-  public String saveLastConfiguration() {
-    try {
-      saveFileConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
-    } catch (Exception e) {
-      e.getMessage();
-    }
-    return "Saved!";
+  public void saveConfiguration() throws IOException {
+    saveConfiguration(Defaults.DEFAULT_CONFIGURATION_FILE_NAME);
   }
 
   /**
    * Saves a Configuration file in the temporary files of the user's computer.
    *
    * @param fileName a new file name for the save file
-   * @return "Saved!" if the file was saved without any issues
    */
-  public String saveFileConfiguration(final String fileName) {
-    try {
+  public void saveConfiguration(final String fileName) throws IOException {
       JSONObject jsonText = getJSONObject();
 
       File jsonFile = new File(System.getProperty("java.io.tmpdir"), fileName);
@@ -355,11 +326,6 @@ public final class Configuration {
       try (FileWriter writer = new FileWriter(jsonFile)) {
         jsonText.write(writer);
       }
-
-    } catch (Exception e) {
-      return e.getMessage();
-    }
-    return "Saved!";
   }
 
   /**
@@ -383,7 +349,7 @@ public final class Configuration {
    *
    * @return Configuration saved from a Json File
    */
-  public static Configuration getCONFIGURATION() {
+  public static Configuration getConfiguration() {
     return Configuration.CONFIGURATION;
   }
 
@@ -452,167 +418,5 @@ public final class Configuration {
     jsonObject.put("preyViewAngle", this.preyViewAngle);
     jsonObject.put("neuralNetworkLayersNumber", this.neuralNetworkLayersNumber);
     return jsonObject;
-  }
-
-  // Setters
-  public void setEntityMaxRotationSpeed(final double newEntityMaxRotationSpeed) {
-    this.entityMaxRotationSpeed = newEntityMaxRotationSpeed;
-  }
-
-  public void setPreyEnergyFillingSpeed(final double newPreyEnergyFillingSpeed) {
-    this.preyEnergyFillingSpeed = newPreyEnergyFillingSpeed;
-  }
-
-  public void setPredatorEnergyFillingSpeed(final double newPredatorEnergyFillingSpeed) {
-    this.predatorEnergyFillingSpeed = newPredatorEnergyFillingSpeed;
-  }
-
-  public void setPredatorEnergyBaseDrainingSpeed(final double newPredatorEnergyBaseDrainingSpeed) {
-    this.predatorEnergyBaseDrainingSpeed = newPredatorEnergyBaseDrainingSpeed;
-  }
-
-  public void setEntitySensorsCount(final int newEntitySensorsCount) {
-    this.entitySensorsCount = newEntitySensorsCount;
-  }
-
-  public void setEntityRadius(final double newEntityRadius) {
-    this.entityRadius = newEntityRadius;
-  }
-
-  public void setEntitySensorsLength(final double newEntitySensorsLength) {
-    this.entitySensorsLength = newEntitySensorsLength;
-  }
-
-  public void setEntityMaxSpeed(final double newEntityMaxSpeed) {
-    this.entityMaxSpeed = newEntityMaxSpeed;
-  }
-
-  public void setEntityMinSpeed(final double newEntityMinSpeed) {
-    this.entityMinSpeed = newEntityMinSpeed;
-  }
-
-  public void setEntitySpeedMutationRate(final double newEntitySpeedMutationRate) {
-    this.entitySpeedMutationRate = newEntitySpeedMutationRate;
-  }
-
-  public void setEntityEnergyDrainRate(final double newEntityEnergyDrainRate) {
-    this.entityEnergyDrainRate = newEntityEnergyDrainRate;
-  }
-
-  public void setPredatorMaxNumber(final double newPredatorMaxNumber) {
-    this.predatorMaxNumber = newPredatorMaxNumber;
-  }
-
-  public void setPredatorInitialPopulation(final int newPredatorInitialPopulation) {
-    this.predatorInitialPopulation = predatorInitialPopulation;
-  }
-
-  public void setPredatorViewAngle(final double newPredatorViewAngle) {
-    this.predatorViewAngle = newPredatorViewAngle;
-  }
-
-  public void setPredatorSplitEnergyFillingSpeed(final double newPredatorSplitEnergyFillingSpeed) {
-    this.predatorSplitEnergyFillingSpeed = newPredatorSplitEnergyFillingSpeed;
-  }
-
-  public void setPreyMaxNumber(final double newPreyMaxNumber) {
-    this.preyMaxNumber = newPreyMaxNumber;
-  }
-
-  public void setPreyInitialPopulation(final int newPreyInitialPopulation) {
-    this.preyInitialPopulation = preyInitialPopulation;
-  }
-
-  public void setPreyViewAngle(final double newPreyViewAngle) {
-    this.preyViewAngle = newPreyViewAngle;
-  }
-
-  public void setPreySplitEnergyFillingSpeed(final double newPreySplitEnergyFillingSpeed) {
-    this.preySplitEnergyFillingSpeed = newPreySplitEnergyFillingSpeed;
-  }
-
-  public void setNeuralNetworkLayersNumber(final int newNeuralNetworkLayersNumber) {
-    this.neuralNetworkLayersNumber = newNeuralNetworkLayersNumber;
-  }
-
-  // Getters
-  public double getEntityMaxRotationSpeed() {
-    return this.entityMaxRotationSpeed;
-  }
-
-  public double getPreyEnergyFillingSpeed() {
-    return this.preyEnergyFillingSpeed;
-  }
-
-  public double getPredatorEnergyFillingSpeed() {
-    return this.predatorEnergyFillingSpeed;
-  }
-
-  public double getPredatorEnergyBaseDrainingSpeed() {
-    return this.predatorEnergyBaseDrainingSpeed;
-  }
-
-  public int getEntitySensorsCount() {
-    return this.entitySensorsCount;
-  }
-
-  public double getEntityRadius() {
-    return this.entityRadius;
-  }
-
-  public double getEntitySensorsLength() {
-    return this.entitySensorsLength;
-  }
-
-  public double getEntityMaxSpeed() {
-    return this.entityMaxSpeed;
-  }
-
-  public double getEntityMinSpeed() {
-    return this.entityMinSpeed;
-  }
-
-  public double getEntitySpeedMutationRate() {
-    return this.entitySpeedMutationRate;
-  }
-
-  public double getEntityEnergyDrainRate() {
-    return this.entityEnergyDrainRate;
-  }
-
-  public double getPredatorMaxNumber() {
-    return this.predatorMaxNumber;
-  }
-
-  public int getPredatorInitialPopulation() {
-    return predatorInitialPopulation;
-  }
-
-  public double getPredatorViewAngle() {
-    return this.predatorViewAngle;
-  }
-
-  public double getPredatorSplitEnergyFillingSpeed() {
-    return this.predatorSplitEnergyFillingSpeed;
-  }
-
-  public double getPreyMaxNumber() {
-    return this.preyMaxNumber;
-  }
-
-  public int getPreyInitialPopulation() {
-    return preyInitialPopulation;
-  }
-
-  public double getPreyViewAngle() {
-    return this.preyViewAngle;
-  }
-
-  public double getPreySplitEnergyFillingSpeed() {
-    return this.preySplitEnergyFillingSpeed;
-  }
-
-  public int getNeuralNetworkLayersNumber() {
-    return this.neuralNetworkLayersNumber;
   }
 }

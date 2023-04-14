@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import org.totallyspies.evosim.ui.MapCanvas?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -65,6 +66,8 @@
       </VBox>
    </left>
    <center>
-      <StackPane fx:id="centerStack" prefHeight="150.0" prefWidth="997.0" BorderPane.alignment="CENTER" />
+     <StackPane fx:id="centerStack" prefHeight="150.0" prefWidth="997.0" BorderPane.alignment="CENTER">
+         <MapCanvas fx:id="mapCanvas"/>
+     </StackPane>
    </center>
 </BorderPane>

@@ -5,12 +5,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import lombok.Getter;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.io.IOException;
 import java.util.Objects;
 
 public final class EvosimApplication extends Application {
+
     /**
      * Sole scene used by the stage.
      */
@@ -19,11 +22,13 @@ public final class EvosimApplication extends Application {
     /**
      * Sole stage of the application.
      */
+    @Getter
     private Stage stage;
 
     /**
      * Instance of the application to be kept.
      */
+    @Getter
     private static EvosimApplication application;
 
     @Override
@@ -73,11 +78,10 @@ public final class EvosimApplication extends Application {
         launch();
     }
 
-    public static EvosimApplication getApplication() {
-        return application;
-    }
+    @Override
+    public void stop() throws Exception {
+        super.stop();
 
-    public Stage getStage() {
-        return stage;
+        Simulation.stopAll();
     }
 }

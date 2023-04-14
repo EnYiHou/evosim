@@ -21,9 +21,8 @@ public final class Predator extends Entity {
      * @param rotationAngleInRadians the rotation angle of the predator
      */
     public Predator(final double speed, final Point position, final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getCONFIGURATION().getPredatorViewAngle(),
-                rotationAngleInRadians);
-        this.setColor(Color.RED);
+        super(speed, position, Configuration.getConfiguration().getPredatorViewAngle(),
+                rotationAngleInRadians, Color.RED);
     }
 
     /**
@@ -35,19 +34,11 @@ public final class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
-        this.setEnergy(this.getEnergy() - Configuration.getCONFIGURATION()
+        this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
                 .getPredatorEnergyBaseDrainingSpeed());
 
-        // collision with prey
-        if (checkCollisions()) {
-            this.setSplitEnergy(this.getSplitEnergy()
-                    + Configuration.getCONFIGURATION().getPredatorSplitEnergyFillingSpeed());
-            this.setEnergy(Math.min(1, this.getEnergy()
-                    + Configuration.getCONFIGURATION().getPredatorEnergyFillingSpeed()));
-        }
-
         if (this.getEnergy() <= 0) {
-            this.setDeath(true);
+            this.setDead(true);
         }
     }
 
@@ -61,8 +52,8 @@ public final class Predator extends Entity {
         // Mutate the speed of the predator
         Predator predator = new Predator(
                 (Math.random()
-                        < Configuration.getCONFIGURATION().getEntitySpeedMutationRate())
-                        ? Math.random() * Configuration.getCONFIGURATION().getEntityMaxSpeed()
+                        < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                        ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
                         : this.getSpeed(),
 
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
@@ -73,5 +64,13 @@ public final class Predator extends Entity {
 
         this.setChildCount(this.getChildCount() + 1);
         return predator;
+    }
+
+    @Override
+    protected void onCollideHandler(final Entity other) {
+        this.setSplitEnergy(this.getSplitEnergy()
+            + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
+        this.setEnergy(Math.min(1, this.getEnergy()
+            + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
     }
 }
