@@ -12,9 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Configuration class consists of saving the settings the user configurations.
- * If the user close the application without saving the configurations, the
- * applications will remember them and will load them if needed.
+ * Configuration class consists of saving the settings the user configurations. If the user close
+ * the application without saving the configurations, the applications will remember them and
+ * will load them if needed.
  *
  * @author niakouu
  */

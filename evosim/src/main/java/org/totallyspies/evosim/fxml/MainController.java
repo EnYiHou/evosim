@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
- * Controller for the {@code welcome.fxml} file. Dynamically adds all input
- * fields.
+ * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
  */
 public final class MainController {
 
@@ -57,15 +56,12 @@ public final class MainController {
     }
 
     /**
-     * Opens the AboutWindow when the "About" option is clicked under Help.
+     * Opens a modal AboutWindow when the "About" option is clicked under Help.
      */
     @FXML
     private void aboutMenuClicked() {
-        AboutWindow aw = new AboutWindow(
-                EvosimApplication.getApplication().getStage());
-        aw.getAbtStage().showAndWait();
-
-        aw.getAbtStage().close();
+        AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
+        aw.getAbtStage().show();
     }
 
     @FXML
