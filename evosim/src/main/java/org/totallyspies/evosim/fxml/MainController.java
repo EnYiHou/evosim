@@ -24,8 +24,6 @@ public final class MainController {
     @FXML
     private void aboutMenuClicked() {
         AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
-        aw.getAbtStage().showAndWait();
-
-        aw.getAbtStage().close();
+        aw.getAbtStage().show();
     }
 }

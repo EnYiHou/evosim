@@ -153,7 +153,7 @@ public abstract class Entity {
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
-        this.body = new Circle(entityPosition, Configuration.getCONFIGURATION().getEntityRadius());
+        this.body = new Circle(Configuration.getCONFIGURATION().getEntityRadius(), entityPosition);
 
         int sensorCount = Configuration.getCONFIGURATION().getEntitySensorsCount();
         // initialize neural network
@@ -295,7 +295,7 @@ public abstract class Entity {
                                 < this.sensors.length; sensorIndex++) {
                             Line sensor = this.sensors[sensorIndex];
                             Double distanceToEntity =
-                                    Formulas.closestIntersection(sensor, entity.getBody());
+                                    Formulas.closestIntersection(sensor, entity.body);
                             this.sensorsData[sensorIndex] =
                                     Math.min(this.sensorsData[sensorIndex], distanceToEntity);
                         }
