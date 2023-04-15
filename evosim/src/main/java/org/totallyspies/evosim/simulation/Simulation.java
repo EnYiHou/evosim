@@ -1,14 +1,17 @@
 package org.totallyspies.evosim.simulation;
 
 import java.util.LinkedList;
+
 import javafx.animation.AnimationTimer;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.ui.MapCanvas;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,184 +21,203 @@ import java.util.List;
  * @author mattlep11, EnYi
  */
 public final class Simulation {
-  private static List<Simulation> simulations = new LinkedList<>();
+    private static List<Simulation> simulations = new LinkedList<>();
 
-  public static void stopAll() {
-    simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
-  }
-
-  /**
-   * The width of the whole map.
-   */
-  public static final int MAP_SIZE_X = 10;
-
-  /**
-   * The height of the whole map.
-   */
-  public static final int MAP_SIZE_Y = 10;
-
-  /**
-   * The x and y size of a single grid.
-   */
-  public static final int GRID_SIZE = 500;
-
-  /**
-   * Grids of entities.
-   */
-  private final ChunkedListWorkerManager<Entity> entityGrids;
-
-  /**
-   * The animation loop of the simulation that runs every frame.
-   */
-  private final AnimationTimer animationLoop;
-
-  /**
-   * Constructs a new simulation based on the default configuration.
-   */
-  public Simulation() {
-    this.entityGrids = new ChunkedListWorkerManager<>(
-        MAP_SIZE_X * MAP_SIZE_Y,
-        100,
-        this::checkGridCollisions
-    );
-
-    // TODO add initial population (add config for initial population)
-    this.populateEntityList(100, 100);
-
-    this.animationLoop = new AnimationTimer() {
-      @Override
-      public void handle(final long now) {
-        update(now);
-      }
-    };
-
-    this.animationLoop.start();
-    this.entityGrids.startWorkers();
-
-    simulations.add(this);
-  }
-
-  /**
-   * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
-   * @param point Point to be converted.
-   * @return Index of chunk for this point.
-   */
-  public static int pointToChunk(final Point point) {
-    return coordsToChunk((int) point.getX() / GRID_SIZE, (int) point.getY() / GRID_SIZE);
-  }
-
-  /**
-   * Converts a coordinate to a chunk index for {@link #entityGrids}.
-   * @param x X axis index.
-   * @param y Y axis index.
-   * @return Index of chunk for this point.
-   */
-  public static int coordsToChunk(final int x, final int y) {
-    return x + y * MAP_SIZE_X;
-  }
-
-  /**
-   * Populates the entity list by constructing all initial entities based on user given initial
-   * populations.
-   *
-   * @param initPrey     the initial number of prey spawned
-   * @param initPredator the initial number of predators spawned
-   */
-  private void populateEntityList(final int initPrey, final int initPredator) {
-    final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
-    final List<Entity> entities = new ArrayList<>(initPrey + initPredator);
-
-    // TODO add min speed to config
-    for (int i = 0; i < initPrey; i++) {
-      entities.add(new Prey(
-          Rng.RNG.nextDouble(1, maxSpeed),
-          new Point(
-              Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-              Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-          ),
-          Rng.RNG.nextDouble(0, 2 * Math.PI)
-      ));
+    public static void stopAll() {
+        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
 
-    for (int i = 0; i < initPredator; i++) {
-      entities.add(new Predator(
-          Rng.RNG.nextDouble(1, maxSpeed),
-          new Point(
-              Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-              Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-          ),
-          Rng.RNG.nextDouble(0, 2 * Math.PI)
-      ));
-    }
+    /**
+     * The width of the whole map.
+     */
+    public static final int MAP_SIZE_X = 10;
 
-    entities.forEach(
-        entity -> this.entityGrids.add(entity, pointToChunk(entity.getBodyCenter()))
-    );
-  }
+    /**
+     * The height of the whole map.
+     */
+    public static final int MAP_SIZE_Y = 10;
 
-  private void checkGridCollisions(final int i, final List<Entity> entities) {
-    List<Entity> chunk;
-    synchronized (entities) {
-      for (Entity cur : entities) {
-        for (int x = i - 1; x < i + 1; ++x) {
-          if (x < 0 || MAP_SIZE_X <= x) {
-            continue;
-          }
+    /**
+     * The x and y size of a single grid.
+     */
+    public static final int GRID_SIZE = 500;
 
-          for (int y = i - 1; y < i + 1; ++y) {
-            if (y < 0 || MAP_SIZE_Y <= y) {
-              continue;
+    /**
+     * Grids of entities.
+     */
+    private final ChunkedListWorkerManager<Entity> entityGrids;
+
+    /**
+     * The animation loop of the simulation that runs every frame.
+     */
+    private final AnimationTimer animationLoop;
+
+    /**
+     * Constructs a new simulation based on the default configuration.
+     */
+    public Simulation() {
+        this.entityGrids = new ChunkedListWorkerManager<>(
+                MAP_SIZE_X * MAP_SIZE_Y,
+                100,
+                this::checkGridCollisions
+        );
+
+
+//    this.populateEntityList(
+//            Configuration.getConfiguration().getPreyInitialPopulation(),
+//            Configuration.getConfiguration().getPredatorInitialPopulation()
+//    );
+
+        this.populateEntityList(0, 500);
+
+        this.animationLoop = new AnimationTimer() {
+            @Override
+            public void handle(final long now) {
+                update(now);
             }
+        };
 
-            chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
-            synchronized (chunk) {
-              for (Entity toCompare : chunk) {
-                if (cur.collidesWith(toCompare)) {
-                  cur.onCollide(toCompare);
-                  toCompare.onCollide(cur);
+        this.animationLoop.start();
+        this.entityGrids.startWorkers();
+
+        simulations.add(this);
+    }
+
+    /**
+     * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
+     *
+     * @param point Point to be converted.
+     * @return Index of chunk for this point.
+     */
+    public static int pointToChunk(final Point point) {
+        return coordsToChunk((int) point.getX() / GRID_SIZE, (int) point.getY() / GRID_SIZE);
+    }
+
+    /**
+     * Converts a coordinate to a chunk index for {@link #entityGrids}.
+     *
+     * @param x X axis index.
+     * @param y Y axis index.
+     * @return Index of chunk for this point.
+     */
+    public static int coordsToChunk(final int x, final int y) {
+        return x + y * MAP_SIZE_X;
+    }
+
+    /**
+     * Converts a {@code Point} into coordinates of a chunk index for {@link #entityGrids}.
+     *
+     * @param   point point to be converted
+     * @return  the coordinates of the chunk
+     */
+    public static Point coordsToChunkCoords(final Point point) {
+        int index = pointToChunk(point);
+        return new Point((int) index / 10, index % 10);
+    }
+
+    /**
+     * Populates the entity list by constructing all initial entities based on user given initial
+     * populations.
+     *
+     * @param initPrey     the initial number of prey spawned
+     * @param initPredator the initial number of predators spawned
+     */
+    private void populateEntityList(final int initPrey, final int initPredator) {
+        final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
+        final double minSpeed = Configuration.getConfiguration().getEntityMinSpeed();
+        final List<Entity> entities = new ArrayList<>(initPrey + initPredator);
+
+        for (int i = 0; i < initPrey; i++) {
+            entities.add(new Prey(
+                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
+                    new Point(
+                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
+                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
+                    ),
+                    Rng.RNG.nextDouble(0, 2 * Math.PI)
+            ));
+        }
+
+        for (int i = 0; i < initPredator; i++) {
+            entities.add(new Predator(
+                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
+                    new Point(
+                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
+                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
+                    ),
+                    Rng.RNG.nextDouble(0, 2 * Math.PI)
+            ));
+        }
+
+        entities.forEach(
+                entity -> this.entityGrids.add(entity, pointToChunk(entity.getBodyCenter()))
+        );
+    }
+
+    private void checkGridCollisions(final int i, final List<Entity> entities) {
+        List<Entity> chunk;
+        synchronized (entities) {
+            for (Entity cur : entities) {
+                for (int x = i - 1; x < i + 1; ++x) {
+                    if (x < 0 || MAP_SIZE_X <= x) {
+                        continue;
+                    }
+
+                    for (int y = i - 1; y < i + 1; ++y) {
+                        if (y < 0 || MAP_SIZE_Y <= y) {
+                            continue;
+                        }
+
+                        chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
+                        synchronized (chunk) {
+                            for (Entity toCompare : chunk) {
+                                if (cur.collidesWith(toCompare)) {
+                                    cur.onCollide(toCompare);
+                                    toCompare.onCollide(cur);
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         }
-      }
     }
-  }
 
-  private void update(final long now) {
-    for (int i = 0; i < this.entityGrids.getChunkCount(); ++i) {
-      List<Entity> chunk = this.entityGrids.getChunk(i);
-      synchronized (chunk) {
-        for (int j = chunk.size() - 1; j >= 0; --j) {
-          final Entity entity = chunk.get(j);
-          entity.update();
-          if (entity.isDead()) {
-            chunk.remove(j);
-          } else if (entity.isSplit()) {
-            chunk.add(entity.clone());
-            entity.setSplitEnergy(0);
-            entity.setChildCount(entity.getChildCount() + 1);
-            entity.setSplit(false);
-          }
+    private void update(final long now) {
+        for (int i = 0; i < this.entityGrids.getChunkCount(); ++i) {
+            List<Entity> chunk = this.entityGrids.getChunk(i);
+            synchronized (chunk) {
+                for (int j = chunk.size() - 1; j >= 0; --j) {
+                    final Entity entity = chunk.get(j);
+                    entity.update();
+                    if (entity.isDead()) {
+                        chunk.remove(j);
+                    } else if (entity.isSplit()) {
+                        chunk.add(entity.clone());
+                        entity.setSplitEnergy(0);
+                        entity.setChildCount(entity.getChildCount() + 1);
+                        entity.setSplit(false);
+                    }
+                }
+            }
         }
-      }
-    }
-  }
-
-  /**
-   * Gets a copy of all entiries within a grid at this instant.
-   * @param x X position of grid
-   * @param y Y position of grid
-   * @return Frozen list of entities within the grid.
-   */
-  public List<Entity> getGridEntities(final int x, final int y) {
-    List<Entity> entities;
-    List<Entity> chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
-
-    synchronized (chunk) {
-      entities = chunk.stream().toList();
     }
 
-    return entities;
-  }
+    /**
+     * Gets a copy of all entiries within a grid at this instant.
+     *
+     * @param x X position of grid
+     * @param y Y position of grid
+     * @return Frozen list of entities within the grid.
+     */
+    public List<Entity> getGridEntities(final int x, final int y) {
+        List<Entity> entities;
+        List<Entity> chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
+
+        synchronized (chunk) {
+            entities = chunk.stream().toList();
+        }
+
+        return entities;
+    }
 }

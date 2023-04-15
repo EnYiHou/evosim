@@ -26,7 +26,7 @@ public final class Neuron {
    * The lower bound used to generate random weights.
    */
   private static final double WEIGHT_MIN = -0.99d;
-  
+
   /**
    * The upper bound for generating random biases.
    */
@@ -90,11 +90,6 @@ public final class Neuron {
     this.activationFunction = newActivationFunction;
   }
 
-  @Override
-  public String toString() {
-    return "\nNeuron{" + "bias=" + this.bias + ", weights=" + this.weights + "}\n";
-  }
-
   /**
    * Feeds the input forward.
    *
@@ -106,11 +101,10 @@ public final class Neuron {
       throw new ArrayIndexOutOfBoundsException();
     }
 
-    return IntStream
+    return this.activationFunction.apply(IntStream
         .range(0, inputs.size())
-        .mapToDouble(i -> this.activationFunction.apply(inputs.get(i))
-            * this.weights.get(i))
-        .sum() * this.bias;
+        .mapToDouble(i -> (inputs.get(i)) * this.weights.get(i))
+        .sum() + this.bias);
   }
 
   /**

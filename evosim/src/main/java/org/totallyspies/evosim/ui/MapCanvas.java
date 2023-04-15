@@ -3,6 +3,7 @@ package org.totallyspies.evosim.ui;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Bounds;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.entities.Entity;
@@ -38,7 +39,6 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private Simulation simulation;
 
-
     /**
      * A list of keycodes being pressed.
      */
@@ -71,13 +71,14 @@ public final class MapCanvas extends ResizableCanvas {
             )
         );
 
+//        this.camera.center();
+
         this.anim = new AnimationTimer() {
             @Override
             public void handle(final long now) {
                 update(now);
             }
         };
-
         this.followingEntity =new AtomicBoolean(false);
     }
 
@@ -248,7 +249,6 @@ public final class MapCanvas extends ResizableCanvas {
         clearMap();
         drawGrids();
 
-
         final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
         final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
         if (!PRESSED_KEYS.isEmpty()) {
@@ -276,12 +276,54 @@ public final class MapCanvas extends ResizableCanvas {
             }
         }
 
+        Point camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
+
         for (int x = 0; x < Simulation.MAP_SIZE_X; ++x) {
             for (int y = 0; y < Simulation.MAP_SIZE_Y; ++y) {
-                simulation.getGridEntities(x, y).forEach(this::drawEntity);
+                // only render entities if they're within the visible square radius
+                int radiusX = (int) Math.ceil(
+                        this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2;
+                int radiusY = (int) Math.ceil(
+                        this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2;
+
+                System.out.println("--");
+                System.out.println("camChunk + radiusX=" + (camChunk.getX() + radiusX));
+                System.out.println("is x <= that=" + (x <= camChunk.getX() + radiusX));
+                System.out.println("camChunk - radiusX=" + (camChunk.getX() - radiusX));
+                System.out.println("is x >= that=" + (x >= camChunk.getX() - radiusX));
+                System.out.println("camChunk + radiusY=" + (camChunk.getX() + radiusY));
+                System.out.println("is y <= that=" + (y <= camChunk.getX() + radiusY));
+                System.out.println("camChunk - radiusY=" + (camChunk.getX() - radiusY));
+                System.out.println("is y >= that=" + (y >= camChunk.getX() - radiusY));
+                System.out.println("current chunk= (" + x + ", " + y + ")");
+                System.out.println("camChunkX=" + camChunk.getX() + " camChunkY=" + camChunk.getY() +
+                        " " +
+                        "radiusX=" + radiusX + " " +
+                        "radiusY" +
+                        "=" + radiusY);
+
+                if (x <= camChunk.getX() + radiusX && x >= camChunk.getX() - radiusX
+                    && y <= camChunk.getY() + radiusY && y >= camChunk.getY() - radiusY) {
+                    simulation.getGridEntities(x, y).forEach(this::drawEntity);
+                    System.out.println("drewA");
+                } else {
+                    System.out.println("drewB");
+                }
             }
         }
     }
 
+    /**
+     * Returns the maximum number of viewable chunks based on the camera's zoom level.
+     *
+     * @return  the max number of chunks on screen
+     */
+    private int getNumberOfViewableChunks() {
+        int maxX =
+                (int) Math.floor(this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom()));
+        int maxY =
+                (int) Math.floor(this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom()));
+        return maxY * maxX;
+    }
 
 }
