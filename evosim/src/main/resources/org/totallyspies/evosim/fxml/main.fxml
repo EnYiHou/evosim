@@ -14,13 +14,21 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Save Configuration" />
+                  <Menu mnemonicParsing="false" text="Load">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadDefault" text="Default Configuration" />
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoad" text="Saved Configuration" />
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadLatest" text="Previous Configuration" />
+                     </items>
+                  </Menu>
+              <MenuItem mnemonicParsing="false" onAction="#clickOnExit" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -28,6 +36,16 @@
               <MenuItem mnemonicParsing="false" text="Delete" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Settings">
+              <items>
+                  <Menu mnemonicParsing="false" text="Preferences">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Zoom" />
+                        <MenuItem mnemonicParsing="false" text="Unzoom" />
+                    </items>
+                  </Menu>
+              </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
                <items>
                   <CustomMenuItem mnemonicParsing="false" text="About">

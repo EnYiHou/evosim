@@ -99,6 +99,12 @@ public final class Formulas {
                     + circleCenterY, lineStartX, lineStartY);
 
             return (distance1 <= distance2 ? distance1 : distance2);
+
+        }
+        
+        if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
+            - circleRadius < 0) {
+            return 0d;
         } else {
             //calculate the slope of the line
             slope = (lineEndY - lineStartY) / (deltaX);
