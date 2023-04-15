@@ -103,11 +103,12 @@ public final class Neuron {
       throw new ArrayIndexOutOfBoundsException();
     }
 
-    return IntStream
-        .range(0, inputs.size())
-        .mapToDouble(i -> this.activationFunction.apply(inputs.get(i))
-            * this.weights.get(i))
-        .sum() * this.bias;
+    return this.activationFunction.apply(
+        IntStream
+          .range(0, inputs.size())
+          .mapToDouble(i -> inputs.get(i) * this.weights.get(i))
+          .sum() + this.bias
+    );
   }
 
   /**
