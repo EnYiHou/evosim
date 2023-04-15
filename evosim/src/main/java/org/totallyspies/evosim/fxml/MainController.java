@@ -30,6 +30,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
+
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -387,17 +389,6 @@ public final class MainController {
         System.out.println(configuration.toString());
     }
 
-    @FXML
-    private void clickOnExit(final ActionEvent event) throws IOException {
-        configuration.saveLatestConfiguration();
-        Platform.exit();
-    }
-
-    @FXML
-    private void clickOnLoadDefault(final ActionEvent event) {
-        configuration.loadDefaultConfiguration();
-        System.out.println(configuration.toString());
-    }
 
     @FXML
     private void clickOnExit(final ActionEvent event) throws IOException {

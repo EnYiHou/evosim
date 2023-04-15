@@ -57,9 +57,6 @@ public final class Simulation {
     /**
      * The animation loop of the simulation that runs every frame.
      */
-    private final AnimationTimer animationLoop;
-
-    /**
     @Getter
     private final AnimationTimer animationLoop;
 
@@ -137,33 +134,6 @@ public final class Simulation {
         return new Coordinate(index % Simulation.MAP_SIZE_X, index / Simulation.MAP_SIZE_Y);
     }
 
-    /**
-     * Stops all workers of all simulations.
-     */
-    public static void stopAll() {
-        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
-    }
-
-    /**
-     * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
-     *
-     * @param point Point to be converted.
-     * @return Index of chunk for this point.
-     */
-    public static int pointToChunk(final Point point) {
-        return coordsToChunk((int) point.getX() / GRID_SIZE, (int) point.getY() / GRID_SIZE);
-    }
-
-    /**
-     * Converts a coordinate to a chunk index for {@link #entityGrids}.
-     *
-     * @param x X axis index.
-     * @param y Y axis index.
-     * @return Index of chunk for this point.
-     */
-    public static int coordsToChunk(final int x, final int y) {
-        return x + y * MAP_SIZE_X;
-    }
 
     /**
      * Populates the entity list by constructing all initial entities based on user given initial
@@ -184,7 +154,8 @@ public final class Simulation {
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
                     ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI)
+                    Rng.RNG.nextDouble(0, 2 * Math.PI),
+                    System.currentTimeMillis()
             ));
         }
 
