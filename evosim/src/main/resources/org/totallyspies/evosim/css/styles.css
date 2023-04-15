@@ -3,3 +3,27 @@
   -fx-background-color: white;
   -fx-background-insets: 10px;
 }
+
+.button:hover {
+  -fx-opacity: 0.8;
+}
+
+.button:pressed {
+  -fx-opacity: 0.5;
+}
+
+.button.play {
+    -fx-background-radius: 12;
+    -fx-text-fill: darkslategray;
+    -fx-font-size: 12px;
+    -fx-padding: 5px;
+    -fx-background-color: aquamarine
+}
+
+.button.pause {
+    -fx-background-radius: 12;
+    -fx-text-fill: darkslategray;
+    -fx-font-size: 12px;
+    -fx-padding: 5px;
+    -fx-background-color: salmon;
+}

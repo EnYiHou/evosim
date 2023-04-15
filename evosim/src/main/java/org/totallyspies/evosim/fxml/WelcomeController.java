@@ -67,7 +67,7 @@ public final class WelcomeController {
             new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
         )));
 
-        Configuration config = Configuration.getCONFIGURATION();
+        Configuration config = Configuration.getConfiguration();
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
                 this.createSliderDefault(
@@ -243,7 +243,6 @@ public final class WelcomeController {
             alert.show();
             return;
         }
-
         WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
                 this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
                 "");
