@@ -99,7 +99,6 @@ public final class Formulas {
                     + circleCenterY, lineStartX, lineStartY);
 
             return (distance1 <= distance2 ? distance1 : distance2);
-
         }
         
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)

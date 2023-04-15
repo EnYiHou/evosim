@@ -3,6 +3,8 @@ package org.totallyspies.evosim.simulation;
 import java.util.LinkedList;
 
 import javafx.animation.AnimationTimer;
+import lombok.Getter;
+import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
@@ -11,7 +13,6 @@ import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,24 @@ public final class Simulation {
     private final AnimationTimer animationLoop;
 
     /**
+    @Getter
+    private final AnimationTimer animationLoop;
+
+    /**
+     * The number of prey alive in the simulation.
+     */
+    @Getter
+    @Setter
+    private int preyCount;
+
+    /**
+     * The number of predators alive in the simulation.
+     */
+    @Getter
+    @Setter
+    private int predatorCount;
+    
+    /**
      * Constructs a new simulation based on the default configuration.
      */
     public Simulation() {
@@ -67,7 +86,6 @@ public final class Simulation {
                 100,
                 this::checkGridCollisions
         );
-
 
         this.populateEntityList(
                 Configuration.getConfiguration().getPreyInitialPopulation(),
@@ -120,6 +138,34 @@ public final class Simulation {
     }
 
     /**
+     * Stops all workers of all simulations.
+     */
+    public static void stopAll() {
+        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
+    }
+
+    /**
+     * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
+     *
+     * @param point Point to be converted.
+     * @return Index of chunk for this point.
+     */
+    public static int pointToChunk(final Point point) {
+        return coordsToChunk((int) point.getX() / GRID_SIZE, (int) point.getY() / GRID_SIZE);
+    }
+
+    /**
+     * Converts a coordinate to a chunk index for {@link #entityGrids}.
+     *
+     * @param x X axis index.
+     * @param y Y axis index.
+     * @return Index of chunk for this point.
+     */
+    public static int coordsToChunk(final int x, final int y) {
+        return x + y * MAP_SIZE_X;
+    }
+
+    /**
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
      *
@@ -144,18 +190,19 @@ public final class Simulation {
 
         for (int i = 0; i < initPredator; i++) {
             entities.add(new Predator(
-                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
+                    Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI)
-            ));
+                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
         }
 
         entities.forEach(
                 entity -> this.entityGrids.add(entity, pointToChunk(entity.getBodyCenter()))
         );
+
+        this.preyCount += initPrey;
+        this.predatorCount += initPredator;
     }
 
     private void checkGridCollisions(final int i, final List<Entity> entities) {
@@ -196,11 +243,22 @@ public final class Simulation {
                     entity.update();
                     if (entity.isDead()) {
                         chunk.remove(j);
+                        if (entity instanceof Prey) {
+                            this.preyCount--;
+                        } else if (entity instanceof Predator) {
+                            this.predatorCount--;
+                        }
                     } else if (entity.isSplit()) {
                         chunk.add(entity.clone());
                         entity.setSplitEnergy(0);
                         entity.setChildCount(entity.getChildCount() + 1);
                         entity.setSplit(false);
+
+                        if (entity instanceof Prey) {
+                            this.preyCount++;
+                        } else if (entity instanceof Predator) {
+                            this.predatorCount++;
+                        }
                     }
                 }
             }
