@@ -160,6 +160,7 @@ public final class Configuration {
      */
     private double entitySensorsLength;
 
+
     /**
      * The maximum speed of an entity.
      */
@@ -209,6 +210,7 @@ public final class Configuration {
      * The split energy that a prey will gain when it is not moving.
      */
     private double preySplitEnergyFillingSpeed;
+
 
     /**
      * The number of layers the neural network will contain.
@@ -289,7 +291,7 @@ public final class Configuration {
      *
      * @return Configuration saved from a Json File
      */
-    public static Configuration getCONFIGURATION() {
+    public static Configuration getConfiguration() {
         return Configuration.CONFIGURATION;
     }
 

@@ -114,6 +114,7 @@ public final class Formulas {
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
             - circleRadius < 0) {
             return 0d;
+
         } else {
             //calculate the slope of the line
             slope = (lineEndY - lineStartY) / (deltaX);

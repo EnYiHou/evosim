@@ -17,9 +17,7 @@ import lombok.NoArgsConstructor;
  * @author mattlep11
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings({
-        "checkstyle:HideUtilityClassConstructor",
-        "checkstyle:TodoComment"})
+@SuppressWarnings({"checkstyle:HideUtilityClassConstructor"})
 public final class WindowUtils {
 
     /**
