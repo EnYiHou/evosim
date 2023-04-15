@@ -115,6 +115,7 @@ public class NeuralNetwork {
                     .stream()
                     .map(neuron -> neuron.mutate(
                         Configuration.getConfiguration().getEntitySpeedMutationRate())
+
                     )
                     .toList()
                 )

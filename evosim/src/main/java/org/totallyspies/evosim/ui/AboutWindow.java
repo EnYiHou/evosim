@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.utils.ResourceManager;
 
+import java.io.IOException;
+
 /**
  * The AboutWindow is a small, locked modal window that displays basic information about the
  * project and team members. It must be closed before the main application can be accessed again.

@@ -4,6 +4,7 @@ import javafx.scene.paint.Color;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
+
 /**
  * A Prey is member of the evolution simulation that survives by evading collision with predators.
  * To multiply, a prey must remain stationary to accumulate split energy. To die, a prey must
@@ -19,13 +20,18 @@ public final class Prey extends Entity {
      * @param speed                  the speed of the prey
      * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
+     * @param birthTime              the time the prey was born
      */
-    public Prey(final double speed, final Point position, final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getConfiguration().getPreyViewAngle(),
+    public Prey(final double speed,
+                final Point position,
+                final double rotationAngleInRadians,
+                final long birthTime) {
+        super(speed, position, birthTime, Configuration.getConfiguration().getPreyViewAngle(),
                 rotationAngleInRadians, Color.GREEN
         );
 
     }
+
 
     /**
      * Determines if this prey should split or die based on its collision and energy.
@@ -41,6 +47,7 @@ public final class Prey extends Entity {
                 + Configuration.getConfiguration().getPreySplitEnergyFillingSpeed());
         this.setEnergy(Math.min(this.getEnergy()
                 + Configuration.getConfiguration().getPreyEnergyFillingSpeed(), 1));
+
     }
 
     /**
@@ -57,8 +64,9 @@ public final class Prey extends Entity {
                         ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
                         : this.getSpeed(),
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians()
-        );
+                this.getDirectionAngleInRadians(),
+                System.currentTimeMillis());
+
 
         // mutate the brain of the prey
         prey.setBrain(this.getBrain().mutate());
@@ -70,5 +78,10 @@ public final class Prey extends Entity {
     @Override
     protected void onCollideHandler(final Entity other) {
         this.setDead(true);
+    }
+
+    @Override
+    public String toString() {
+        return "Prey";
     }
 }
