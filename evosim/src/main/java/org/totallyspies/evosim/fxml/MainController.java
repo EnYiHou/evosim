@@ -3,7 +3,9 @@ package org.totallyspies.evosim.fxml;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.stage.FileChooser;
 import lombok.NoArgsConstructor;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
@@ -42,6 +44,7 @@ public final class MainController {
     @FXML
     private StackPane centerStack;
 
+    /*
      *  In order to explore the user's files.
      */
     private FileChooser fileChooser;
