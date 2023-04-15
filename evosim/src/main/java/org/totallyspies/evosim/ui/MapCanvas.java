@@ -287,7 +287,6 @@ public final class MapCanvas extends ResizableCanvas {
                 }
             }
         }
-        System.out.println(this.camera.getX() + " " + this.camera.getY());
         Coordinate camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
 
         // only render entities if they're within the visible square radius

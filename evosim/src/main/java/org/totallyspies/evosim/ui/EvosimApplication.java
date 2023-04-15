@@ -53,9 +53,9 @@ public final class EvosimApplication extends Application {
         super.stop();
 
         Simulation.stopAll();
+    }
 
-    private static void createTempDirectory()
-            throws IOException {
+    private static void createTempDirectory() throws IOException {
         final File temp;
         temp = File.createTempFile("temp", "evosim/");
 

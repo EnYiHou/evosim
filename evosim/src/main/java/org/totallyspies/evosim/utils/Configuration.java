@@ -91,8 +91,8 @@ public final class Configuration {
         /**
          * The initial quantity of predator spawned.
          */
-        public static final int PREDATOR_INITIAL_POPULATION = 10;
-        
+        public static final int PREDATOR_INITIAL_POPULATION = 20;
+
         /**
          * The view angle of a predator.
          */
@@ -107,11 +107,11 @@ public final class Configuration {
          * The maximum number of prey that could be generated.
          */
         public static final int PREY_MAX_NUMBER = 100;
-        
+
          /**
           * The initial quantity of prey spawned.
           */
-         public static final int PREY_INITIAL_POPULATION = 50;
+         public static final int PREY_INITIAL_POPULATION = 60;
 
         /**
          * The view angle of a prey.
@@ -196,6 +196,11 @@ public final class Configuration {
     private double predatorMaxNumber;
 
     /**
+     * The initial quantity of predators spawned.
+     */
+    private int predatorInitialPopulation;
+
+    /**
      * The view angle of a predator.
      */
     private double predatorViewAngle;
@@ -209,6 +214,11 @@ public final class Configuration {
      * The maximum number of prey that could be generated.
      */
     private double preyMaxNumber;
+
+    /**
+     * The initial quantity of prey spawned.
+     */
+    private int preyInitialPopulation;
 
     /**
      * The view angle of a prey.
@@ -345,6 +355,8 @@ public final class Configuration {
         jsonObject.put("entitySpeedMutationRate", this.entitySpeedMutationRate);
         jsonObject.put("entityEnergyDrainRate", this.entityEnergyDrainRate);
         jsonObject.put("predatorMaxNumber", this.predatorMaxNumber);
+        jsonObject.put("predatorInitialPopulation", this.predatorInitialPopulation);
+        jsonObject.put("preyInitialPopulation", this.preyInitialPopulation);
         jsonObject.put("predatorViewAngle", this.predatorViewAngle);
         jsonObject.put("predatorSplitEnergyFillingSpeed",
                 this.predatorSplitEnergyFillingSpeed);
@@ -380,11 +392,13 @@ public final class Configuration {
                 "entityEnergyDrainRate");
 
         this.predatorMaxNumber = jsonObject.getInt("predatorMaxNumber");
+        this.predatorInitialPopulation = jsonObject.getInt("predatorInitialPopulation");
         this.predatorViewAngle = jsonObject.getDouble("predatorViewAngle");
         this.predatorSplitEnergyFillingSpeed = jsonObject.getDouble(
                 "predatorSplitEnergyFillingSpeed");
 
         this.preyMaxNumber = jsonObject.getInt("preyMaxNumber");
+        this.preyInitialPopulation = jsonObject.getInt("preyInitialPopulation");
         this.preyViewAngle = jsonObject.getDouble("preyViewAngle");
         this.preySplitEnergyFillingSpeed = jsonObject.getDouble(
                 "preySplitEnergyFillingSpeed");
@@ -409,11 +423,13 @@ public final class Configuration {
 
         // Predator
         this.predatorMaxNumber = Defaults.PREDATOR_MAX_NUMBER;
+        this.predatorInitialPopulation = Defaults.PREDATOR_INITIAL_POPULATION;
         this.predatorViewAngle = Defaults.PREDATOR_VIEW_ANGLE;
         this.predatorSplitEnergyFillingSpeed = Defaults.
                 PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
 
         this.preyMaxNumber = Defaults.PREY_MAX_NUMBER;
+        this.preyInitialPopulation = Defaults.PREY_INITIAL_POPULATION;
         this.preyViewAngle = Defaults.PREY_VIEW_ANGLE;
         this.preySplitEnergyFillingSpeed = Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED;
 
