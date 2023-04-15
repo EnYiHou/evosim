@@ -122,5 +122,4 @@ public class NeuralNetwork {
 
         return mutatedNeuralNetwork;
     }
-
 }
