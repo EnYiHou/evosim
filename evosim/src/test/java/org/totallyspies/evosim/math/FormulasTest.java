@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.math;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.totallyspies.evosim.math.Formulas.*;
 
 import org.junit.jupiter.api.Test;
 import org.totallyspies.evosim.geometry.Circle;
@@ -48,12 +47,12 @@ class FormulasTest {
   public void testClosestIntersection() {
     assertEquals(1.561, Formulas.closestIntersection(
             new Line(1.61d, 0.83d, 3.457, 6.371),
-            new Circle(new Point(3.4d, 3.7d), 1.9d)),
+            new Circle(1.9d, new Point(3.4d, 3.7d))),
         0.001d);
 
     assertEquals(0, Formulas.closestIntersection(
             new Line(2.556d, 3.668d, 3.457, 6.371),
-            new Circle(new Point(3.4d, 3.7d), 1.9d)),
+            new Circle(1.9d, new Point(3.4d, 3.7d))),
         0.001d);
   }
 

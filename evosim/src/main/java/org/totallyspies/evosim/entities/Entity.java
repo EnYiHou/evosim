@@ -152,9 +152,11 @@ public abstract class Entity {
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
+
         this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
 
         int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
+
         // initialize neural network
         this.brain = new NeuralNetwork(List.of(sensorCount, 10, 2));
 
@@ -180,7 +182,6 @@ public abstract class Entity {
     public void move(final double movementSpeed) {
         Point position = this.body.getCenter();
 
-        // wrap around the map
         double positionX = Math.max(0, Math.min(
             position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
             Simulation.MAP_SIZE_X * Simulation.GRID_SIZE
@@ -206,6 +207,7 @@ public abstract class Entity {
                 / (Configuration.getConfiguration().getEntitySensorsCount() - 1);
 
         for (int i = 0; i < Configuration.getConfiguration().getEntitySensorsCount(); i++) {
+
             double angle = this.directionAngleInRadians
                     + Math.toRadians(-this.fovAngleInDegrees / 2 + angleBetweenSensors * i);
 

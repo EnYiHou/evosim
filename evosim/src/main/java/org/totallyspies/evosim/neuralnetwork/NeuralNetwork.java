@@ -19,7 +19,7 @@ import org.totallyspies.evosim.utils.Rng;
  * values calculated by taking the dot product of the list of Neuron values and the list of
  * weights. The final layer's values (output layer) determines what the Entity's decision will be.
  *
- * @author Matthew, niakouu
+ * @author mattlep11, niakouu
  */
 public class NeuralNetwork {
 

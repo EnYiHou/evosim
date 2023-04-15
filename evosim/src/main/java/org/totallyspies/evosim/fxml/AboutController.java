@@ -55,8 +55,7 @@ public final class AboutController {
 
     /**
      * Loads the AboutWindow text from the project's json file.
-     *
-     * @param path The input stream path
+     * @param path  the file path of the json
      */
     private void addMenuText(final InputStream path) {
         String jsonText = "";
