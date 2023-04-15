@@ -149,7 +149,7 @@ public final class MainController {
      * The simulation to be rendered.
      */
     private Simulation simulation;
-    
+
     /**
      *  In order to explore the user's files.
      */
@@ -165,7 +165,7 @@ public final class MainController {
      */
     public MainController() {
         this.fileChooser = new FileChooser();
-        MainController.configuration = Configuration.getCONFIGURATION();
+        MainController.configuration = Configuration.getConfiguration();
     }
 
 
@@ -185,7 +185,7 @@ public final class MainController {
                 1, System.currentTimeMillis()));
         this.setEntityInfoTab();
         this.mapCanvas.attach(simulation);
-        
+
         String evosimDir = Paths.get(
                 System.getProperty("user.home"), "Documents", "Evosim").toString();
         File evosimFolder = new File(evosimDir);

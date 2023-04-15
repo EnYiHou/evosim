@@ -1,13 +1,16 @@
 package org.totallyspies.evosim.ui;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import lombok.Getter;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.ResourceManager;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public final class EvosimApplication extends Application {
 
@@ -82,8 +85,7 @@ public final class EvosimApplication extends Application {
 
         Simulation.stopAll();
     }
-    
-    
+
     private static void createTempDirectory()
             throws IOException {
         final File temp;
