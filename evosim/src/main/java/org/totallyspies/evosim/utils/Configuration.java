@@ -291,7 +291,7 @@ public final class Configuration {
      *
      * @return Configuration saved from a Json File
      */
-    public static Configuration getCONFIGURATION() {
+    public static Configuration getConfiguration() {
         return Configuration.CONFIGURATION;
     }
 

@@ -70,11 +70,7 @@ public abstract class Entity {
     @Getter
     @Setter
     private boolean split;
-    /**
-     * The fixed entity speed randomly chosen at birth for an entity.
-     */
-    @Getter
-    private final double speed;
+
     /**
      * The neural network of the entity.
      * <p>

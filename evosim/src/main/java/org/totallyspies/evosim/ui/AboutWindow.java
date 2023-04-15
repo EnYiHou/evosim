@@ -1,12 +1,16 @@
 package org.totallyspies.evosim.ui;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.utils.ResourceManager;
+
+import java.io.IOException;
 
 /**
  * The AboutWindow is a small, locked modal window that displays basic information about the
