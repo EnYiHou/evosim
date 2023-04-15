@@ -47,6 +47,7 @@ public final class Prey extends Entity {
                 + Configuration.getConfiguration().getPreySplitEnergyFillingSpeed());
         this.setEnergy(Math.min(this.getEnergy()
                 + Configuration.getConfiguration().getPreyEnergyFillingSpeed(), 1));
+
     }
 
     /**
@@ -65,6 +66,7 @@ public final class Prey extends Entity {
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
                 this.getDirectionAngleInRadians(),
                 System.currentTimeMillis());
+
 
         // mutate the brain of the prey
         prey.setBrain(this.getBrain().mutate());

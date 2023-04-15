@@ -41,7 +41,6 @@ public final class Predator extends Entity {
     public void onUpdate() {
         this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
                 .getPredatorEnergyBaseDrainingSpeed());
-
         if (this.getEnergy() <= 0) {
             this.setDead(true);
         }
@@ -63,6 +62,7 @@ public final class Predator extends Entity {
 
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
                 this.getDirectionAngleInRadians(), System.currentTimeMillis());
+
         // mutate the brain of the predator
         predator.setBrain(this.getBrain().mutate());
 
