@@ -243,14 +243,8 @@ public final class WelcomeController {
             alert.show();
             return;
         }
-
-        EvosimApplication.getApplication().setRoot(
-                ResourceManager.FXML_MAIN_VIEW
-        );
-        /*
         WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
                 this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
                 "");
-        */
     }
 }

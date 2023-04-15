@@ -55,35 +55,4 @@ public final class AboutWindow {
         abtStage.setResizable(false);
         abtStage.setScene(scene);
     }
-
-    /**
-     * Sets the root of {@link #scene} to an FXML at {#code path}.
-     *
-     * @param path Resource folder path for the new FXMLs
-     * @author ptrstr
-     */
-    private void setRoot(final String path) {
-        FXMLLoader loader = new FXMLLoader(
-                this.getClass().getResource(path)
-        );
-
-        try {
-            if (scene == null) {
-                this.scene = new Scene(loader.load(), ABT_WINDOW_WIDTH, ABT_WINDOW_HEIGHT);
-            } else {
-                this.scene.setRoot(loader.load());
-            }
-        } catch (IOException ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Evosim Fatal Error");
-            alert.setContentText(ex.getMessage());
-
-            ex.printStackTrace();
-        }
-     /*
-        WindowUtils.setSceneRoot(this.abtStage,
-                this.getClass().getResource(ResourceManager.FXML_ABOUT),
-                "");
-      */
-    }
 }
