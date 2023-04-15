@@ -54,15 +54,13 @@ public final class MainController {
             if (code == KeyCode.ESCAPE) {
                 escapeClicked();
             }
-            if (!this.mapCanvas.getPressedKeys().contains(code)) {
-                this.mapCanvas.getPressedKeys().push(code);
+            if (!MapCanvas.getPressedKeys().contains(code)) {
+                MapCanvas.getPressedKeys().push(code);
             }
         });
 
         scene.setOnKeyReleased(event ->
-                this.mapCanvas.getPressedKeys().remove(event.getCode()));
-
-        // TODO add on click event to track and follow entities.
+                MapCanvas.getPressedKeys().remove(event.getCode()));
     }
 
     /**

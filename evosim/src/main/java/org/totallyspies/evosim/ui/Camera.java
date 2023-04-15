@@ -66,20 +66,23 @@ public final class Camera {
     /**
      * Top left limit of pan.
      */
-    final Point topLeft;
+    private final Point topLeft;
 
     /**
      * Bottom right limit of pan.
      */
-    final Point bottomRight;
+    private final Point bottomRight;
 
     /**
      * Creates a new camera with the given position and zoom level.
      *
-     * @param newPoint the position of the camera
-     * @param newZoom  the zoom level of the camera
+     * @param newPoint          the position of the camera
+     * @param newZoom           the zoom level of the camera
+     * @param newTopLeft        the new top left position
+     * @param newBottomRight    the new bottom right position
      */
-    public Camera(final Point newPoint, final double newZoom, final Point newTopLeft, final Point newBottomRight) {
+    public Camera(final Point newPoint, final double newZoom,
+                  final Point newTopLeft, final Point newBottomRight) {
         this.point = newPoint;
         this.zoom = new AtomicDouble(newZoom);
         this.topLeft = newTopLeft;
@@ -87,10 +90,13 @@ public final class Camera {
     }
 
     /**
-     * Creates a new camera with a default point and a default zoom level of 1.
+     * Creates a camera with a default position and zoom.
+     *
+     * @param newTopLeft       the top-left Point
+     * @param newBottomRight   the bottom-right Point
      */
-    public Camera(final Point topLeft, final Point bottomRight) {
-        this(DEFAULT_POINT, DEFAULT_ZOOM, topLeft, bottomRight);
+    public Camera(final Point newTopLeft, final Point newBottomRight) {
+        this(DEFAULT_POINT, DEFAULT_ZOOM, newTopLeft, newBottomRight);
     }
 
     /**
@@ -109,7 +115,8 @@ public final class Camera {
      *          (positive values move the camera to the right)
      */
     public void translateX(final double x) {
-        if (this.point.getX() + x >= this.topLeft.getX() && this.point.getX() + x <= this.bottomRight.getX()) {
+        if (this.point.getX() + x >= this.topLeft.getX()
+                && this.point.getX() + x <= this.bottomRight.getX()) {
             this.point.setX(this.point.getX() + x);
         }
     }
@@ -121,7 +128,8 @@ public final class Camera {
      *          (positive values move the camera down)
      */
     public void translateY(final double y) {
-        if (this.point.getY() + y <= this.bottomRight.getY() && this.point.getY() + y >= this.topLeft.getY()) {
+        if (this.point.getY() + y <= this.bottomRight.getY()
+                && this.point.getY() + y >= this.topLeft.getY()) {
             this.point.setY(this.point.getY() + y);
         }
     }

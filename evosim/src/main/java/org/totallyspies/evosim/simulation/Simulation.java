@@ -21,8 +21,14 @@ import java.util.List;
  * @author mattlep11, EnYi
  */
 public final class Simulation {
+    /**
+     * A list of all simulations.
+     */
     private static List<Simulation> simulations = new LinkedList<>();
 
+    /**
+     * Stops all threads for any active simulation.
+     */
     public static void stopAll() {
         simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
@@ -63,12 +69,10 @@ public final class Simulation {
         );
 
 
-//    this.populateEntityList(
-//            Configuration.getConfiguration().getPreyInitialPopulation(),
-//            Configuration.getConfiguration().getPredatorInitialPopulation()
-//    );
-
-        this.populateEntityList(0, 500);
+        this.populateEntityList(
+                Configuration.getConfiguration().getPreyInitialPopulation(),
+                Configuration.getConfiguration().getPredatorInitialPopulation()
+        );
 
         this.animationLoop = new AnimationTimer() {
             @Override
@@ -112,7 +116,7 @@ public final class Simulation {
      */
     public static Coordinate coordsToChunkCoords(final Point point) {
         int index = pointToChunk(point);
-        return new Coordinate((int) index % Simulation.MAP_SIZE_X, index / Simulation.MAP_SIZE_Y);
+        return new Coordinate(index % Simulation.MAP_SIZE_X, index / Simulation.MAP_SIZE_Y);
     }
 
     /**
