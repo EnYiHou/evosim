@@ -137,11 +137,12 @@ public abstract class Entity {
      * @param entityPosition   The position of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param color            The color of the entity
+     * @param newColor            The color of the entity
      */
     protected Entity(final double entitySpeed, final Point entityPosition,
-                     final double newViewAngle, final double newRotationAngle, Color color) {
-        this.color = color;
+                     final double newViewAngle, final double newRotationAngle,
+                     final Color newColor) {
+        this.color = newColor;
         // initialize entity properties
         this.energy = 1d;
         this.splitEnergy = 0d;

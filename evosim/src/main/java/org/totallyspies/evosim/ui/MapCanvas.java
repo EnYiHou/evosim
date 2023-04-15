@@ -3,8 +3,9 @@ package org.totallyspies.evosim.ui;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Bounds;
+import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
@@ -48,7 +49,7 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * Whether the camera is following an entity or not.
      */
-    private AtomicBoolean followingEntity;
+    private final AtomicBoolean followingEntity;
 
     /**
      * The entity currently being followed.
@@ -72,7 +73,7 @@ public final class MapCanvas extends ResizableCanvas {
             )
         );
 
-//        this.camera.center();
+        this.camera.center();
 
         this.anim = new AnimationTimer() {
             @Override
@@ -80,7 +81,14 @@ public final class MapCanvas extends ResizableCanvas {
                 update(now);
             }
         };
-        this.followingEntity =new AtomicBoolean(false);
+        this.followingEntity = new AtomicBoolean(false);
+
+        this.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent event) {
+                checkForEntityOnClick(event);
+            }
+        });
     }
 
     /**
@@ -186,7 +194,6 @@ public final class MapCanvas extends ResizableCanvas {
      * @param entity The entity to be unfollowed
      */
     public void unfollowEntity(final Entity entity) {
-
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY()));
         autoZoom(0.5);
@@ -272,11 +279,15 @@ public final class MapCanvas extends ResizableCanvas {
                 }
             } else {
                 if (PRESSED_KEYS.contains(KeyCode.SPACE)) {
-                    this.unfollowEntity(followedEntity);
+                    if (followedEntity != null) {
+                        this.unfollowEntity(followedEntity);
+                        followingEntity.set(false);
+                        this.camera.center();
+                    }
                 }
             }
         }
-
+        System.out.println(this.camera.getX() + " " + this.camera.getY());
         Coordinate camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
 
         // only render entities if they're within the visible square radius
@@ -287,8 +298,9 @@ public final class MapCanvas extends ResizableCanvas {
 
         for (int x = camChunk.getX() - radiusX; x <= camChunk.getX() + radiusX; ++x) {
             for (int y = camChunk.getY() - radiusY; y <= camChunk.getY() + radiusY; ++y) {
-                if (x < 0 || x >= Simulation.MAP_SIZE_X || y < 0 || y >= Simulation.MAP_SIZE_Y)
+                if (x < 0 || x >= Simulation.MAP_SIZE_X || y < 0 || y >= Simulation.MAP_SIZE_Y) {
                     continue;
+                }
 
                 simulation.getGridEntities(x, y).forEach(this::drawEntity);
             }
@@ -296,16 +308,12 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     /**
-     * Returns the maximum number of viewable chunks based on the camera's zoom level.
+     * Checks all entities within the clicked chunk. If the mouse clicked an entity, follow it.
      *
-     * @return  the max number of chunks on screen
+     * @param e the click event
      */
-    private int getNumberOfViewableChunks() {
-        int maxX =
-                (int) Math.floor(this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom()));
-        int maxY =
-                (int) Math.floor(this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom()));
-        return maxY * maxX;
+    private void checkForEntityOnClick(final MouseEvent e) {
+        // TODO determine which chunk was clicked, check if mouse clicked entity.
     }
 
 }
