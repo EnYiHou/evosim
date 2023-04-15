@@ -66,7 +66,7 @@ public final class Configuration {
     /**
      * The maximum speed of an entity.
      */
-    public static final double ENTITY_MAX_SPEED = 2.0d;
+    public static final double ENTITY_MAX_SPEED = 5.0d;
 
     /**
      * The minimum possible speed of an entity.

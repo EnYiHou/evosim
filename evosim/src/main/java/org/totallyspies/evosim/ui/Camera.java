@@ -22,7 +22,7 @@ public final class Camera {
      * <p>
      * This value indicates the maximum scale constant when the camera is zoomed out to its min.
      */
-    public static final double MAX_ZOOM = 1.55;
+    public static final double MAX_ZOOM = 1.60;
 
     /**
      * The minimum zoom level of the camera.
@@ -34,7 +34,7 @@ public final class Camera {
     /**
      * The default zoom level of the camera.
      */
-    public static final double DEFAULT_ZOOM = MAX_ZOOM;
+    public static final double DEFAULT_ZOOM = 1.0;
 
     /**
      * The default zooming speed of the camera.
@@ -44,7 +44,7 @@ public final class Camera {
     /**
      * The speed at which the camera translates.
      */
-    public static final double CAMERA_TRANSLATE_SPEED = 7.5;
+    public static final double CAMERA_TRANSLATE_SPEED = 10.0;
 
     /**
      * The increment value of the camera's zoom.
@@ -99,6 +99,7 @@ public final class Camera {
     public void center() {
         this.point.setX((this.bottomRight.getX() - this.topLeft.getX()) / 2.0);
         this.point.setY((this.bottomRight.getY() - this.topLeft.getY()) / 2.0);
+        this.zoom.set(MIN_ZOOM);
     }
 
     /**
