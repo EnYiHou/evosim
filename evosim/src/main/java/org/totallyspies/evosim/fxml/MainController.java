@@ -23,6 +23,11 @@ public final class MainController {
     private FileChooser fileChooser;
 
     /**
+     * As if the variable is saved or not on the drive.
+     */
+    private boolean isSaved;
+
+    /**
      * The global configuration of the application.
      */
     private static Configuration configuration;
@@ -33,13 +38,14 @@ public final class MainController {
     public MainController() {
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getCONFIGURATION();
+        isSaved = false;
     }
 
 
     /**
      * Initializes {@code main.fxml}.
      */
-    public void initialize() {
+    public void initialize() throws IOException {
 
         String evosimDir = Paths.get(
                 System.getProperty("user.home"), "Documents", "Evosim").toString();
@@ -53,6 +59,7 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         fileChooser.setInitialDirectory(
                 new File(evosimDir));
+        configuration.saveLatestConfiguration();
     }
 
     /**
@@ -66,11 +73,14 @@ public final class MainController {
 
     @FXML
     private void clickOnSave(final ActionEvent event) throws IOException {
-        fileChooser.setTitle("Save Configuration");
-        File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
+        if(!isSaved) {
+            fileChooser.setTitle("Save Configuration");
+            File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
 
-        if (file != null) {
-            configuration.saveConfiguration(file);
+            if (file != null) {
+                configuration.saveConfiguration(file);
+            }
+            isSaved = true;
         }
     }
 
