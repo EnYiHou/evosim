@@ -62,7 +62,7 @@ public final class Simulation {
     @Getter
     @Setter
     private int predatorCount;
-
+    
     /**
      * Constructs a new simulation based on the default configuration.
      */

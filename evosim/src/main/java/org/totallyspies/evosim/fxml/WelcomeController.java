@@ -14,6 +14,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
+import org.totallyspies.evosim.ui.WindowUtils;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.ResourceManager;
@@ -246,5 +247,10 @@ public final class WelcomeController {
         EvosimApplication.getApplication().setRoot(
                 ResourceManager.FXML_MAIN_VIEW
         );
+        /*
+        WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
+                this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
+                "");
+        */
     }
 }

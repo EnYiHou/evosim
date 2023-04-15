@@ -7,10 +7,10 @@ import java.util.stream.Stream;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
- * A Neuron is a single node of the greater Neural Network system storing a double valued bias. Each
- * layer of the network is made up of many Neuron objects.
+ * A Neuron is a single node of the greater Neural Network system storing a double valued bias.
+ * Each layer of the network is made up of many Neuron objects.
  *
- * @author Matthew, niakouu
+ * @author mattlep11, niakouu
  */
 public final class Neuron {
 
