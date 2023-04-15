@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
+import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Assert;
@@ -276,39 +277,20 @@ public final class MapCanvas extends ResizableCanvas {
             }
         }
 
-        Point camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
+        Coordinate camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
 
-        for (int x = 0; x < Simulation.MAP_SIZE_X; ++x) {
-            for (int y = 0; y < Simulation.MAP_SIZE_Y; ++y) {
-                // only render entities if they're within the visible square radius
-                int radiusX = (int) Math.ceil(
-                        this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2;
-                int radiusY = (int) Math.ceil(
-                        this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2;
+        // only render entities if they're within the visible square radius
+        int radiusX = (int) Math.ceil(
+                this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
+        int radiusY = (int) Math.ceil(
+                this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
 
-                System.out.println("--");
-                System.out.println("camChunk + radiusX=" + (camChunk.getX() + radiusX));
-                System.out.println("is x <= that=" + (x <= camChunk.getX() + radiusX));
-                System.out.println("camChunk - radiusX=" + (camChunk.getX() - radiusX));
-                System.out.println("is x >= that=" + (x >= camChunk.getX() - radiusX));
-                System.out.println("camChunk + radiusY=" + (camChunk.getX() + radiusY));
-                System.out.println("is y <= that=" + (y <= camChunk.getX() + radiusY));
-                System.out.println("camChunk - radiusY=" + (camChunk.getX() - radiusY));
-                System.out.println("is y >= that=" + (y >= camChunk.getX() - radiusY));
-                System.out.println("current chunk= (" + x + ", " + y + ")");
-                System.out.println("camChunkX=" + camChunk.getX() + " camChunkY=" + camChunk.getY() +
-                        " " +
-                        "radiusX=" + radiusX + " " +
-                        "radiusY" +
-                        "=" + radiusY);
+        for (int x = camChunk.getX() - radiusX; x <= camChunk.getX() + radiusX; ++x) {
+            for (int y = camChunk.getY() - radiusY; y <= camChunk.getY() + radiusY; ++y) {
+                if (x < 0 || x >= Simulation.MAP_SIZE_X || y < 0 || y >= Simulation.MAP_SIZE_Y)
+                    continue;
 
-                if (x <= camChunk.getX() + radiusX && x >= camChunk.getX() - radiusX
-                    && y <= camChunk.getY() + radiusY && y >= camChunk.getY() - radiusY) {
-                    simulation.getGridEntities(x, y).forEach(this::drawEntity);
-                    System.out.println("drewA");
-                } else {
-                    System.out.println("drewB");
-                }
+                simulation.getGridEntities(x, y).forEach(this::drawEntity);
             }
         }
     }

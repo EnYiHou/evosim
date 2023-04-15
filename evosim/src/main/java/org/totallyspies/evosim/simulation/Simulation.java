@@ -6,8 +6,8 @@ import javafx.animation.AnimationTimer;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
+import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Point;
-import org.totallyspies.evosim.ui.MapCanvas;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
@@ -107,12 +107,12 @@ public final class Simulation {
     /**
      * Converts a {@code Point} into coordinates of a chunk index for {@link #entityGrids}.
      *
-     * @param   point point to be converted
-     * @return  the coordinates of the chunk
+     * @param point point to be converted
+     * @return the coordinates of the chunk
      */
-    public static Point coordsToChunkCoords(final Point point) {
+    public static Coordinate coordsToChunkCoords(final Point point) {
         int index = pointToChunk(point);
-        return new Point((int) index / 10, index % 10);
+        return new Coordinate((int) index % Simulation.MAP_SIZE_X, index / Simulation.MAP_SIZE_Y);
     }
 
     /**
