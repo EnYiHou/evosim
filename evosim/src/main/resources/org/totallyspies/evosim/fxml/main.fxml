@@ -211,7 +211,7 @@
                   <Insets bottom="100.0" />
                </StackPane.margin>
             </Label>
-            <Button fx:id="playBtn" disable="true" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Play">
+            <Button fx:id="playBtn" disable="true" focusTraversable="false" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Play">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -223,7 +223,7 @@
                   <String fx:value="play" />
                </styleClass>
             </Button>
-            <Button fx:id="pauseBtn" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Pause">
+            <Button fx:id="pauseBtn" focusTraversable="false" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Pause">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

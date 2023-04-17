@@ -4,9 +4,11 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.entities.Entity;
+import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Line;
@@ -289,7 +291,6 @@ public final class MapCanvas extends ResizableCanvas {
                     if (followedEntity != null) {
                         this.unfollowEntity(followedEntity);
                         followingEntity.set(false);
-                        this.camera.center();
                     }
                 }
             }
@@ -323,10 +324,16 @@ public final class MapCanvas extends ResizableCanvas {
             double x = e.getX();
             double y = e.getY();
 
-            Point absX = this.computePositionPoint(x, y);
+            Point abs = this.computePositionPoint(x, y);
 
-            int chunkX = (int) absX.getX() / Simulation.GRID_SIZE;
-            int chunkY = (int) absX.getY() / Simulation.GRID_SIZE;
+            int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
+            int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
+
+            System.out.println("Clicked on " + abs.getX() + " " + abs.getY());
+            System.out.println("Chunk " + chunkX + " " + chunkY);
+
+
+
 
             if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
                     || chunkY < 0 || chunkY >= Simulation.MAP_SIZE_Y) {
@@ -336,7 +343,7 @@ public final class MapCanvas extends ResizableCanvas {
             for (Entity entity : simulation.getGridEntities(chunkX, chunkY)) {
                 Point entityCenter = entity.getBodyCenter();
                 if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
-                        absX.getX(), absX.getY()) <= Configuration.getConfiguration().getEntityRadius()) {
+                        abs.getX(), abs.getY()) <= Configuration.getConfiguration().getEntityRadius()*2) {
 
                     if (!followingEntity.get()) {
                         this.followEntity(entity);
@@ -345,6 +352,8 @@ public final class MapCanvas extends ResizableCanvas {
                     }
                 }
             }
+
+            System.out.println("Followed" + followingEntity.get());
         });
 
     }

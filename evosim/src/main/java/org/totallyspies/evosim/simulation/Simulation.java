@@ -52,6 +52,7 @@ public final class Simulation {
     /**
      * Grids of entities.
      */
+    @Getter
     private final ChunkedListWorkerManager<Entity> entityGrids;
 
     /**
@@ -73,7 +74,7 @@ public final class Simulation {
     @Getter
     @Setter
     private int predatorCount;
-    
+
     /**
      * Constructs a new simulation based on the default configuration.
      */
