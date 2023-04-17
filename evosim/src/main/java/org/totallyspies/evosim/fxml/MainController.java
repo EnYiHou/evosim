@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.geometry.Point;
@@ -23,10 +22,7 @@ import org.totallyspies.evosim.ui.MapCanvas;
 import java.util.concurrent.atomic.AtomicLong;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
-import org.totallyspies.evosim.ui.AboutWindow;
-import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.io.File;

@@ -47,12 +47,12 @@ class FormulasTest {
   public void testClosestIntersection() {
     assertEquals(1.561, Formulas.closestIntersection(
             new Line(1.61d, 0.83d, 3.457, 6.371),
-            new Circle(1.9d, new Point(3.4d, 3.7d))),
+            new Circle(new Point(3.4d, 3.7d), 1.9d)),
         0.001d);
 
     assertEquals(0, Formulas.closestIntersection(
             new Line(2.556d, 3.668d, 3.457, 6.371),
-            new Circle(1.9d, new Point(3.4d, 3.7d))),
+            new Circle(new Point(3.4d, 3.7d), 1.9d)),
         0.001d);
   }
 
