@@ -14,7 +14,7 @@ import org.totallyspies.evosim.utils.Configuration.Defaults;
         "checkstyle:MissingJavadocMethod"})
 public class ConfigurationTest {
 
-  private Configuration configuration = Configuration.getCONFIGURATION();
+  private Configuration configuration = Configuration.getConfiguration();
 
   @Test
   public void saveConfiguration() throws IOException {
@@ -25,7 +25,7 @@ public class ConfigurationTest {
   @Test
   public void loadDefaultConfiguration() throws IOException {
     configuration.saveLatestConfiguration();
-    Configuration.getCONFIGURATION().loadLastConfiguration();
+    Configuration.getConfiguration().loadLastConfiguration();
 
     Defaults.LATEST_CONFIGURATION.delete();
   }
