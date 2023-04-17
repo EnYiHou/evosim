@@ -137,6 +137,7 @@ public abstract class Entity {
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInDegrees = newViewAngle;
+
         this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
 
         int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
@@ -177,6 +178,7 @@ public abstract class Entity {
      */
     public void move(final double movementSpeed) {
         Point position = this.body.getCenter();
+
         double positionX = Math.max(0, Math.min(
                 position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
                 Simulation.MAP_SIZE_X * Simulation.GRID_SIZE

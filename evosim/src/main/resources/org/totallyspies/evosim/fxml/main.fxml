@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -18,6 +19,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <?import org.totallyspies.evosim.ui.MapCanvas?>
 
 <BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
@@ -80,114 +82,137 @@
       </MenuBar>
    </top>
    <left>
-      <TabPane prefHeight="773.0" prefWidth="234.0" style="-fx-background-color: #F2F5F8;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="Graphs">
-               <content>
-                  <VBox prefHeight="643.0" prefWidth="234.0">
-                     <children>
-                        <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <TabPane prefHeight="773.0" prefWidth="234.0" style="-fx-background-color: #F2F5F8;" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Graphs">
+                     <content>
+                        <ScrollPane>
+                           <content>
+                              <VBox prefHeight="643.0" prefWidth="234.0">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
+                                       <children>
+                                          <Label text="Total Population" />
+                                          <LineChart fx:id="totalPopulationChart" prefHeight="128.0" prefWidth="189.0">
+                                            <xAxis>
+                                              <CategoryAxis animated="false" side="BOTTOM" />
+                                            </xAxis>
+                                            <yAxis>
+                                              <NumberAxis animated="false" side="LEFT" />
+                                            </yAxis>
+                                          </LineChart>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
+                                       <children>
+                                          <Label text="PreyPopulation" />
+                                          <LineChart fx:id="preyPopulationChart">
+                                             <xAxis>
+                                                <CategoryAxis animated="false" side="BOTTOM" />
+                                             </xAxis>
+                                             <yAxis>
+                                                <NumberAxis animated="false" side="LEFT" />
+                                             </yAxis>
+                                          </LineChart>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
+                                       <children>
+                                          <Label text="PredatorPopulation" />
+                                          <LineChart fx:id="predatorPopulationChart">
+                                             <xAxis>
+                                                <CategoryAxis animated="false" side="BOTTOM" />
+                                             </xAxis>
+                                             <yAxis>
+                                                <NumberAxis animated="false" side="LEFT" />
+                                             </yAxis>
+                                          </LineChart>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <padding>
+                                    <Insets top="30.0" />
+                                 </padding>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
+                     </content>
+                  </Tab>
+                <Tab fx:id="entityInfoTab" text="Entity Information">
+                     <content>
+                        <VBox alignment="TOP_CENTER" prefHeight="710.0" prefWidth="233.0" spacing="35.0">
                            <children>
-                              <Label text="Total Population" />
-                              <LineChart fx:id="totalPopulationChart" prefHeight="128.0" prefWidth="189.0">
-                                <xAxis>
-                                  <CategoryAxis animated="false" side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis animated="false" side="LEFT" />
-                                </yAxis>
-                              </LineChart>
+                              <VBox alignment="CENTER" prefHeight="234.0" prefWidth="234.0" spacing="10.0">
+                                 <children>
+                                    <Label fx:id="entityInfoLabel" prefHeight="44.0" prefWidth="178.0" text="Label" />
+                                    <Label fx:id="speedLabel" prefHeight="17.0" prefWidth="171.0" text="Speed : ">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="energyLabel" prefHeight="17.0" prefWidth="171.0" text="Energy :">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="splitEnergyLabel" prefHeight="17.0" prefWidth="171.0" text="Split energy">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="childCountLabel" prefHeight="17.0" prefWidth="171.0" text="Child count : ">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="livingTimeLabel" prefHeight="17.0" prefWidth="171.0" text="Living time : ">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
                            </children>
                            <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                              <Insets top="40.0" />
                            </padding>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
                         </VBox>
-                        <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
-                           <children>
-                              <Label text="PreyPopulation" />
-                              <LineChart fx:id="preyPopulationChart">
-                                 <xAxis>
-                                    <CategoryAxis animated="false" side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis animated="false" side="LEFT" />
-                                 </yAxis>
-                              </LineChart>
-                           </children>
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
-                           </padding>
-                        </VBox>
-                        <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
-                           <children>
-                              <Label text="PredatorPopulation" />
-                              <LineChart fx:id="predatorPopulationChart">
-                                 <xAxis>
-                                    <CategoryAxis animated="false" side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <NumberAxis animated="false" side="LEFT" />
-                                 </yAxis>
-                              </LineChart>
-                           </children>
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
-                           </padding>
-                        </VBox>
-                     </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                     <padding>
-                        <Insets top="30.0" />
-                     </padding>
-                  </VBox>
-               </content></Tab>
-          <Tab fx:id="entityInfoTab" text="Entity Information">
-               <content>
-                  <VBox alignment="TOP_CENTER" prefHeight="710.0" prefWidth="233.0" spacing="35.0">
-                     <children>
-                        <VBox alignment="CENTER" prefHeight="234.0" prefWidth="234.0" spacing="10.0">
-                           <children>
-                              <Label fx:id="entityInfoLabel" prefHeight="44.0" prefWidth="178.0" text="Label" />
-                              <Label fx:id="speedLabel" prefHeight="17.0" prefWidth="171.0" text="Speed : ">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="energyLabel" prefHeight="17.0" prefWidth="171.0" text="Energy :">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="splitEnergyLabel" prefHeight="17.0" prefWidth="171.0" text="Split energy">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="childCountLabel" prefHeight="17.0" prefWidth="171.0" text="Child count : ">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="livingTimeLabel" prefHeight="17.0" prefWidth="171.0" text="Living time : ">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </VBox>
-                     </children>
-                     <padding>
-                        <Insets top="40.0" />
-                     </padding>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  </VBox>
-               </content></Tab>
-        </tabs>
-      </TabPane>
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+                <VBox alignment="CENTER" prefHeight="274.0" prefWidth="200.0" style="-fx-border-width: 3px 0 0 0; -fx-border-color: black; -fx-spacing: 5;" VBox.vgrow="NEVER">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Camera Controls" underline="true" VBox.vgrow="NEVER">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[WASD]&#13;Translate Camera&#13;[+/-]&#13;Zoom Camera&#13;[C]&#13;Center Camera&#13;[SPACE]&#13;Unfollow Entity&#13;[ESC]&#13;Exit Application" textAlignment="CENTER" wrappingWidth="178.55859375">
+                            <font>
+                                <Font size="14.0" />
+                            </font></Text>
+                    </children>
+                </VBox>
+         </children>
+      </VBox>
    </left>
    <center>
       <StackPane alignment="BOTTOM_CENTER">
@@ -202,7 +227,7 @@
                   <Insets bottom="100.0" />
                </StackPane.margin>
             </Label>
-            <Button fx:id="playBtn" disable="true" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Play">
+            <Button fx:id="playBtn" disable="true" focusTraversable="false" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Play">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -214,7 +239,7 @@
                   <String fx:value="play" />
                </styleClass>
             </Button>
-            <Button fx:id="pauseBtn" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Pause">
+            <Button fx:id="pauseBtn" focusTraversable="false" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Pause">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

@@ -22,6 +22,7 @@ import java.util.Set;
  * @author niakouu
  */
 @ToString
+@SuppressWarnings("MissingJavadocMethod")
 public final class Configuration {
 
     /**
@@ -37,17 +38,17 @@ public final class Configuration {
         /**
          * The energy regained passively by a prey for surviving.
          */
-        public static final double PREY_ENERGY_FILLING_SPEED = 0.005d;
+        public static final double PREY_ENERGY_FILLING_SPEED = 0.0005d;
 
         /**
          * The energy regained by a predator from eating prey.
          */
-        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.005d;
+        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.0005d;
 
         /**
          * The base energy lost rate of a predator.
          */
-        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.1d;
+        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01d;
 
         /**
          * The number of sensors each entity has.
@@ -62,12 +63,12 @@ public final class Configuration {
         /**
          * The length of an entity's sensors.
          */
-        public static final double ENTITY_SENSORS_LENGTH = 1000.0d;
+        public static final double ENTITY_SENSORS_LENGTH = 300.0d;
 
         /**
          * The maximum speed of an entity.
          */
-        public static final double ENTITY_MAX_SPEED = 3.0d;
+        public static final double ENTITY_MAX_SPEED = 5.0d;
 
         /**
          * The minimum possible speed of an entity.
@@ -90,6 +91,11 @@ public final class Configuration {
         public static final int PREDATOR_MAX_NUMBER = 100;
 
         /**
+         * The initial quantity of predator spawned.
+         */
+        public static final int PREDATOR_INITIAL_POPULATION = 20;
+
+        /**
          * The view angle of a predator.
          */
         public static final double PREDATOR_VIEW_ANGLE = 60.0d;
@@ -104,6 +110,11 @@ public final class Configuration {
          */
         public static final int PREY_MAX_NUMBER = 100;
 
+         /**
+          * The initial quantity of prey spawned.
+          */
+         public static final int PREY_INITIAL_POPULATION = 60;
+
         /**
          * The view angle of a prey.
          */
@@ -112,7 +123,7 @@ public final class Configuration {
         /**
          * The split energy that a prey will gain when it is not moving.
          */
-        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005d;
 
         /**
          * The number of layers the neural network will contain.
@@ -136,7 +147,6 @@ public final class Configuration {
      */
     private HashMap<String, Number> defaultsValues;
 
-
     /**
      * The only configuration that exists using the Singleton Pattern.
      */
@@ -158,14 +168,20 @@ public final class Configuration {
 
         this.defaultsValues.put("predatorMaxNumber", Defaults.PREDATOR_MAX_NUMBER);
         this.defaultsValues.put("predatorViewAngle", Defaults.PREDATOR_VIEW_ANGLE);
-        this.defaultsValues.put("predatorSplitEnergyFillingSpeed", Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED);
-        this.defaultsValues.put("predatorEnergyBaseDrainingSpeed", Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
-        this.defaultsValues.put("predatorEnergyFillingSpeed", Defaults.PREDATOR_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("predatorSplitEnergyFillingSpeed",
+                Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("predatorEnergyBaseDrainingSpeed",
+                Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
+        this.defaultsValues.put("predatorEnergyFillingSpeed",
+                Defaults.PREDATOR_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("predatorInitialPopulation", Defaults.PREDATOR_INITIAL_POPULATION);
 
         this.defaultsValues.put("preyMaxNumber", Defaults.PREY_MAX_NUMBER);
         this.defaultsValues.put("preyViewAngle", Defaults.PREY_VIEW_ANGLE);
-        this.defaultsValues.put("preySplitEnergyFillingSpeed", Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("preySplitEnergyFillingSpeed",
+                Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
         this.defaultsValues.put("preyEnergyFillingSpeed", Defaults.PREY_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("preyInitialPopulation", Defaults.PREY_INITIAL_POPULATION);
 
         this.defaultsValues.put("neuralNetworkLayersNumber", Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
 
@@ -277,7 +293,7 @@ public final class Configuration {
         return new JSONObject(this.variables);
     }
 
-    private JSONObject getNeuralNetworkJSON(List<Entity> entityList) {
+    private JSONObject getNeuralNetworkJSON(final List<Entity> entityList) {
         JSONObject jsonObjectNeuralNetworks = new JSONObject();
 
         for (int i = 0; i < entityList.size(); i++) {
@@ -306,7 +322,7 @@ public final class Configuration {
         return (double) this.variables.get("entityMaxRotationSpeed");
     }
 
-    public void setEntityMaxRotationSpeed(double newEntityMaxRotationSpeed) {
+    public void setEntityMaxRotationSpeed(final double newEntityMaxRotationSpeed) {
         this.variables.replace("entityMaxRotationSpeed", newEntityMaxRotationSpeed);
     }
 
@@ -314,7 +330,7 @@ public final class Configuration {
         return (int) this.variables.get("entitySensorsCount");
     }
 
-    public void setEntitySensorsCount(int newEntitySensorsCount) {
+    public void setEntitySensorsCount(final int newEntitySensorsCount) {
         this.variables.replace("entitySensorsCount", newEntitySensorsCount);
     }
 
@@ -322,7 +338,7 @@ public final class Configuration {
         return (double) this.variables.get("entityRadius");
     }
 
-    public void setEntityRadius(double newEntityRadius) {
+    public void setEntityRadius(final double newEntityRadius) {
         this.variables.replace("entityEntityRadius", newEntityRadius);
     }
 
@@ -330,7 +346,7 @@ public final class Configuration {
         return (double) this.variables.get("entitySensorsLength");
     }
 
-    public void setEntitySensorsLength(double newEntitySensorsLength) {
+    public void setEntitySensorsLength(final double newEntitySensorsLength) {
         this.variables.replace("entitySensorsLength", newEntitySensorsLength);
     }
 
@@ -338,7 +354,7 @@ public final class Configuration {
         return (double) this.variables.get("entityMaxSpeed");
     }
 
-    public void setEntityMaxSpeed(double newEntityMaxSpeed) {
+    public void setEntityMaxSpeed(final double newEntityMaxSpeed) {
         this.variables.replace("entityMaxSpeed", newEntityMaxSpeed);
     }
 
@@ -346,7 +362,7 @@ public final class Configuration {
         return (double) this.variables.get("entityMinSpeed");
     }
 
-    public void setEntityMinSpeed(double newEntityMinSpeed) {
+    public void setEntityMinSpeed(final double newEntityMinSpeed) {
         this.variables.replace("entityMinxSpeed", newEntityMinSpeed);
     }
 
@@ -354,7 +370,7 @@ public final class Configuration {
         return (double) this.variables.get("entitySpeedMutationRate");
     }
 
-    public void setEntitySpeedMutationRate(double newEntitySpeedMutationRate) {
+    public void setEntitySpeedMutationRate(final double newEntitySpeedMutationRate) {
         this.variables.replace("entitySpeedMutationRate", newEntitySpeedMutationRate);
     }
 
@@ -362,7 +378,7 @@ public final class Configuration {
         return (double) this.variables.get("entityEnergyDrainRate");
     }
 
-    public void setEntityEnergyDrainRate(double newEntityEnergyDrainRate) {
+    public void setEntityEnergyDrainRate(final double newEntityEnergyDrainRate) {
         this.variables.replace("entityEnergyDrainRat", newEntityEnergyDrainRate);
     }
 
@@ -370,7 +386,7 @@ public final class Configuration {
         return (int) this.variables.get("predatorMaxNumber");
     }
 
-    public void setPredatorMaxNumber(int newPredatorMaxNumber) {
+    public void setPredatorMaxNumber(final int newPredatorMaxNumber) {
         this.variables.replace("predatorMaxNumber", newPredatorMaxNumber);
     }
 
@@ -378,7 +394,7 @@ public final class Configuration {
         return (double) this.variables.get("predatorViewAngle");
     }
 
-    public void setPredatorViewAngle(double newPredatorViewAngle) {
+    public void setPredatorViewAngle(final double newPredatorViewAngle) {
         this.variables.replace("predatorViewAngle", newPredatorViewAngle);
     }
 
@@ -386,15 +402,17 @@ public final class Configuration {
         return (double) this.variables.get("predatorSplitEnergyFillingSpeed");
     }
 
-    public void setPredatorSplitEnergyFillingSpeed(double newPredatorSplitEnergyFillingSpeed) {
-        this.variables.replace("predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
+    public void setPredatorSplitEnergyFillingSpeed(
+            final double newPredatorSplitEnergyFillingSpeed) {
+        this.variables.replace(
+                "predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
     }
 
     public double getPredatorEnergyFillingSpeed() {
         return (double) this.variables.get("predatorEnergyFillingSpeed");
     }
 
-    public void setPredatorEnergyFillingSpeed(double newPredatorEnergyFillingSpeed) {
+    public void setPredatorEnergyFillingSpeed(final double newPredatorEnergyFillingSpeed) {
         this.variables.replace("predatorEnergyFillingSpeed", newPredatorEnergyFillingSpeed);
     }
 
@@ -402,15 +420,33 @@ public final class Configuration {
         return (double) this.variables.get("predatorEnergyBaseDrainingSpeed");
     }
 
-    public void setPredatorEnergyBaseDrainingSpeed(double newPredatorEnergyBaseDrainingSpeed) {
-        this.variables.replace("predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
+    public void setPredatorEnergyBaseDrainingSpeed(
+            final double newPredatorEnergyBaseDrainingSpeed) {
+        this.variables.replace(
+                "predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
+    }
+
+    public int getPredatorInitialPopulation() {
+        return (int) this.variables.get("predatorInitialPopulation");
+    }
+
+    public void setPredatorInitialPopulation(final int newPredatorInitialPopulation) {
+        this.variables.replace("predatorInitialPopulation", newPredatorInitialPopulation);
+    }
+
+    public int getPreyInitialPopulation() {
+        return (int) this.variables.get("preyInitialPopulation");
+    }
+
+    public void setPreyInitialPopulation(final int newPreyInitialPopulation) {
+        this.variables.replace("preyInitialPopulation", newPreyInitialPopulation);
     }
 
     public int getPreyMaxNumber() {
         return (int) this.variables.get("preyMaxNumber");
     }
 
-    public void setPreyMaxNumber(int newPreyMaxNumber) {
+    public void setPreyMaxNumber(final int newPreyMaxNumber) {
         this.variables.replace("preyMaxNumber", newPreyMaxNumber);
     }
 
@@ -418,7 +454,7 @@ public final class Configuration {
         return (double) this.variables.get("preyViewAngle");
     }
 
-    public void setPreyViewAngle(double newPreyViewAngle) {
+    public void setPreyViewAngle(final double newPreyViewAngle) {
         this.variables.replace("preyViewAngle", newPreyViewAngle);
     }
 
@@ -426,7 +462,7 @@ public final class Configuration {
         return (double) this.variables.get("preySplitEnergyFillingSpeed");
     }
 
-    public void setPreySplitEnergyFillingSpeed(double newPreySplitEnergyFillingSpeed) {
+    public void setPreySplitEnergyFillingSpeed(final double newPreySplitEnergyFillingSpeed) {
         this.variables.replace("preySplitEnergyFillingSpeed", newPreySplitEnergyFillingSpeed);
     }
 
@@ -434,7 +470,7 @@ public final class Configuration {
         return (double) this.variables.get("preyEnergyFillingSpeed");
     }
 
-    public void setPreyEnergyFillingSpeed(double newPreyEnergyFillingSpeed) {
+    public void setPreyEnergyFillingSpeed(final double newPreyEnergyFillingSpeed) {
         this.variables.replace("preyEnergyFillingSpeed", newPreyEnergyFillingSpeed);
     }
 
@@ -442,7 +478,7 @@ public final class Configuration {
         return (int) this.variables.get("neuralNetworkLayersNumber");
     }
 
-    public void setNeuralNetworkLayersNumber(double newNeuralNetworkLayersNumber) {
+    public void setNeuralNetworkLayersNumber(final double newNeuralNetworkLayersNumber) {
         this.variables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
     }
 }
