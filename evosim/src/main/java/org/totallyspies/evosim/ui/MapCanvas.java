@@ -329,10 +329,8 @@ public final class MapCanvas extends ResizableCanvas {
             int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
             int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
 
-            System.out.println("Clicked on " + abs.getX() + " " + abs.getY());
-            System.out.println("Chunk " + chunkX + " " + chunkY);
-
-
+//            System.out.println("Clicked on " + abs.getX() + " " + abs.getY());
+//            System.out.println("Chunk " + chunkX + " " + chunkY);
 
 
             if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
@@ -340,10 +338,12 @@ public final class MapCanvas extends ResizableCanvas {
                 return;
             }
 
+            System.out.println("Number of entities in chunk: " +
+                    simulation.getGridEntities(chunkX, chunkY).size());
             for (Entity entity : simulation.getGridEntities(chunkX, chunkY)) {
                 Point entityCenter = entity.getBodyCenter();
                 if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
-                        abs.getX(), abs.getY()) <= Configuration.getConfiguration().getEntityRadius()*2) {
+                        abs.getX(), abs.getY()) <= Configuration.getConfiguration().getEntityRadius() * 2) {
 
                     if (!followingEntity.get()) {
                         this.followEntity(entity);
@@ -353,7 +353,6 @@ public final class MapCanvas extends ResizableCanvas {
                 }
             }
 
-            System.out.println("Followed" + followingEntity.get());
         });
 
     }
