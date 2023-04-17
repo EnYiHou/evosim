@@ -1,16 +1,19 @@
 package org.totallyspies.evosim.simulation;
 
+import java.util.LinkedList;
+
 import javafx.animation.AnimationTimer;
+import lombok.Getter;
+import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.Rng;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * The class in which the bulk of the simulation loop is managed.
@@ -19,150 +22,213 @@ import java.util.ListIterator;
  */
 public final class Simulation {
     /**
-     * A list containing a list of all living entities.
+     * The width of the whole map.
      */
-    public static final List<Entity> ENTITY_LIST = new ArrayList<>();
-
-    /**
-     * The list of grids that the entities are stored in.
-     */
-    public static final List<List<List<Entity>>> GRIDS = new ArrayList<>();
-
-    /**
-     * The height of a single grid.
-     */
-    public static final double GRID_HEIGHT = 500.0d;
-
-    /**
-     * The width of a single grid.
-     */
-    public static final double GRID_WIDTH = 500.0d;
-
+    public static final int MAP_SIZE_X = 10;
     /**
      * The height of the whole map.
      */
-    public static final double MAP_HEIGHT = 5000.0d;
+    public static final int MAP_SIZE_Y = 10;
+    /**
+     * The x and y size of a single grid.
+     */
+    public static final int GRID_SIZE = 500;
 
     /**
-     * The width of the whole map.
+     * The list of all simulations.
      */
-    public static final double MAP_WIDTH = 5000.0d;
-
+    private static List<Simulation> simulations = new LinkedList<>();
     /**
-     * The number of grids in the x direction.
+     * Grids of entities.
      */
-    public static final int GRID_X = (int) (Simulation.MAP_WIDTH / Simulation.GRID_WIDTH);
-
-    /**
-     * The number of grids in the y direction.
-     */
-    public static final int GRID_Y = (int) (Simulation.MAP_HEIGHT / Simulation.GRID_HEIGHT);
-
-    /**
-     * The singleton instance of the simulation.
-     */
-    private static final Simulation INSTANCE = new Simulation();
+    private final ChunkedListWorkerManager<Entity> entityGrids;
 
     /**
      * The animation loop of the simulation that runs every frame.
      */
-    private final AnimationTimer animationLoop = new AnimationTimer() {
-        @Override
-        public void handle(final long now) {
-            updateGrids();
+    @Getter
+    private final AnimationTimer animationLoop;
 
-            ListIterator<Entity> iterator = Simulation.ENTITY_LIST.listIterator();
-            while (iterator.hasNext()) {
-                final Entity entity = iterator.next();
-                entity.update();
-                if (entity.isDeath()) {
-                    iterator.remove();
-                }
-                if (entity.isSplit()) {
-                    iterator.add(entity.clone());
-                    entity.setSplitEnergy(entity.getSplitEnergy() - 1);
-                    entity.setChildCount(entity.getChildCount() + 1);
-                    entity.setSplit(false);
-                }
-            }
-        }
-    };
+    /**
+     * The number of prey alive in the simulation.
+     */
+    @Getter
+    @Setter
+    private int preyCount;
 
-    private Simulation() {
-        this.generateGrids();
+    /**
+     * The number of predators alive in the simulation.
+     */
+    @Getter
+    @Setter
+    private int predatorCount;
+    
+    /**
+     * Constructs a new simulation based on the default configuration.
+     */
+    public Simulation() {
+        this.entityGrids = new ChunkedListWorkerManager<>(
+                MAP_SIZE_X * MAP_SIZE_Y,
+                100,
+                this::checkGridCollisions
+        );
+
         // TODO add initial population (add config for initial population)
         this.populateEntityList(100, 100);
-        this.updateGrids();
+
+        this.animationLoop = new AnimationTimer() {
+            @Override
+            public void handle(final long now) {
+                update(now);
+            }
+        };
+
+        this.animationLoop.start();
+        this.entityGrids.startWorkers();
+
+        simulations.add(this);
     }
 
     /**
-     * Generate the grids for the simulation.
+     * Stops all workers of all simulations.
      */
-    private void generateGrids() {
-        final int x = (int) (Simulation.MAP_WIDTH / Simulation.GRID_WIDTH);
-        final int y = (int) (Simulation.MAP_HEIGHT / Simulation.GRID_HEIGHT);
+    public static void stopAll() {
+        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
+    }
 
-        for (int i = 0; i < x; i++) {
-            final List<List<Entity>> grid = new ArrayList<>();
-            for (int j = 0; j < y; j++) {
-                grid.add(new ArrayList<>());
-            }
-            Simulation.GRIDS.add(grid);
-        }
+    /**
+     * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
+     *
+     * @param point Point to be converted.
+     * @return Index of chunk for this point.
+     */
+    public static int pointToChunk(final Point point) {
+        return coordsToChunk((int) point.getX() / GRID_SIZE, (int) point.getY() / GRID_SIZE);
+    }
+
+    /**
+     * Converts a coordinate to a chunk index for {@link #entityGrids}.
+     *
+     * @param x X axis index.
+     * @param y Y axis index.
+     * @return Index of chunk for this point.
+     */
+    public static int coordsToChunk(final int x, final int y) {
+        return x + y * MAP_SIZE_X;
     }
 
     /**
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
      *
-     * @param initPrey      the initial number of prey spawned
-     * @param initPredator  the initial number of predators spawned
+     * @param initPrey     the initial number of prey spawned
+     * @param initPredator the initial number of predators spawned
      */
     private void populateEntityList(final int initPrey, final int initPredator) {
-        double maxSpeed = Configuration.getCONFIGURATION().getEntityMaxSpeed();
+        final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
+        final List<Entity> entities = new ArrayList<>(initPrey + initPredator);
 
         // TODO add min speed to config
         for (int i = 0; i < initPrey; i++) {
-            Simulation.ENTITY_LIST.add(new Prey(
+            entities.add(new Prey(
                     Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
-                            Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
-                            Rng.RNG.nextDouble(0, Simulation.MAP_HEIGHT)
-                    ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI)
-            ));
+                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
+                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
+                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
         }
 
         for (int i = 0; i < initPredator; i++) {
-            Simulation.ENTITY_LIST.add(new Predator(
+            entities.add(new Predator(
                     Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
-                            Rng.RNG.nextDouble(0, Simulation.MAP_WIDTH),
-                            Rng.RNG.nextDouble(0, Simulation.MAP_HEIGHT)
-                    ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI)
-            ));
+                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
+                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
+                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
+        }
+
+        entities.forEach(
+                entity -> this.entityGrids.add(entity, pointToChunk(entity.getBodyCenter()))
+        );
+
+        this.preyCount += initPrey;
+        this.predatorCount += initPredator;
+    }
+
+    private void checkGridCollisions(final int i, final List<Entity> entities) {
+        List<Entity> chunk;
+        synchronized (entities) {
+            for (Entity cur : entities) {
+                for (int x = i - 1; x < i + 1; ++x) {
+                    if (x < 0 || MAP_SIZE_X <= x) {
+                        continue;
+                    }
+
+                    for (int y = i - 1; y < i + 1; ++y) {
+                        if (y < 0 || MAP_SIZE_Y <= y) {
+                            continue;
+                        }
+
+                        chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
+                        synchronized (chunk) {
+                            for (Entity toCompare : chunk) {
+                                if (cur.collidesWith(toCompare)) {
+                                    cur.onCollide(toCompare);
+                                    toCompare.onCollide(cur);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void update(final long now) {
+        for (int i = 0; i < this.entityGrids.getChunkCount(); ++i) {
+            List<Entity> chunk = this.entityGrids.getChunk(i);
+            synchronized (chunk) {
+                for (int j = chunk.size() - 1; j >= 0; --j) {
+                    final Entity entity = chunk.get(j);
+                    entity.update();
+                    if (entity.isDead()) {
+                        chunk.remove(j);
+                        if (entity instanceof Prey) {
+                            this.preyCount--;
+                        } else if (entity instanceof Predator) {
+                            this.predatorCount--;
+                        }
+                    } else if (entity.isSplit()) {
+                        chunk.add(entity.clone());
+                        entity.setSplitEnergy(0);
+                        entity.setChildCount(entity.getChildCount() + 1);
+                        entity.setSplit(false);
+                        if (entity instanceof Prey) {
+                            this.preyCount++;
+                        } else if (entity instanceof Predator) {
+                            this.predatorCount++;
+                        }
+                    }
+                }
+            }
         }
     }
 
     /**
-     * Updates the grid map by clearing all entities from the grid map and
-     * re-adding them based on their current position.
+     * Gets a copy of all entiries within a grid at this instant.
+     *
+     * @param x X position of grid
+     * @param y Y position of grid
+     * @return Frozen list of entities within the grid.
      */
-    private void updateGrids() {
-        //clear entity from grids
-        for (List<List<Entity>> grid : Simulation.GRIDS) {
-            for (List<Entity> entities : grid) {
-                entities.clear();
-            }
+    public List<Entity> getGridEntities(final int x, final int y) {
+        List<Entity> entities;
+        List<Entity> chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
+
+        synchronized (chunk) {
+            entities = chunk.stream().toList();
         }
 
-        for (final Entity entity : Simulation.ENTITY_LIST) {
-            final int x = (int) (entity.getBodyCenter().getX() / Simulation.GRID_WIDTH);
-            final int y = (int) (entity.getBodyCenter().getY() / Simulation.GRID_WIDTH);
-            Simulation.GRIDS.get(x).get(y).add(entity);
-            entity.setGridX(x);
-            entity.setGridY(y);
-        }
+        return entities;
     }
 }

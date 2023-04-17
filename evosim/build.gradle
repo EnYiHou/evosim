@@ -30,7 +30,7 @@ application {
 }
 
 javafx {
-    version = '17.0.2'
+    version = '19.0.2'
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
@@ -39,6 +39,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
     implementation group: 'org.json', name: 'json', version: '20230227'
+
+    implementation 'com.google.guava:guava:31.0.1-jre'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"

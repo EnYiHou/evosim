@@ -1,7 +1,5 @@
 package org.totallyspies.evosim.utils;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
 import org.totallyspies.evosim.entities.Entity;
@@ -12,11 +10,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Configuration class consists of saving the settings the user configurations. If the user close
@@ -140,6 +136,7 @@ public final class Configuration {
      */
     private HashMap<String, Number> defaultsValues;
 
+
     /**
      * The only configuration that exists using the Singleton Pattern.
      */
@@ -239,7 +236,7 @@ public final class Configuration {
      *
      * @return Configuration saved from a Json File
      */
-    public static Configuration getCONFIGURATION() {
+    public static Configuration getConfiguration() {
         return Configuration.CONFIGURATION;
     }
 
@@ -330,7 +327,7 @@ public final class Configuration {
     }
 
     public double getEntitySensorsLength() {
-        return (double) this.variables.get("getEntitySensorsLength");
+        return (double) this.variables.get("entitySensorsLength");
     }
 
     public void setEntitySensorsLength(double newEntitySensorsLength) {
