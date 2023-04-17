@@ -48,24 +48,13 @@ public final class Formulas {
     }
 
     /**
-     * ReLU activation function.
-     *
-     * @param x input value
-     * @return activated value
-     */
-    public static double relu(final double x) {
-        return Math.max(0, x);
-    }
-
-    /**
      * List of all activation functions.
      */
     public static final List<Function<Double, Double>> ACTIVATION_FUNCTIONS =
             List.of(
                     Formulas::logistic,
                     Formulas::hyperbolicTangent,
-                    Formulas::arctangent,
-                    Formulas::relu
+                    Formulas::arctangent
             );
 
     /**
@@ -111,10 +100,10 @@ public final class Formulas {
 
             return (distance1 <= distance2 ? distance1 : distance2);
         }
+
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
             - circleRadius < 0) {
             return 0d;
-
         } else {
             //calculate the slope of the line
             slope = (lineEndY - lineStartY) / (deltaX);

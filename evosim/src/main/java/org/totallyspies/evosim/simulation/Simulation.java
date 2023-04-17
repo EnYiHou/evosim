@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
+import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
@@ -18,29 +19,40 @@ import java.util.List;
 /**
  * The class in which the bulk of the simulation loop is managed.
  *
- * @author Matthew
+ * @author mattlep11, EnYi
  */
 public final class Simulation {
+    /**
+     * A list of all simulations.
+     */
+    private static List<Simulation> simulations = new LinkedList<>();
+
+    /**
+     * Stops all threads for any active simulation.
+     */
+    public static void stopAll() {
+        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
+    }
+
     /**
      * The width of the whole map.
      */
     public static final int MAP_SIZE_X = 10;
+
     /**
      * The height of the whole map.
      */
     public static final int MAP_SIZE_Y = 10;
+
     /**
      * The x and y size of a single grid.
      */
     public static final int GRID_SIZE = 500;
 
     /**
-     * The list of all simulations.
-     */
-    private static List<Simulation> simulations = new LinkedList<>();
-    /**
      * Grids of entities.
      */
+    @Getter
     private final ChunkedListWorkerManager<Entity> entityGrids;
 
     /**
@@ -62,7 +74,7 @@ public final class Simulation {
     @Getter
     @Setter
     private int predatorCount;
-    
+
     /**
      * Constructs a new simulation based on the default configuration.
      */
@@ -73,8 +85,10 @@ public final class Simulation {
                 this::checkGridCollisions
         );
 
-        // TODO add initial population (add config for initial population)
-        this.populateEntityList(100, 100);
+        this.populateEntityList(
+                Configuration.getConfiguration().getPreyInitialPopulation(),
+                Configuration.getConfiguration().getPredatorInitialPopulation()
+        );
 
         this.animationLoop = new AnimationTimer() {
             @Override
@@ -87,13 +101,6 @@ public final class Simulation {
         this.entityGrids.startWorkers();
 
         simulations.add(this);
-    }
-
-    /**
-     * Stops all workers of all simulations.
-     */
-    public static void stopAll() {
-        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
 
     /**
@@ -118,6 +125,18 @@ public final class Simulation {
     }
 
     /**
+     * Converts a {@code Point} into coordinates of a chunk index for {@link #entityGrids}.
+     *
+     * @param point point to be converted
+     * @return the coordinates of the chunk
+     */
+    public static Coordinate coordsToChunkCoords(final Point point) {
+        int index = pointToChunk(point);
+        return new Coordinate(index % Simulation.MAP_SIZE_X, index / Simulation.MAP_SIZE_Y);
+    }
+
+
+    /**
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
      *
@@ -126,16 +145,19 @@ public final class Simulation {
      */
     private void populateEntityList(final int initPrey, final int initPredator) {
         final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
+        final double minSpeed = Configuration.getConfiguration().getEntityMinSpeed();
         final List<Entity> entities = new ArrayList<>(initPrey + initPredator);
 
-        // TODO add min speed to config
         for (int i = 0; i < initPrey; i++) {
             entities.add(new Prey(
-                    Rng.RNG.nextDouble(1, maxSpeed),
+                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
+                    ),
+                    Rng.RNG.nextDouble(0, 2 * Math.PI),
+                    System.currentTimeMillis()
+            ));
         }
 
         for (int i = 0; i < initPredator; i++) {
@@ -203,6 +225,7 @@ public final class Simulation {
                         entity.setSplitEnergy(0);
                         entity.setChildCount(entity.getChildCount() + 1);
                         entity.setSplit(false);
+
                         if (entity instanceof Prey) {
                             this.preyCount++;
                         } else if (entity instanceof Predator) {

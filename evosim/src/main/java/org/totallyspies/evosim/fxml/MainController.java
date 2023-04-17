@@ -1,10 +1,13 @@
 package org.totallyspies.evosim.fxml;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -19,16 +22,19 @@ import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
+
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.stage.FileChooser;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
 
 /**
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
@@ -147,6 +153,12 @@ public final class MainController {
     private Simulation simulation;
 
     /**
+     * The StackPane within the center of the root BorderPane.
+     */
+    @FXML
+    private StackPane centerStack;
+
+    /**
      *  In order to explore the user's files.
      */
     private FileChooser fileChooser;
@@ -170,23 +182,42 @@ public final class MainController {
         isSaved = false;
     }
 
-
     /**
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws IOException {
-
         this.simulation = new Simulation();
+        this.mapCanvas.attach(simulation);
+
         this.setPlayPauseButtons();
         this.setChart(totalPopulationChart);
         this.setChart(preyPopulationChart);
         this.setChart(predatorPopulationChart);
         this.setTimer();
+
         this.chosenEntityProperty = new SimpleObjectProperty<>();
-        this.chosenEntityProperty.set(new Predator(1, new Point(0, 0),
-                1, System.currentTimeMillis()));
+        this.chosenEntityProperty.set(new Predator(
+                1,
+                new Point(0, 0),
+                1,
+                System.currentTimeMillis())
+        );
         this.setEntityInfoTab();
-        this.mapCanvas.attach(simulation);
+
+        Scene scene = EvosimApplication.getApplication().getStage().getScene();
+
+        scene.setOnKeyPressed(event -> {
+            KeyCode code = event.getCode();
+            if (code == KeyCode.ESCAPE) {
+                escapeClicked();
+            }
+            if (!MapCanvas.getPressedKeys().contains(code)) {
+                MapCanvas.getPressedKeys().push(code);
+            }
+        });
+
+        scene.setOnKeyReleased(event ->
+                MapCanvas.getPressedKeys().remove(event.getCode()));
 
         String evosimDir = Paths.get(
                 System.getProperty("user.home"), "Documents", "Evosim").toString();
@@ -204,10 +235,9 @@ public final class MainController {
     }
 
     /**
-     * Sets the play and pause buttons.
+     * Sets entity information in the info tab.
      */
     private void setEntityInfoTab() {
-
         this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
         this.energyLabel.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Energy: %.2f",
@@ -229,7 +259,7 @@ public final class MainController {
     }
 
     /**
-     * Sets the charts of the simulation.
+     * Sets the chart of the simulation.
      *
      * @param chart the chart to be set
      */
@@ -324,12 +354,12 @@ public final class MainController {
     @FXML
     private void aboutMenuClicked() {
         AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
-        aw.getAbtStage().showAndWait();
+        aw.getAbtStage().show();
     }
 
     @FXML
     private void clickOnSave(final ActionEvent event) throws IOException {
-        if(!isSaved) {
+        if (!isSaved) {
             fileChooser.setTitle("Save Configuration");
             File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
 
@@ -366,9 +396,31 @@ public final class MainController {
         System.out.println(configuration.toString());
     }
 
+
     @FXML
     private void clickOnExit(final ActionEvent event) throws IOException {
         configuration.saveLatestConfiguration();
         Platform.exit();
     }
+
+    /**
+     * Display an alert to the user to confirm if they'd like to close the app.
+     */
+    private void escapeClicked() {
+        Alert confirmation = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Are you sure you'd like to exit Evosim?",
+                ButtonType.YES,
+                ButtonType.NO
+        );
+
+        Optional<ButtonType> selection = confirmation.showAndWait();
+        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
+            confirmation.close();
+        } else if (selection.get() == ButtonType.YES) {
+            System.out.println("Shutting down application...");
+            EvosimApplication.getApplication().getStage().close();
+        }
+    }
+
 }
