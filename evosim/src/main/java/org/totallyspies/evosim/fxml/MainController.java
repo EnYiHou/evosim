@@ -4,12 +4,10 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
-import lombok.NoArgsConstructor;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
@@ -17,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.geometry.Point;
@@ -33,12 +30,6 @@ import javafx.scene.layout.StackPane;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.stage.FileChooser;
-import org.totallyspies.evosim.ui.AboutWindow;
-import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.io.File;
@@ -167,7 +158,7 @@ public final class MainController {
     @FXML
     private StackPane centerStack;
 
-    /*
+    /**
      *  In order to explore the user's files.
      */
     private FileChooser fileChooser;
@@ -197,8 +188,12 @@ public final class MainController {
         this.setChart(predatorPopulationChart);
         this.setTimer();
         this.chosenEntityProperty = new SimpleObjectProperty<>();
-        this.chosenEntityProperty.set(new Predator(1, new Point(0, 0),
-                1, System.currentTimeMillis()));
+        this.chosenEntityProperty.set(new Predator(
+                1,
+                new Point(0, 0),
+                1,
+                System.currentTimeMillis())
+        );
         this.setEntityInfoTab();
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
 
@@ -230,10 +225,9 @@ public final class MainController {
     }
 
     /**
-     * Sets the play and pause buttons.
+     * Sets entity information in the info tab.
      */
     private void setEntityInfoTab() {
-
         this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
         this.energyLabel.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Energy: %.2f",
@@ -255,7 +249,7 @@ public final class MainController {
     }
 
     /**
-     * Sets the charts of the simulation.
+     * Sets the chart of the simulation.
      *
      * @param chart the chart to be set
      */
