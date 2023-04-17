@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="532.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.SettingsController">
+   <top>
+      <Label alignment="CENTER" prefHeight="58.0" prefWidth="310.0" text="Evosim SETTINGS" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <VBox alignment="TOP_CENTER" prefHeight="455.0" prefWidth="532.0" style="-fx-border-insets: 20 35 20 35; -fx-border-color: grey; -fx-border-radius: 15; -fx-padding: 10;" BorderPane.alignment="CENTER">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <children>
+            <Label text="Entity Stats Visibility">
+               <font>
+                  <Font name="System Bold Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label text="** The entity stats are only visible on click focus." textFill="#535151">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <GridPane alignment="CENTER" prefHeight="91.0" prefWidth="335.0">
+               <columnConstraints>
+                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <CheckBox fx:id="cbEnergy" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" text="Energy Bar Visible" />
+                  <CheckBox fx:id="cbSplitEnergy" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" text="Split Energy Visible" GridPane.columnIndex="1" />
+                  <CheckBox fx:id="cbSpeed" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" text="Speed Count Visible" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="cbChild" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" text="Child Count Visible" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="cbTimer" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" text="Time Alive Visible" GridPane.rowIndex="2" />
+               </children>
+               <VBox.margin>
+                  <Insets left="30.0" right="15.0" top="10.0" />
+               </VBox.margin>
+            </GridPane>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="GREY" height="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.5" width="200.0">
+               <VBox.margin>
+                  <Insets bottom="15.0" top="15.0" />
+               </VBox.margin>
+            </Rectangle>
+            <Label text="General Settings">
+               <font>
+                  <Font name="System Bold Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label text="placeholder :)" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

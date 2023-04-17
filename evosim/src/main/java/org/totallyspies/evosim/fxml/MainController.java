@@ -3,6 +3,13 @@ package org.totallyspies.evosim.fxml;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tab;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -10,26 +17,20 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
-import org.totallyspies.evosim.entities.Predator;
-import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.io.File;
@@ -89,18 +90,6 @@ public final class MainController {
     private Label timerLabel;
 
     /**
-     * Label for the chosen entity's energy.
-     */
-    @FXML
-    private Label energyLabel;
-
-    /**
-     * Label for the chosen entity's splitEnergy.
-     */
-    @FXML
-    private Label splitEnergyLabel;
-
-    /**
      * Label for the chosen entity's speed.
      */
     @FXML
@@ -121,7 +110,6 @@ public final class MainController {
     /**
      * Entity information tab.
      */
-    @Getter
     @FXML
     private Tab entityInfoTab;
 
@@ -135,7 +123,6 @@ public final class MainController {
      * The chosen Entity.
      */
     private ObjectProperty<Entity> chosenEntityProperty;
-
 
     /**
      * The timer of the simulation.
@@ -153,10 +140,29 @@ public final class MainController {
     private Simulation simulation;
 
     /**
-     * The StackPane within the center of the root BorderPane.
+     * A {@code #ProgressBar} displaying the tracked entity's energy level.
      */
     @FXML
-    private StackPane centerStack;
+    private ProgressBar pbEnergy;
+
+    /**
+     * A {@code #ProgressBar} displaying the tracked entity's split energy level.
+     */
+    @FXML
+    private ProgressBar pbSplit;
+
+    /**
+     * An {@code #HBox} containing the progress bar and label for the entity split energy.
+     */
+    @FXML
+    private HBox energyBar;
+
+    /**
+     * An {@code #HBox} containing the progress bar and label for the entity energy.
+     */
+    @FXML
+    private HBox splitEnergyBar;
+
 
     /**
      *  In order to explore the user's files.
@@ -187,14 +193,6 @@ public final class MainController {
         this.setChart(preyPopulationChart);
         this.setChart(predatorPopulationChart);
         this.setTimer();
-        this.chosenEntityProperty = new SimpleObjectProperty<>();
-        this.chosenEntityProperty.set(new Predator(
-                1,
-                new Point(0, 0),
-                1,
-                System.currentTimeMillis())
-        );
-        this.setEntityInfoTab();
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
 
         scene.setOnKeyPressed(event -> {
@@ -225,27 +223,19 @@ public final class MainController {
     }
 
     /**
-     * Sets entity information in the info tab.
+     * Binds the visibility of all entity stat nodes to their respective settings.
      */
-    private void setEntityInfoTab() {
-        this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
-        this.energyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Energy: %.2f",
-                        this.chosenEntityProperty.getValue().getEnergy()),
-                this.chosenEntityProperty));
-        this.splitEnergyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Split Energy: %.2f",
-                        this.chosenEntityProperty.getValue().getSplitEnergy()),
-                this.chosenEntityProperty));
-        this.speedLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Speed: %.2f",
-                        this.chosenEntityProperty.getValue().getSpeed()),
-                this.chosenEntityProperty));
-        this.childCountLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Child Count: %d",
-                        this.chosenEntityProperty.getValue().getChildCount()),
-                this.chosenEntityProperty));
-
+    private void setSettingsBindings() {
+        energyBar.visibleProperty().bind(
+                Bindings.createBooleanBinding(SettingsController::isEnergyVisible));
+        splitEnergyBar.visibleProperty().bind(
+                Bindings.createBooleanBinding(SettingsController::isSplitEnergyVisible));
+        speedLabel.visibleProperty().bind(
+                Bindings.createBooleanBinding(SettingsController::isSpeedVisible));
+        childCountLabel.visibleProperty().bind(
+                Bindings.createBooleanBinding(SettingsController::isChildCountVisible));
+        timerLabel.visibleProperty().bind(
+                Bindings.createBooleanBinding(SettingsController::isTimerVisible));
     }
 
     /**
@@ -300,10 +290,11 @@ public final class MainController {
                     new XYChart.Data<>(counter.toString(),
                             this.simulation.getPredatorCount()));
 
-            livingTimeLabel.setText(
-                    String.format("Living Time: %d s",
-                            this.chosenEntityProperty.getValue()
-                                    .getLivingTime(System.currentTimeMillis())));
+//            livingTimeLabel.setText(
+//                    String.format("Living Time: %d s",
+//                            this.chosenEntityProperty.getValue()
+//                                    .getLivingTime(System.currentTimeMillis())));
+            //TODO remove if not being used.
             checkChartSize(totalPopulationChartSeries);
             checkChartSize(preyPopulationChartSeries);
             checkChartSize(predatorPopulationChartSeries);
@@ -323,7 +314,7 @@ public final class MainController {
     /**
      * Set the play and pause buttons.
      */
-    public void setPlayPauseButtons() {
+    private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().start();
             this.playBtn.setDisable(true);
@@ -345,6 +336,15 @@ public final class MainController {
     private void aboutMenuClicked() {
         AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
         aw.getAbtStage().show();
+    }
+
+    /**
+     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
+     */
+    @FXML
+    private void settingsMenuClicked() {
+        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
+        sw.getSettingsStage().show();
     }
 
     @FXML
@@ -393,6 +393,7 @@ public final class MainController {
     /**
      * Display an alert to the user to confirm if they'd like to close the app.
      */
+    @FXML
     private void escapeClicked() {
         Alert confirmation = new Alert(
                 Alert.AlertType.CONFIRMATION,

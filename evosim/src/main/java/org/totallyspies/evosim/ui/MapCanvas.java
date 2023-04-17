@@ -361,5 +361,29 @@ public final class MapCanvas extends ResizableCanvas {
 
     }
 
+//    /**
+//     * Sets entity information in the on-screen focus display.
+//     */
+//    private void setEntityInfo() {
+//        // TODO move this to the simulation to set ON focus.
+//        MainController.get.setText(this.chosenEntityProperty.getValue().toString());
+////        this.energyLabel.textProperty().bind(Bindings.createStringBinding(
+////                () -> String.format("Energy: %.2f",
+////                        this.chosenEntityProperty.getValue().getEnergy()),
+////                this.chosenEntityProperty));
+////        this.splitEnergyLabel.textProperty().bind(Bindings.createStringBinding(
+////                () -> String.format("Split Energy: %.2f",
+////                        this.chosenEntityProperty.getValue().getSplitEnergy()),
+////                this.chosenEntityProperty));
+//        this.speedLabel.textProperty().bind(Bindings.createStringBinding(
+//                () -> String.format("Speed: %.2f",
+//                        this.chosenEntityProperty.getValue().getSpeed()),
+//                this.chosenEntityProperty));
+//        this.childCountLabel.textProperty().bind(Bindings.createStringBinding(
+//                () -> String.format("Child Count: %d",
+//                        this.chosenEntityProperty.getValue().getChildCount()),
+//                this.chosenEntityProperty));
+//    }
+
 
 }
