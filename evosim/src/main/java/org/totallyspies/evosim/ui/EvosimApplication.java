@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.ui;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.Getter;
 import org.totallyspies.evosim.simulation.Simulation;
@@ -10,11 +9,6 @@ import java.io.File;
 import java.io.IOException;
 
 public final class EvosimApplication extends Application {
-
-    /**
-     * Sole scene used by the stage.
-     */
-    private Scene scene;
 
     /**
      * Sole stage of the application.
@@ -35,7 +29,7 @@ public final class EvosimApplication extends Application {
         WindowUtils.setSceneRoot(primaryStage,
                 this.getClass().getResource(ResourceManager.FXML_WELCOME_VIEW),
                 this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());
-        primaryStage.setTitle("Evosim");
+        primaryStage.setTitle("EVOSIM");
         primaryStage.show();
     }
 

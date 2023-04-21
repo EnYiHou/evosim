@@ -137,15 +137,11 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab fx:id="entityInfoTab" text="Entity Information">
+                <Tab text="Entity Information">
                      <content>
                         <VBox alignment="TOP_CENTER" prefHeight="710.0" prefWidth="233.0" spacing="35.0">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="234.0" prefWidth="234.0" spacing="10.0">
-                                 <children>
-                                    <Label fx:id="entityInfoLabel" prefHeight="44.0" prefWidth="178.0" text="placeholder" />
-                                 </children>
-                              </VBox>
+                              <Label prefHeight="44.0" prefWidth="178.0" text="placeholder" />
                            </children>
                            <padding>
                               <Insets top="40.0" />
@@ -175,56 +171,60 @@
       </VBox>
    </left>
    <center>
-      <StackPane alignment="BOTTOM_CENTER">
+      <StackPane alignment="BOTTOM_CENTER" prefHeight="603.0" prefWidth="966.0">
          <children>
             <MapCanvas fx:id="mapCanvas" prefHeight="150.0" prefWidth="100.0">
                <StackPane.margin>
                   <Insets />
                </StackPane.margin>
             </MapCanvas>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
-               <left>
-                  <VBox prefHeight="882.0" prefWidth="314.0" style="-fx-padding: 0 0 0 5px;" BorderPane.alignment="CENTER">
+            <VBox fx:id="entityStats" fillWidth="false" maxHeight="150.0" maxWidth="315.0" minHeight="168.0" minWidth="300.0" style="-fx-padding: 0 0 0 5px; -fx-border-color: rgba(120, 120, 120, 0.5); -fx-border-radius: 0 0 10px 0; -fx-background-radius: 0 0 10px 0; -fx-background-color: rgba(90, 90, 90, 0.2);" visible="false" StackPane.alignment="TOP_LEFT">
+               <children>
+                  <Label style="-fx-padding: 0 0 5px 0;" text="Focused Entity Stats">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets bottom="5.0" />
+                     </opaqueInsets>
+                  </Label>
+                  <HBox fx:id="energyBar" alignment="CENTER_LEFT" style="-fx-spacing: 10;">
                      <children>
-                        <HBox fx:id="energyBar" alignment="CENTER_LEFT" style="-fx-spacing: 10;">
-                           <children>
-                              <ProgressBar fx:id="pbEnergy" prefWidth="200.0" progress="0.0" style="-fx-accent: green;" />
-                              <Label text="Energy">
-                                 <font>
-                                    <Font name="System Bold" size="16.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox fx:id="splitEnergyBar" alignment="CENTER_LEFT" style="-fx-spacing: 10;">
-                           <children>
-                              <ProgressBar fx:id="pbSplit" prefWidth="200.0" progress="0.0" style="-fx-accent: purple;" />
-                              <Label text="Split Energy">
-                                 <font>
-                                    <Font name="System Bold" size="16.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <Label fx:id="speedLabel" style="-fx-padding: 15 0 0 0;" text="Base Speed:">
-                           <font>
-                              <Font name="System Bold" size="16.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="childCountLabel" layoutX="15.0" layoutY="61.0" text="Child Count:">
-                           <font>
-                              <Font name="System Bold" size="16.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="livingTimeLabel" layoutX="15.0" layoutY="102.0" text="Time Alive:">
+                        <ProgressBar fx:id="pbEnergy" prefWidth="200.0" progress="0.0" style="-fx-accent: green;" />
+                        <Label text="Energy">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
                      </children>
-                  </VBox>
-               </left>
-            </BorderPane>
+                  </HBox>
+                  <HBox fx:id="splitEnergyBar" alignment="CENTER_LEFT" style="-fx-spacing: 10;">
+                     <children>
+                        <ProgressBar fx:id="pbSplit" prefWidth="200.0" progress="0.0" style="-fx-accent: purple;" />
+                        <Label text="Split Energy">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <Label fx:id="speedLabel" style="-fx-padding: 15 0 0 0;" text="Base Speed:">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="childCountLabel" layoutX="15.0" layoutY="61.0" text="Child Count:">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="livingTimeLabel" layoutX="15.0" layoutY="102.0" text="Time Alive:">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
             <Label fx:id="timerLabel" text="timer">
                <StackPane.margin>
                   <Insets bottom="100.0" />

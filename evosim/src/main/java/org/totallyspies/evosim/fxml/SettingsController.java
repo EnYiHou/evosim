@@ -75,6 +75,12 @@ public final class SettingsController {
     private static boolean timerVisible = true;
 
     /**
+     * If the stats menu should be visible when focused.
+     */
+    @Getter
+    private static boolean statsVisible = true;
+
+    /**
      * Initializes {@code settings.fxml}. Sets the checkbox states on open.
      */
     public void initialize() {
@@ -88,26 +94,25 @@ public final class SettingsController {
 
     /**
      * Changes the visibility setting of the clicked checkbox.
+     *
      * @param e the mouse event
      */
     @FXML
     private void checkBoxClicked(final MouseEvent e) {
         if (e.getSource().equals(cbEnergy)) {
             energyVisible = !energyVisible;
-            cbEnergy.setSelected(energyVisible);
         } else if (e.getSource().equals((cbSplitEnergy))) {
             splitEnergyVisible = !splitEnergyVisible;
-            cbSplitEnergy.setSelected(splitEnergyVisible);
         } else if (e.getSource().equals((cbSpeed))) {
             speedVisible = !speedVisible;
-            cbSpeed.setSelected(speedVisible);
         } else if (e.getSource().equals((cbChild))) {
             childCountVisible = !childCountVisible;
-            cbChild.setSelected(childCountVisible);
         } else if (e.getSource().equals((cbTimer))) {
             timerVisible = !timerVisible;
-            cbTimer.setSelected(timerVisible);
         }
+
+        statsVisible = energyVisible || splitEnergyVisible || speedVisible
+                || childCountVisible || timerVisible;
     }
 
 

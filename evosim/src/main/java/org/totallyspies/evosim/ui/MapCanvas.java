@@ -4,10 +4,15 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import org.totallyspies.evosim.entities.Entity;
+import org.totallyspies.evosim.fxml.MainController;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Line;
@@ -26,30 +31,45 @@ public final class MapCanvas extends ResizableCanvas {
      * The color of the map.
      */
     public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
+
     /**
      * A list of keycodes being pressed.
      */
     private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
+
     /**
      * The camera of the map.
      */
     private final Camera camera;
+
     /**
      * The loop to render the map.
      */
     private final AnimationTimer anim;
+
     /**
      * Whether the camera is following an entity or not.
      */
     private final AtomicBoolean followingEntity;
+
     /**
      * The simulation that is being rendered by the map.
      */
     private Simulation simulation;
+
     /**
      * The entity currently being followed.
      */
     private Entity followedEntity;
+
+    /**
+     * A {@code #Timeline} updating the life timer of the followed entity.
+     */
+    private final Timeline followedLifeTimer = new Timeline(new KeyFrame(Duration.millis(100), e ->
+            followedEntity.setLifeTime(String.format("Time Alive: %d : %d",
+            followedEntity.getLivingTime(System.currentTimeMillis()) / 60,
+            followedEntity.getLivingTime(System.currentTimeMillis()) % 60)))
+    );
 
     /**
      * Construct an instance of MapCanvas.
@@ -295,6 +315,8 @@ public final class MapCanvas extends ResizableCanvas {
                         this.unfollowEntity(followedEntity);
                         followingEntity.set(false);
                         followedEntity = null;
+                        followedLifeTimer.stop();
+                        untrackEntityStats();
                     }
                 }
             }
@@ -355,35 +377,45 @@ public final class MapCanvas extends ResizableCanvas {
                     this.followEntity(entity);
                     followingEntity.set(true);
                     followedEntity = entity;
+                    trackEntityStats(entity);
+                    followedLifeTimer.playFromStart();
                 }
             }
         }
 
     }
 
-//    /**
-//     * Sets entity information in the on-screen focus display.
-//     */
-//    private void setEntityInfo() {
-//        // TODO move this to the simulation to set ON focus.
-//        MainController.get.setText(this.chosenEntityProperty.getValue().toString());
-////        this.energyLabel.textProperty().bind(Bindings.createStringBinding(
-////                () -> String.format("Energy: %.2f",
-////                        this.chosenEntityProperty.getValue().getEnergy()),
-////                this.chosenEntityProperty));
-////        this.splitEnergyLabel.textProperty().bind(Bindings.createStringBinding(
-////                () -> String.format("Split Energy: %.2f",
-////                        this.chosenEntityProperty.getValue().getSplitEnergy()),
-////                this.chosenEntityProperty));
-//        this.speedLabel.textProperty().bind(Bindings.createStringBinding(
-//                () -> String.format("Speed: %.2f",
-//                        this.chosenEntityProperty.getValue().getSpeed()),
-//                this.chosenEntityProperty));
-//        this.childCountLabel.textProperty().bind(Bindings.createStringBinding(
-//                () -> String.format("Child Count: %d",
-//                        this.chosenEntityProperty.getValue().getChildCount()),
-//                this.chosenEntityProperty));
-//    }
+    /**
+     * Binds the focused entity's stats to the visible nodes on screen.
+     *
+     * @param entity the entity being focused
+     */
+    private void trackEntityStats(final Entity entity) {
+        MainController.getController().getEntityStats().setVisible(true);
+        MainController.getController().getPbEnergy().progressProperty().bind(
+                Bindings.createDoubleBinding(entity::getEnergy));
+        MainController.getController().getPbSplit().progressProperty().bind(
+                Bindings.createDoubleBinding(entity::getSplitEnergy));
+        MainController.getController().getSpeedLabel().textProperty().bind(
+                Bindings.createStringBinding(
+                        () -> String.format("Speed: %.2f", entity.getSpeed())));
+        MainController.getController().getChildCountLabel().textProperty().bind(
+                Bindings.createStringBinding(
+                        () -> String.format("Child Count: %d", entity.getChildCount())));
+        MainController.getController().getLivingTimeLabel().textProperty().bind(
+                Bindings.createStringBinding(entity::getLifeTime));
+    }
 
+    /**
+     * Unbinds all nodes from the previously tracked entity.
+     */
+    private void untrackEntityStats() {
+        MainController.getController().getEntityStats().setVisible(false);
+        MainController.getController().getPbEnergy().progressProperty().unbind();
+        MainController.getController().getPbSplit().progressProperty().unbind();
+        MainController.getController().getSpeedLabel().textProperty().unbind();
+        MainController.getController().getChildCountLabel().textProperty().unbind();
+        MainController.getController().getLivingTimeLabel().textProperty().unbind();
+    }
 
 }

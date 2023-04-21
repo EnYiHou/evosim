@@ -3,13 +3,14 @@ package org.totallyspies.evosim.fxml;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -19,7 +20,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.util.Duration;
 import lombok.Getter;
-import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
@@ -27,6 +27,7 @@ import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -46,6 +47,12 @@ public final class MainController {
      * Max chart points.
      */
     private static final int MAX_CHART_POINTS = 10;
+
+    /**
+     * The current controller being used.
+     */
+    @Getter
+    private static MainController controller;
 
     /**
      * FXML reference to the map where simulation is rendered.
@@ -84,45 +91,65 @@ public final class MainController {
     private LineChart predatorPopulationChart;
 
     /**
-     * The timer label of the simulation.
+     * A {@code #VBox} containing the nodes displaying entity stats on focus.
      */
     @FXML
-    private Label timerLabel;
+    @Getter
+    private VBox entityStats;
 
     /**
      * Label for the chosen entity's speed.
      */
     @FXML
+    @Getter
     private Label speedLabel;
 
     /**
      * Label for the chosen entity's child count.
      */
     @FXML
+    @Getter
     private Label childCountLabel;
 
     /**
      * Label for the chosen entity's livingTime.
      */
     @FXML
+    @Getter
     private Label livingTimeLabel;
 
     /**
-     * Entity information tab.
+     * A {@code #ProgressBar} displaying the tracked entity's energy level.
      */
     @FXML
-    private Tab entityInfoTab;
+    @Getter
+    private ProgressBar pbEnergy;
 
     /**
-     * Entity information label.
+     * A {@code #ProgressBar} displaying the tracked entity's split energy level.
      */
     @FXML
-    private Label entityInfoLabel;
+    @Getter
+    private ProgressBar pbSplit;
 
     /**
-     * The chosen Entity.
+     * An {@code #HBox} containing the progress bar and label for the entity split energy.
      */
-    private ObjectProperty<Entity> chosenEntityProperty;
+    @FXML
+    private HBox energyBar;
+
+    /**
+     * An {@code #HBox} containing the progress bar and label for the entity energy.
+     */
+    @FXML
+    @Getter
+    private HBox splitEnergyBar;
+
+    /**
+     * The timer label of the simulation.
+     */
+    @FXML
+    private Label timerLabel;
 
     /**
      * The timer of the simulation.
@@ -140,34 +167,9 @@ public final class MainController {
     private Simulation simulation;
 
     /**
-     * A {@code #ProgressBar} displaying the tracked entity's energy level.
-     */
-    @FXML
-    private ProgressBar pbEnergy;
-
-    /**
-     * A {@code #ProgressBar} displaying the tracked entity's split energy level.
-     */
-    @FXML
-    private ProgressBar pbSplit;
-
-    /**
-     * An {@code #HBox} containing the progress bar and label for the entity split energy.
-     */
-    @FXML
-    private HBox energyBar;
-
-    /**
-     * An {@code #HBox} containing the progress bar and label for the entity energy.
-     */
-    @FXML
-    private HBox splitEnergyBar;
-
-
-    /**
      *  In order to explore the user's files.
      */
-    private FileChooser fileChooser;
+    private final FileChooser fileChooser;
 
     /**
      * The global configuration of the application.
@@ -178,6 +180,7 @@ public final class MainController {
      * Constructor to create the MainController object.
      */
     public MainController() {
+        controller = this;
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getConfiguration();
     }
@@ -222,20 +225,8 @@ public final class MainController {
                 new File(evosimDir));
     }
 
-    /**
-     * Binds the visibility of all entity stat nodes to their respective settings.
-     */
-    private void setSettingsBindings() {
-        energyBar.visibleProperty().bind(
-                Bindings.createBooleanBinding(SettingsController::isEnergyVisible));
-        splitEnergyBar.visibleProperty().bind(
-                Bindings.createBooleanBinding(SettingsController::isSplitEnergyVisible));
-        speedLabel.visibleProperty().bind(
-                Bindings.createBooleanBinding(SettingsController::isSpeedVisible));
-        childCountLabel.visibleProperty().bind(
-                Bindings.createBooleanBinding(SettingsController::isChildCountVisible));
-        timerLabel.visibleProperty().bind(
-                Bindings.createBooleanBinding(SettingsController::isTimerVisible));
+    static void processVisibilityChange(final boolean[] changes) {
+        //TODO process visibility changes from the settings controller.
     }
 
     /**
@@ -290,11 +281,6 @@ public final class MainController {
                     new XYChart.Data<>(counter.toString(),
                             this.simulation.getPredatorCount()));
 
-//            livingTimeLabel.setText(
-//                    String.format("Living Time: %d s",
-//                            this.chosenEntityProperty.getValue()
-//                                    .getLivingTime(System.currentTimeMillis())));
-            //TODO remove if not being used.
             checkChartSize(totalPopulationChartSeries);
             checkChartSize(preyPopulationChartSeries);
             checkChartSize(predatorPopulationChartSeries);
