@@ -39,10 +39,12 @@ public final class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
-        this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
-                .getPredatorEnergyBaseDrainingSpeed());
+        this.setEnergy(Math.max(0, this.getEnergy() - Configuration.getConfiguration()
+                .getPredatorEnergyBaseDrainingSpeed()));
+
         if (this.getEnergy() <= 0) {
             this.setDead(true);
+            System.out.println("dead to energy loss");
         }
     }
 

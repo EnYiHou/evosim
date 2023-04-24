@@ -210,7 +210,8 @@ public abstract class Entity {
         position.setY(positionY);
 
         // drain energy
-        this.energy -= Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed;
+        this.energy = Math.max(0,
+                Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
     }
 
     /**

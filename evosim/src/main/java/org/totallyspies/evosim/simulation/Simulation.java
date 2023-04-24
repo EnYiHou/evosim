@@ -25,13 +25,13 @@ public final class Simulation {
     /**
      * A list of all simulations.
      */
-    private static List<Simulation> simulations = new LinkedList<>();
+    private static final List<Simulation> SIMULATIONS = new LinkedList<>();
 
     /**
      * Stops all threads for any active simulation.
      */
     public static void stopAll() {
-        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
+        SIMULATIONS.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
 
     /**
@@ -100,7 +100,7 @@ public final class Simulation {
         this.animationLoop.start();
         this.entityGrids.startWorkers();
 
-        simulations.add(this);
+        SIMULATIONS.add(this);
     }
 
     /**
@@ -223,7 +223,6 @@ public final class Simulation {
                     } else if (entity.isSplit()) {
                         chunk.add(entity.clone());
                         entity.setSplitEnergy(0);
-                        entity.setChildCount(entity.getChildCount() + 1);
                         entity.setSplit(false);
 
                         if (entity instanceof Prey) {
