@@ -84,11 +84,10 @@ public final class MapCanvas extends ResizableCanvas {
         };
         this.updStat = new AnimationTimer() {
             private final MainController controller = MainController.getController();
-            private int livingTime;
+
             @Override
             public void handle(final long now) {
                 if (followedEntity != null) {
-                    System.out.println(followedEntity.getEnergy());
                     controller.getPbEnergy().setProgress(followedEntity.getEnergy());
                     controller.getPbSplit().setProgress(followedEntity.getSplitEnergy());
                     controller.getSpeedLabel().setText(
@@ -96,9 +95,9 @@ public final class MapCanvas extends ResizableCanvas {
                     controller.getChildCountLabel().setText(
                             "Child Count: " + followedEntity.getChildCount());
 
-                    livingTime = followedEntity.getLivingTime(System.currentTimeMillis());
+                    int livingTime = followedEntity.getLivingTime(System.currentTimeMillis());
                     controller.getLivingTimeLabel().setText(
-                            "Time Alive: " + (livingTime / 60) + " : " + livingTime % 60);
+                            "Time Alive: " + (livingTime / 60) + "m : " + livingTime % 60 + "s");
                 }
             }
         };
@@ -397,7 +396,7 @@ public final class MapCanvas extends ResizableCanvas {
      * Enables the entity stats and begins {@code updStat} to update the values for the entity.
      */
     private void trackEntityStats() {
-        MainController.getController().getEntityStats().setVisible(true);
+        MainController.getController().getStatsContainer().setVisible(true);
         updStat.start();
     }
 
@@ -405,7 +404,7 @@ public final class MapCanvas extends ResizableCanvas {
      * Stops the animation timer tracking the entity.
      */
     private void untrackEntityStats() {
-        MainController.getController().getEntityStats().setVisible(false);
+        MainController.getController().getStatsContainer().setVisible(false);
         updStat.stop();
     }
 

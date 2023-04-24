@@ -1,6 +1,8 @@
 package org.totallyspies.evosim.fxml;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import lombok.Getter;
@@ -23,7 +25,6 @@ public final class SettingsController {
     /**
      * If the energy bar should be visible.
      */
-    @Getter
     private static boolean energyVisible = true;
 
     /**
@@ -47,7 +48,6 @@ public final class SettingsController {
     /**
      * If the speed count should be visible.
      */
-    @Getter
     private static boolean speedVisible = true;
 
     /**
@@ -59,7 +59,6 @@ public final class SettingsController {
     /**
      * If the child count should be visible.
      */
-    @Getter
     private static boolean childCountVisible = true;
 
     /**
@@ -71,13 +70,11 @@ public final class SettingsController {
     /**
      * If the timer should be visible.
      */
-    @Getter
     private static boolean timerVisible = true;
 
     /**
      * If the stats menu should be visible when focused.
      */
-    @Getter
     private static boolean statsVisible = true;
 
     /**
@@ -111,9 +108,37 @@ public final class SettingsController {
             timerVisible = !timerVisible;
         }
 
+        // should the container be displayed
         statsVisible = energyVisible || splitEnergyVisible || speedVisible
                 || childCountVisible || timerVisible;
+
+        MainController.getController().getStatsContainer().setOpacity(statsVisible ? 1 : 0);
+        clearAndResize();
     }
 
+    /**
+     * Clears the parent container and adds back only the enabled children.
+     */
+    private void clearAndResize() {
+        final MainController controller = MainController.getController();
+        final ObservableList<Node> children = controller.getEntityStats().getChildren();
+        children.remove(1, children.size()); // keep the label at the top
+
+        if (energyVisible) {
+            children.add(controller.getEnergyBar());
+        }
+        if (splitEnergyVisible) {
+            children.add(controller.getSplitEnergyBar());
+        }
+        if (speedVisible) {
+            children.add(controller.getSpeedLabel());
+        }
+        if (childCountVisible) {
+            children.add(controller.getChildCountLabel());
+        }
+        if (timerVisible) {
+            children.add(controller.getLivingTimeLabel());
+        }
+    }
 
 }

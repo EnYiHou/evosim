@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -89,6 +90,13 @@ public final class MainController {
     private LineChart predatorPopulationChart;
 
     /**
+     * A {@code #AnchorPane} containing the entity stats. Disabled when no entities are tracked.
+     */
+    @FXML
+    @Getter
+    private AnchorPane statsContainer;
+
+    /**
      * A {@code #VBox} containing the nodes displaying entity stats on focus.
      */
     @FXML
@@ -134,6 +142,7 @@ public final class MainController {
      * An {@code #HBox} containing the progress bar and label for the entity split energy.
      */
     @FXML
+    @Getter
     private HBox energyBar;
 
     /**

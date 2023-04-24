@@ -44,7 +44,6 @@ public final class Predator extends Entity {
 
         if (this.getEnergy() <= 0) {
             this.setDead(true);
-            System.out.println("dead to energy loss");
         }
     }
 
