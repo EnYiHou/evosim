@@ -293,6 +293,24 @@ public final class MapCanvas extends ResizableCanvas {
         this.anim.start();
     }
 
+    /**
+     * Resumes playback of the stat tracker for this MapCanvas.
+     */
+    public void play() {
+        if (followingEntity.get()) {
+            this.updStat.start();
+        }
+    }
+
+    /**
+     * Pauses playback of the stat tracker for this MapCanvas.
+     */
+    public void pause() {
+        if (followingEntity.get()) {
+            this.updStat.stop();
+        }
+    }
+
     private void update(final long now) {
         clearMap();
         drawGrids();

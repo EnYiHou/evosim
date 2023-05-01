@@ -310,12 +310,14 @@ public final class MainController {
     private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().start();
+            this.mapCanvas.play();
             this.playBtn.setDisable(true);
             this.pauseBtn.setDisable(false);
             this.timerTimeLine.play();
         });
         this.pauseBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().stop();
+            this.mapCanvas.pause();
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();
