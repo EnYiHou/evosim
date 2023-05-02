@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.input.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
-<?import org.totallyspies.evosim.ui.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import org.totallyspies.evosim.ui.MapCanvas?>
 
-<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -233,11 +247,11 @@
                   </VBox>
                </children>
             </HBox>
-            <VBox alignment="CENTER" layoutX="806.0" layoutY="665.0" mouseTransparent="true" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+            <VBox alignment="CENTER" layoutX="806.0" layoutY="665.0" mouseTransparent="true" spacing="3.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
                <children>
                   <StackPane maxWidth="50.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                        <Rectangle fx:id="wKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
                         <Label text="W" textFill="WHITE">
                            <font>
                               <Font name="Courier New" size="31.0" />
@@ -245,11 +259,11 @@
                         </Label>
                      </children>
                   </StackPane>
-                  <HBox mouseTransparent="true">
+                  <HBox mouseTransparent="true" spacing="3.0">
                      <children>
                         <StackPane maxHeight="50.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                              <Rectangle fx:id="aKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
                               <Label text="A" textFill="WHITE">
                                  <font>
                                     <Font name="Courier New" size="31.0" />
@@ -259,7 +273,7 @@
                         </StackPane>
                         <StackPane maxHeight="50.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                              <Rectangle fx:id="sKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
                               <Label text="S" textFill="WHITE">
                                  <font>
                                     <Font name="Courier New" size="31.0" />
@@ -269,7 +283,7 @@
                         </StackPane>
                         <StackPane maxHeight="50.0">
                            <children>
-                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                              <Rectangle fx:id="dKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
                               <Label text="D" textFill="WHITE">
                                  <font>
                                     <Font name="Courier New" size="31.0" />

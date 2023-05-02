@@ -2,9 +2,12 @@ package org.totallyspies.evosim.fxml;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -23,14 +26,8 @@ import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
 
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.utils.Configuration;
 
@@ -134,6 +131,30 @@ public final class MainController {
     private Label entityInfoLabel;
 
     /**
+     * Rectangle for W key.
+     */
+    @FXML
+    private Rectangle wKey;
+
+    /**
+     * Rectangle for A key.
+     */
+    @FXML
+    private Rectangle aKey;
+
+    /**
+     * Rectangle for S key.
+     */
+    @FXML
+    private Rectangle sKey;
+
+    /**
+     * Rectangle for D key.
+     */
+    @FXML
+    private Rectangle dKey;
+
+    /**
      * The chosen Entity.
      */
     private ObjectProperty<Entity> chosenEntityProperty;
@@ -153,15 +174,6 @@ public final class MainController {
      * The simulation to be rendered.
      */
     private Simulation simulation;
-
-    /**
-     * The StackPane within the center of the root BorderPane.
-     */
-    @FXML
-    private AnchorPane centerAnchor;
-
-    @FXML
-    private BorderPane root;
 
     /**
      *  In order to explore the user's files.
@@ -203,7 +215,7 @@ public final class MainController {
 
         this.setChosenEntityProperty();
         this.setEntityInfoTab();
-        this.setKeyMoveCamera();
+        this.setKeyPress();
 
         this.setupSavingDirectory();
 
@@ -218,6 +230,11 @@ public final class MainController {
         aw.getAbtStage().show();
     }
 
+    /**
+     * Saving a configuration with the menu bar.
+     * @param event on click
+     * @throws IOException
+     */
     @FXML
     private void clickOnSave(final ActionEvent event) throws IOException {
         if (!isSaved) {
@@ -231,6 +248,11 @@ public final class MainController {
         }
     }
 
+    /**
+     * Loading the configuration.
+     * @param event on click
+     * @throws IOException
+     */
     @FXML
     private void clickOnLoad(final ActionEvent event) throws IOException {
         fileChooser.setTitle("Load Configuration");
@@ -245,21 +267,29 @@ public final class MainController {
 
     }
 
+    /**
+     * Loading the latest configuration.
+     * @param event on click
+     */
     @FXML
     private void clickOnLoadLatest(final ActionEvent event) {
         configuration.loadLastConfiguration();
         System.out.println(configuration.toString());
     }
 
+    /**
+     * Loading the default configuration.
+     * @param event on click
+     */
     @FXML
     private void clickOnLoadDefault(final ActionEvent event) {
         configuration.loadDefaultConfiguration();
         System.out.println(configuration.toString());
     }
 
-
     /**
      * Display an alert to the user to confirm if they'd like to close the app.
+     * @param event
      */
     @FXML
     private void clickOnExit(final ActionEvent event) throws IOException {
@@ -279,6 +309,9 @@ public final class MainController {
         }
     }
 
+    /**
+     * Unfollow an entity clicking on the menu.
+     */
     @FXML
     private void clickOnUnfollow() {
         Thread tread =  new Thread(() -> {
@@ -292,20 +325,31 @@ public final class MainController {
         });
     }
 
-    private void setKeyMoveCamera() {
+    /**
+     * Setting the keys movements.
+     */
+    private void setKeyPress() {
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
 
         scene.setOnKeyPressed(event -> {
             KeyCode code = event.getCode();
-            if (!MapCanvas.getPRESSED_KEYS().contains(code) && MapCanvas.getACCEPTED_KEYS().contains(code)) {
+            if (!MapCanvas.getPRESSED_KEYS().contains(code)
+                    && MapCanvas.getACCEPTED_KEYS().contains(code)) {
                 MapCanvas.getPRESSED_KEYS().push(code);
             }
+            changeOpacityWASD(code, true);
         });
 
-        scene.setOnKeyReleased(event ->
-                MapCanvas.getPRESSED_KEYS().remove(event.getCode()));
+        scene.setOnKeyReleased(event -> {
+            MapCanvas.getPRESSED_KEYS().remove(event.getCode());
+            changeOpacityWASD(event.getCode(), false);
+        });
     }
 
+    /**
+     * Setting the saving directory for the project.
+     * @throws IOException
+     */
     private void setupSavingDirectory() throws IOException {
         String evosimDir = Paths.get(
                 System.getProperty("user.home"), "Documents", "Evosim").toString();
@@ -411,6 +455,10 @@ public final class MainController {
         this.timerTimeLine.play();
     }
 
+    /**
+     * Verify the chart sizes.
+     * @param series chart series
+     */
     private void checkChartSize(final XYChart.Series<String, Number> series) {
         if (series.getData().size() > MAX_CHART_POINTS) {
             series.getData().remove(0);
@@ -435,6 +483,9 @@ public final class MainController {
         });
     }
 
+    /**
+     * Set the chosen entity property that will be displayed.
+     */
     private void setChosenEntityProperty() {
         this.chosenEntityProperty = new SimpleObjectProperty<>();
         this.chosenEntityProperty.set(new Predator(
@@ -443,6 +494,29 @@ public final class MainController {
                 1,
                 System.currentTimeMillis())
         );
+    }
+
+    /**
+     * Change the opacity of WASD keys rectangles.
+     * @param keyCode key associated with the rectangle
+     * @param darkerOpacity should the rectangle be darker
+     */
+    private void changeOpacityWASD(final KeyCode keyCode, final boolean darkerOpacity) {
+
+        double opacityPercentage = darkerOpacity ? 1d : 0.55d;
+
+        if (keyCode == KeyCode.W) {
+            wKey.setOpacity(opacityPercentage);
+        }
+        if (keyCode == KeyCode.A) {
+            aKey.setOpacity(opacityPercentage);
+        }
+        if (keyCode == KeyCode.S) {
+            sKey.setOpacity(opacityPercentage);
+        }
+        if (keyCode == KeyCode.D) {
+            dKey.setOpacity(opacityPercentage);
+        }
     }
 
 }
