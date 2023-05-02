@@ -33,22 +33,22 @@ public final class Configuration {
         /**
          * The maximum speed at which the entity can rotate.
          */
-        public static final double ENTITY_MAX_ROTATION_SPEED = 0.02d;
+        public static final double ENTITY_MAX_ROTATION_SPEED = 0.02;
 
         /**
          * The energy regained passively by a prey for surviving.
          */
-        public static final double PREY_ENERGY_FILLING_SPEED = 0.0005d;
+        public static final double PREY_ENERGY_FILLING_SPEED = 0.0005;
 
         /**
          * The energy regained by a predator from eating prey.
          */
-        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.0005d;
+        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.0005;
 
         /**
          * The base energy lost rate of a predator.
          */
-        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01d;
+        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01;
 
         /**
          * The number of sensors each entity has.
@@ -58,32 +58,32 @@ public final class Configuration {
         /**
          * The radius of an entity.
          */
-        public static final double ENTITY_RADIUS = 15.0d;
+        public static final double ENTITY_RADIUS = 15.0;
 
         /**
          * The length of an entity's sensors.
          */
-        public static final double ENTITY_SENSORS_LENGTH = 300.0d;
+        public static final double ENTITY_SENSORS_LENGTH = 300.0;
 
         /**
          * The maximum speed of an entity.
          */
-        public static final double ENTITY_MAX_SPEED = 5.0d;
+        public static final double ENTITY_MAX_SPEED = 5.0;
 
         /**
          * The minimum possible speed of an entity.
          */
-        public static final double ENTITY_MIN_SPEED = 1.0d;
+        public static final double ENTITY_MIN_SPEED = 1.0;
 
         /**
          * The mutation rate of the speed of the entity.
          */
-        public static final double ENTITY_SPEED_MUTATION_RATE = 0.2d;
+        public static final double ENTITY_SPEED_MUTATION_RATE = 0.2;
 
         /**
          * The speed at which the energy of the entity will be drained.
          */
-        public static final double ENTITY_ENERGY_DRAIN_RATE = 0.01d;
+        public static final double ENTITY_ENERGY_DRAIN_RATE = 0.01;
 
         /**
          * The maximum number of predator that could be generated.
@@ -98,12 +98,12 @@ public final class Configuration {
         /**
          * The view angle of a predator.
          */
-        public static final double PREDATOR_VIEW_ANGLE = 60.0d;
+        public static final double PREDATOR_VIEW_ANGLE = 60.0;
 
         /**
          * The split energy that a predator will gain when it eats a prey.
          */
-        public static final double PREDATOR_SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+        public static final double PREDATOR_SPLIT_ENERGY_FILLING_SPEED = 0.5;
 
         /**
          * The maximum number of prey that could be generated.
@@ -118,12 +118,12 @@ public final class Configuration {
         /**
          * The view angle of a prey.
          */
-        public static final double PREY_VIEW_ANGLE = 300.0d;
+        public static final double PREY_VIEW_ANGLE = 300.0;
 
         /**
          * The split energy that a prey will gain when it is not moving.
          */
-        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005d;
+        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005;
 
         /**
          * The number of layers the neural network will contain.
