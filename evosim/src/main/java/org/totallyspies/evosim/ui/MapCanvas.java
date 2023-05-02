@@ -1,6 +1,5 @@
 package org.totallyspies.evosim.ui;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,6 +34,9 @@ public final class MapCanvas extends ResizableCanvas {
     @Getter
     private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
 
+    /**
+     * The Keys that are accepted to PRESSED_KEYS array.
+     */
     @Getter
     private static final LinkedList<KeyCode> ACCEPTED_KEYS = new LinkedList<>() {{
         add(KeyCode.W);
