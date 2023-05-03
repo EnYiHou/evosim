@@ -3,6 +3,14 @@ package org.totallyspies.evosim.fxml;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -10,26 +18,19 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.util.Duration;
 import lombok.Getter;
-import org.totallyspies.evosim.entities.Entity;
-import org.totallyspies.evosim.entities.Predator;
-import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.io.File;
@@ -45,6 +46,12 @@ public final class MainController {
      * Max chart points.
      */
     private static final int MAX_CHART_POINTS = 10;
+
+    /**
+     * The current controller being used.
+     */
+    @Getter
+    private static MainController controller;
 
     /**
      * FXML reference to the map where simulation is rendered.
@@ -83,63 +90,78 @@ public final class MainController {
     private LineChart predatorPopulationChart;
 
     /**
-     * The timer label of the simulation.
+     * A {@code #AnchorPane} containing the entity stats. Disabled when no entities are tracked.
      */
     @FXML
-    private Label timerLabel;
+    @Getter
+    private AnchorPane statsContainer;
 
     /**
-     * Label for the chosen entity's energy.
+     * A {@code #VBox} containing the nodes displaying entity stats on focus.
      */
     @FXML
-    private Label energyLabel;
-
-    /**
-     * Label for the chosen entity's splitEnergy.
-     */
-    @FXML
-    private Label splitEnergyLabel;
+    @Getter
+    private VBox entityStats;
 
     /**
      * Label for the chosen entity's speed.
      */
     @FXML
+    @Getter
     private Label speedLabel;
 
     /**
      * Label for the chosen entity's child count.
      */
     @FXML
+    @Getter
     private Label childCountLabel;
 
     /**
      * Label for the chosen entity's livingTime.
      */
     @FXML
+    @Getter
     private Label livingTimeLabel;
 
     /**
-     * Entity information tab.
+     * A {@code #ProgressBar} displaying the tracked entity's energy level.
      */
+    @FXML
     @Getter
-    @FXML
-    private Tab entityInfoTab;
+    private ProgressBar pbEnergy;
 
     /**
-     * Entity information label.
+     * A {@code #ProgressBar} displaying the tracked entity's split energy level.
      */
     @FXML
-    private Label entityInfoLabel;
+    @Getter
+    private ProgressBar pbSplit;
 
     /**
-     * The chosen Entity.
+     * An {@code #HBox} containing the progress bar and label for the entity split energy.
      */
-    private ObjectProperty<Entity> chosenEntityProperty;
+    @FXML
+    @Getter
+    private HBox energyBar;
 
+    /**
+     * An {@code #HBox} containing the progress bar and label for the entity energy.
+     */
+    @FXML
+    @Getter
+    private HBox splitEnergyBar;
+
+    /**
+     * The timer label of the simulation.
+     */
+    @FXML
+    private Label timerLabel;
 
     /**
      * The timer of the simulation.
      */
+    @Getter
     private ObjectProperty<java.time.Duration> timerProperty;
 
     /**
@@ -153,15 +175,9 @@ public final class MainController {
     private Simulation simulation;
 
     /**
-     * The StackPane within the center of the root BorderPane.
-     */
-    @FXML
-    private StackPane centerStack;
-
-    /**
      *  In order to explore the user's files.
      */
-    private FileChooser fileChooser;
+    private final FileChooser fileChooser;
 
     /**
      * The global configuration of the application.
@@ -172,6 +188,7 @@ public final class MainController {
      * Constructor to create the MainController object.
      */
     public MainController() {
+        controller = this;
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getConfiguration();
     }
@@ -187,14 +204,6 @@ public final class MainController {
         this.setChart(preyPopulationChart);
         this.setChart(predatorPopulationChart);
         this.setTimer();
-        this.chosenEntityProperty = new SimpleObjectProperty<>();
-        this.chosenEntityProperty.set(new Predator(
-                1,
-                new Point(0, 0),
-                1,
-                System.currentTimeMillis())
-        );
-        this.setEntityInfoTab();
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
 
         scene.setOnKeyPressed(event -> {
@@ -222,30 +231,6 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         fileChooser.setInitialDirectory(
                 new File(evosimDir));
-    }
-
-    /**
-     * Sets entity information in the info tab.
-     */
-    private void setEntityInfoTab() {
-        this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
-        this.energyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Energy: %.2f",
-                        this.chosenEntityProperty.getValue().getEnergy()),
-                this.chosenEntityProperty));
-        this.splitEnergyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Split Energy: %.2f",
-                        this.chosenEntityProperty.getValue().getSplitEnergy()),
-                this.chosenEntityProperty));
-        this.speedLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Speed: %.2f",
-                        this.chosenEntityProperty.getValue().getSpeed()),
-                this.chosenEntityProperty));
-        this.childCountLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Child Count: %d",
-                        this.chosenEntityProperty.getValue().getChildCount()),
-                this.chosenEntityProperty));
-
     }
 
     /**
@@ -300,10 +285,6 @@ public final class MainController {
                     new XYChart.Data<>(counter.toString(),
                             this.simulation.getPredatorCount()));
 
-            livingTimeLabel.setText(
-                    String.format("Living Time: %d s",
-                            this.chosenEntityProperty.getValue()
-                                    .getLivingTime(System.currentTimeMillis())));
             checkChartSize(totalPopulationChartSeries);
             checkChartSize(preyPopulationChartSeries);
             checkChartSize(predatorPopulationChartSeries);
@@ -323,15 +304,17 @@ public final class MainController {
     /**
      * Set the play and pause buttons.
      */
-    public void setPlayPauseButtons() {
+    private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().start();
+            this.mapCanvas.play();
             this.playBtn.setDisable(true);
             this.pauseBtn.setDisable(false);
             this.timerTimeLine.play();
         });
         this.pauseBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().stop();
+            this.mapCanvas.pause();
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();
@@ -345,6 +328,15 @@ public final class MainController {
     private void aboutMenuClicked() {
         AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
         aw.getAbtStage().show();
+    }
+
+    /**
+     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
+     */
+    @FXML
+    private void settingsMenuClicked() {
+        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
+        sw.getSettingsStage().show();
     }
 
     @FXML
@@ -393,6 +385,7 @@ public final class MainController {
     /**
      * Display an alert to the user to confirm if they'd like to close the app.
      */
+    @FXML
     private void escapeClicked() {
         Alert confirmation = new Alert(
                 Alert.AlertType.CONFIRMATION,

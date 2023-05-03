@@ -34,36 +34,43 @@ public abstract class Entity {
      * A list of detected distances from the sensors.
      */
     private final Double[] sensorsData;
+
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     @Getter
     private final double speed;
+
     /**
      * The position of the entity.
      */
     @Getter
     private final Circle body;
+
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
     private final double fovAngleInDegrees;
+
     /**
      * The color of the entity.
      */
     @Getter
     private final Color color;
+
     /**
      * The birth time of the entity.
      */
     @Getter
     private final long birthTime;
+
     /**
      * If the entity is dead or not.
      */
     @Getter
     @Setter
     private boolean dead;
+
     /**
      * If the entity split.
      */
@@ -92,6 +99,7 @@ public abstract class Entity {
     @Getter
     @Setter
     private double energy;
+
     /**
      * The current amount of split energy this Entity has accumulated.
      * <p>
@@ -102,18 +110,20 @@ public abstract class Entity {
     @Getter
     @Setter
     private double splitEnergy;
+
     /**
      * The direction the entity is facing in radians.
      */
     @Getter
     private double directionAngleInRadians;
+
     /**
      * The number of children born from this entity.
      */
     @Getter
     @Setter
     private int childCount;
-
+    
     /**
      * Constructs a new Entity.
      *
@@ -158,9 +168,11 @@ public abstract class Entity {
     /**
      * Clones this entity and mutates some of its properties.
      *
+     * @param cloneTime the time of clone in seconds
+     *
      * @return the cloned entity.
      */
-    public abstract Entity clone();
+    public abstract Entity clone(long cloneTime);
 
     /**
      * Handles what happens on update every frame to an entity.
@@ -193,7 +205,8 @@ public abstract class Entity {
         position.setY(positionY);
 
         // drain energy
-        this.energy -= Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed;
+        this.energy = Math.max(0,
+                Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
     }
 
     /**
@@ -302,7 +315,7 @@ public abstract class Entity {
      * @return The living time of this entity.
      */
     public final int getLivingTime(final long currentTime) {
-        return (int) ((currentTime - this.birthTime) / 1000d);
+        return (int) ((currentTime - this.birthTime));
     }
 
 }

@@ -39,8 +39,9 @@ public final class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
-        this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
-                .getPredatorEnergyBaseDrainingSpeed());
+        this.setEnergy(Math.max(0, this.getEnergy() - Configuration.getConfiguration()
+                .getPredatorEnergyBaseDrainingSpeed()));
+
         if (this.getEnergy() <= 0) {
             this.setDead(true);
         }
@@ -49,10 +50,12 @@ public final class Predator extends Entity {
     /**
      * Clones the predator and mutates its speed and neural network.
      *
+     * @param cloneTime the time of clone in seconds
+     *
      * @return the cloned predator
      */
     @Override
-    public Predator clone() {
+    public Predator clone(final long cloneTime) {
         // Mutate the speed of the predator
         Predator predator = new Predator(
                 (Math.random()
@@ -61,7 +64,7 @@ public final class Predator extends Entity {
                         : this.getSpeed(),
 
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians(), System.currentTimeMillis());
+                this.getDirectionAngleInRadians(), cloneTime);
 
         // mutate the brain of the predator
         predator.setBrain(this.getBrain().mutate());

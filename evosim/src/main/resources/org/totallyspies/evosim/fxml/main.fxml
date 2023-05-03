@@ -11,17 +11,20 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import org.totallyspies.evosim.ui.MapCanvas?>
 
-<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -44,14 +47,13 @@
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Settings">
-              <items>
-                  <Menu mnemonicParsing="false" text="Preferences">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Zoom" />
-                        <MenuItem mnemonicParsing="false" text="Unzoom" />
-                    </items>
-                  </Menu>
-              </items>
+               <items>
+                  <CustomMenuItem mnemonicParsing="false" text="Modify Preferences">
+                     <content>
+                        <Label onMouseClicked="#settingsMenuClicked" text="Modify Preferences" />
+                     </content>
+                  </CustomMenuItem>
+               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
                <items>
@@ -136,40 +138,11 @@
                         </ScrollPane>
                      </content>
                   </Tab>
-                <Tab fx:id="entityInfoTab" text="Entity Information">
+                <Tab text="Entity Information">
                      <content>
                         <VBox alignment="TOP_CENTER" prefHeight="710.0" prefWidth="233.0" spacing="35.0">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="234.0" prefWidth="234.0" spacing="10.0">
-                                 <children>
-                                    <Label fx:id="entityInfoLabel" prefHeight="44.0" prefWidth="178.0" text="Label" />
-                                    <Label fx:id="speedLabel" prefHeight="17.0" prefWidth="171.0" text="Speed : ">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="energyLabel" prefHeight="17.0" prefWidth="171.0" text="Energy :">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="splitEnergyLabel" prefHeight="17.0" prefWidth="171.0" text="Split energy">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="childCountLabel" prefHeight="17.0" prefWidth="171.0" text="Child count : ">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="livingTimeLabel" prefHeight="17.0" prefWidth="171.0" text="Living time : ">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </VBox>
+                              <Label prefHeight="44.0" prefWidth="178.0" text="placeholder" />
                            </children>
                            <padding>
                               <Insets top="40.0" />
@@ -199,14 +172,68 @@
       </VBox>
    </left>
    <center>
-      <StackPane alignment="BOTTOM_CENTER">
+      <StackPane alignment="BOTTOM_CENTER" prefHeight="603.0" prefWidth="966.0">
          <children>
             <MapCanvas fx:id="mapCanvas" prefHeight="150.0" prefWidth="100.0">
                <StackPane.margin>
                   <Insets />
                </StackPane.margin>
             </MapCanvas>
-            <Label fx:id="timerLabel" text="Label">
+            <AnchorPane fx:id="statsContainer" maxHeight="180.0" maxWidth="205.0" minHeight="180.0" minWidth="315.0" visible="false" StackPane.alignment="TOP_LEFT">
+               <children>
+                  <VBox fx:id="entityStats" fillWidth="false" style="-fx-padding: 5px; -fx-border-color: rgba(120, 120, 120, 0.5); -fx-border-radius: 0 0 10px 0; -fx-background-radius: 0 0 10px 0; -fx-background-color: rgba(90, 90, 90, 0.2);">
+                     <children>
+                        <Label style="-fx-padding: 0 0 5px 0;" text="Focused Entity Stats">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <opaqueInsets>
+                              <Insets bottom="5.0" />
+                           </opaqueInsets>
+                        </Label>
+                        <HBox fx:id="energyBar" alignment="CENTER_LEFT" style="-fx-spacing: 10; -fx-padding: 0 0 15 0;">
+                           <children>
+                              <ProgressBar fx:id="pbEnergy" prefWidth="200.0" progress="0.0" style="-fx-accent: green;" />
+                              <Label text="Energy">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox fx:id="splitEnergyBar" alignment="CENTER_LEFT" style="-fx-spacing: 10; -fx-padding: 0 0 15 0;">
+                           <children>
+                              <ProgressBar fx:id="pbSplit" prefWidth="200.0" progress="0.0" style="-fx-accent: purple;" />
+                              <Label text="Split Energy">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <Label fx:id="speedLabel" text="Base Speed:">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="childCountLabel" layoutX="15.0" layoutY="61.0" text="Child Count:">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="livingTimeLabel" layoutX="15.0" layoutY="102.0" text="Time Alive:">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+            <Label fx:id="timerLabel" text="timer">
                <StackPane.margin>
                   <Insets bottom="100.0" />
                </StackPane.margin>

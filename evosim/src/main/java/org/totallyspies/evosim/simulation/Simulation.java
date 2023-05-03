@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
+import org.totallyspies.evosim.fxml.MainController;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
@@ -25,13 +26,13 @@ public final class Simulation {
     /**
      * A list of all simulations.
      */
-    private static List<Simulation> simulations = new LinkedList<>();
+    private static final List<Simulation> SIMULATIONS = new LinkedList<>();
 
     /**
      * Stops all threads for any active simulation.
      */
     public static void stopAll() {
-        simulations.forEach(simulation -> simulation.entityGrids.stopWorkers());
+        SIMULATIONS.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
 
     /**
@@ -100,7 +101,7 @@ public final class Simulation {
         this.animationLoop.start();
         this.entityGrids.startWorkers();
 
-        simulations.add(this);
+        SIMULATIONS.add(this);
     }
 
     /**
@@ -155,8 +156,7 @@ public final class Simulation {
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
                     ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI),
-                    System.currentTimeMillis()
+                    Rng.RNG.nextDouble(0, 2 * Math.PI), 0L
             ));
         }
 
@@ -166,7 +166,7 @@ public final class Simulation {
                     new Point(
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
+                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), 0L));
         }
 
         entities.forEach(
@@ -221,9 +221,9 @@ public final class Simulation {
                             this.predatorCount--;
                         }
                     } else if (entity.isSplit()) {
-                        chunk.add(entity.clone());
+                        chunk.add(entity.clone(MainController.getController()
+                                .getTimerProperty().getValue().toSeconds()));
                         entity.setSplitEnergy(0);
-                        entity.setChildCount(entity.getChildCount() + 1);
                         entity.setSplit(false);
 
                         if (entity instanceof Prey) {

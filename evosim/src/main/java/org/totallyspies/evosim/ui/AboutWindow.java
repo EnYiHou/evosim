@@ -1,6 +1,5 @@
 package org.totallyspies.evosim.ui;
 
-import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.AccessLevel;

@@ -4,10 +4,14 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
+import org.totallyspies.evosim.fxml.MainController;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Line;
@@ -25,27 +29,46 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * The color of the map.
      */
-    public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
+    @Setter
+    @Getter
+    private static Color mapColor = Color.LIGHTSKYBLUE;
+
+    /**
+     * The background image of the map.
+     */
+    @Setter
+    private static Image mapImage = null;
+
     /**
      * A list of keycodes being pressed.
      */
     private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
+
     /**
      * The camera of the map.
      */
     private final Camera camera;
+
     /**
      * The loop to render the map.
      */
     private final AnimationTimer anim;
+
+    /**
+     * The loop updating the focused entities stats on focus.
+     */
+    private final AnimationTimer updStat;
+
     /**
      * Whether the camera is following an entity or not.
      */
     private final AtomicBoolean followingEntity;
+
     /**
      * The simulation that is being rendered by the map.
      */
     private Simulation simulation;
+
     /**
      * The entity currently being followed.
      */
@@ -64,16 +87,34 @@ public final class MapCanvas extends ResizableCanvas {
                 )
         );
 
-        this.camera.center();
-
         this.anim = new AnimationTimer() {
             @Override
             public void handle(final long now) {
                 update(now);
             }
         };
-        this.followingEntity = new AtomicBoolean(false);
+        this.updStat = new AnimationTimer() {
+            private final MainController controller = MainController.getController();
 
+            @Override
+            public void handle(final long now) {
+                if (followedEntity != null) {
+                    controller.getPbEnergy().setProgress(followedEntity.getEnergy());
+                    controller.getPbSplit().setProgress(followedEntity.getSplitEnergy());
+                    controller.getSpeedLabel().setText(
+                            String.format("Base Speed: %.2f", followedEntity.getSpeed()));
+                    controller.getChildCountLabel().setText(
+                            "Child Count: " + followedEntity.getChildCount());
+
+                    int livingTime = followedEntity.getLivingTime(
+                            controller.getTimerProperty().getValue().getSeconds());
+                    controller.getLivingTimeLabel().setText(
+                            "Time Alive: " + (livingTime / 60) + "m : " + livingTime % 60 + "s");
+                }
+            }
+        };
+
+        this.followingEntity = new AtomicBoolean(false);
         this.setOnMouseClicked(this::checkEntityonClick);
     }
 
@@ -240,7 +281,7 @@ public final class MapCanvas extends ResizableCanvas {
      * Prepare to draw a new frame.
      */
     public void clearMap() {
-        this.getGraphicsContext2D().setFill(MapCanvas.MAP_COLOR);
+        this.getGraphicsContext2D().setFill(MapCanvas.mapColor);
         this.getGraphicsContext2D().fillRect(
                 0d, 0d, this.getWidth(), this.getHeight());
     }
@@ -264,9 +305,38 @@ public final class MapCanvas extends ResizableCanvas {
         this.anim.start();
     }
 
+    /**
+     * Resumes playback of the stat tracker for this MapCanvas.
+     */
+    public void play() {
+        if (followingEntity.get()) {
+            this.updStat.start();
+        }
+    }
+
+    /**
+     * Pauses playback of the stat tracker for this MapCanvas.
+     */
+    public void pause() {
+        if (followingEntity.get()) {
+            this.updStat.stop();
+        }
+    }
+
     private void update(final long now) {
         clearMap();
+        if (mapImage != null) {
+            this.getGraphicsContext2D().drawImage(mapImage, 0, 0,
+                    this.getWidth(), this.getHeight());
+        }
         drawGrids();
+
+        if (this.followingEntity.get() && this.followedEntity.isDead()) {
+            this.unfollowEntity(followedEntity);
+            followingEntity.set(false);
+            followedEntity = null;
+            untrackEntityStats();
+        }
 
         final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
         final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
@@ -295,6 +365,7 @@ public final class MapCanvas extends ResizableCanvas {
                         this.unfollowEntity(followedEntity);
                         followingEntity.set(false);
                         followedEntity = null;
+                        untrackEntityStats();
                     }
                 }
             }
@@ -355,11 +426,27 @@ public final class MapCanvas extends ResizableCanvas {
                     this.followEntity(entity);
                     followingEntity.set(true);
                     followedEntity = entity;
+                    trackEntityStats();
                 }
             }
         }
 
     }
 
+    /**
+     * Enables the entity stats and begins {@code updStat} to update the values for the entity.
+     */
+    private void trackEntityStats() {
+        MainController.getController().getStatsContainer().setVisible(true);
+        updStat.start();
+    }
+
+    /**
+     * Stops the animation timer tracking the entity.
+     */
+    private void untrackEntityStats() {
+        MainController.getController().getStatsContainer().setVisible(false);
+        updStat.stop();
+    }
 
 }

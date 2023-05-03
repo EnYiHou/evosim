@@ -97,6 +97,7 @@ public final class Camera {
      */
     public Camera(final Point newTopLeft, final Point newBottomRight) {
         this(DEFAULT_POINT, DEFAULT_ZOOM, newTopLeft, newBottomRight);
+        this.center();
     }
 
     /**
