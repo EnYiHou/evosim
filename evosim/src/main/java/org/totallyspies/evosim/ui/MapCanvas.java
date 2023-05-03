@@ -4,9 +4,12 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.MainController;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
@@ -26,7 +29,15 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * The color of the map.
      */
-    public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
+    @Setter
+    @Getter
+    private static Color mapColor = Color.LIGHTSKYBLUE;
+
+    /**
+     * The background image of the map.
+     */
+    @Setter
+    private static Image mapImage = null;
 
     /**
      * A list of keycodes being pressed.
@@ -270,7 +281,7 @@ public final class MapCanvas extends ResizableCanvas {
      * Prepare to draw a new frame.
      */
     public void clearMap() {
-        this.getGraphicsContext2D().setFill(MapCanvas.MAP_COLOR);
+        this.getGraphicsContext2D().setFill(MapCanvas.mapColor);
         this.getGraphicsContext2D().fillRect(
                 0d, 0d, this.getWidth(), this.getHeight());
     }
@@ -314,6 +325,10 @@ public final class MapCanvas extends ResizableCanvas {
 
     private void update(final long now) {
         clearMap();
+        if (mapImage != null) {
+            this.getGraphicsContext2D().drawImage(mapImage, 0, 0,
+                    this.getWidth(), this.getHeight());
+        }
         drawGrids();
 
         if (this.followingEntity.get() && this.followedEntity.isDead()) {

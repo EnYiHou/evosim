@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
@@ -61,7 +64,39 @@
                   <Insets bottom="15.0" top="15.0" />
                </VBox.margin>
             </Rectangle>
-            <Label text="General Settings">
+            <Label text="Customize Map">
+               <font>
+                  <Font name="System Bold Italic" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="171.0" layoutY="66.0" text="** Non-transparent images will block the colour selection." textFill="#535151">
+               <font>
+                  <Font size="10.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="37.0" prefWidth="440.0" style="-fx-spacing: 12;">
+               <children>
+                  <Label text="Map Background Colour" />
+                  <ColorPicker fx:id="cpMap" prefHeight="25.0" prefWidth="117.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="56.0" layoutY="242.0" prefHeight="37.0" prefWidth="440.0" style="-fx-spacing: 12;">
+               <children>
+                  <Label text="Map Background Image" />
+                  <Button mnemonicParsing="false" onMouseClicked="#selectImgClicked" text="Select Image" />
+                  <Button mnemonicParsing="false" onMouseClicked="#clearImgClicked" text="Clear Image" />
+               </children>
+            </HBox>
+            <Label fx:id="feedbackLabel" text="[No selected image]" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="GREY" height="5.0" layoutX="176.0" layoutY="197.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.5" width="200.0">
+               <VBox.margin>
+                  <Insets bottom="15.0" top="15.0" />
+               </VBox.margin>
+            </Rectangle>
+            <Label layoutX="227.0" layoutY="217.0" text="Customize Entities">
                <font>
                   <Font name="System Bold Italic" size="16.0" />
                </font>

@@ -4,9 +4,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.totallyspies.evosim.ui.EvosimApplication;
+import org.totallyspies.evosim.ui.MapCanvas;
+
+import java.io.File;
 
 /**
  * Controller for the {@code settings.fxml} file. Dynamically adds all input fields.
@@ -78,15 +86,52 @@ public final class SettingsController {
     private static boolean statsVisible = true;
 
     /**
+     * ColorPicker to select the map's background colour.
+     */
+    @FXML
+    private ColorPicker cpMap;
+
+    /**
+     * ColorPicker to select the prey's body colour.
+     */
+    @FXML
+    private ColorPicker cpPrey;
+
+    /**
+     * ColorPicker to select the predator's body colour.
+     */
+    @FXML
+    private ColorPicker cpPred;
+
+    /**
+     * A FileChooser to select an image for the map background.
+     */
+    private static FileChooser fileChooser;
+
+    /**
+     * A Label to give feedback based on the image file search.
+     */
+    @FXML
+    private Label feedbackLabel;
+
+
+    /**
      * Initializes {@code settings.fxml}. Sets the checkbox states on open.
      */
     public void initialize() {
         // set states on launch
-        cbEnergy.setSelected(energyVisible);
-        cbSplitEnergy.setSelected(splitEnergyVisible);
-        cbSpeed.setSelected(speedVisible);
-        cbChild.setSelected(childCountVisible);
-        cbTimer.setSelected(timerVisible);
+        this.cbEnergy.setSelected(energyVisible);
+        this.cbSplitEnergy.setSelected(splitEnergyVisible);
+        this.cbSpeed.setSelected(speedVisible);
+        this.cbChild.setSelected(childCountVisible);
+        this.cbTimer.setSelected(timerVisible);
+        this.cpMap.setValue(MapCanvas.getMapColor());
+
+        fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                "Image Files", "*" + ".png", "*.jpg", "*.gif"));
+
+        cpMap.valueProperty().addListener((o, ov, nv) -> MapCanvas.setMapColor(nv));
     }
 
     /**
@@ -139,6 +184,30 @@ public final class SettingsController {
         if (timerVisible) {
             children.add(controller.getLivingTimeLabel());
         }
+    }
+
+    /**
+     * Opens the file explorer to select an image for the map background.
+     */
+    @FXML
+    private void selectImgClicked() {
+        File chosenFile = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
+        try {
+            Image img = new Image(chosenFile.toURI().toString());
+            feedbackLabel.setText("Selected: " + chosenFile.getName());
+            MapCanvas.setMapImage(img);
+        } catch (Exception e) {
+            System.out.println("Image not found.");
+        }
+    }
+
+    /**
+     * Clears the MapCanvas' selected image.
+     */
+    @FXML
+    private void clearImgClicked() {
+        feedbackLabel.setText("[No selected image]");
+        MapCanvas.setMapImage(null);
     }
 
 }
