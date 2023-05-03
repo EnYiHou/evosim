@@ -123,14 +123,7 @@ public abstract class Entity {
     @Getter
     @Setter
     private int childCount;
-
-    /**
-     * A string representation of this entity's lifespan in minutes : seconds.
-     */
-    @Getter
-    @Setter
-    private String lifeTime = "0 : 0";
-
+    
     /**
      * Constructs a new Entity.
      *
