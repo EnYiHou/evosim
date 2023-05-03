@@ -175,9 +175,11 @@ public abstract class Entity {
     /**
      * Clones this entity and mutates some of its properties.
      *
+     * @param cloneTime the time of clone in seconds
+     *
      * @return the cloned entity.
      */
-    public abstract Entity clone();
+    public abstract Entity clone(long cloneTime);
 
     /**
      * Handles what happens on update every frame to an entity.
@@ -320,7 +322,7 @@ public abstract class Entity {
      * @return The living time of this entity.
      */
     public final int getLivingTime(final long currentTime) {
-        return (int) ((currentTime - this.birthTime) / 1000d);
+        return (int) ((currentTime - this.birthTime));
     }
 
 }

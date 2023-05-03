@@ -161,6 +161,7 @@ public final class MainController {
     /**
      * The timer of the simulation.
      */
+    @Getter
     private ObjectProperty<java.time.Duration> timerProperty;
 
     /**
@@ -230,10 +231,6 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         fileChooser.setInitialDirectory(
                 new File(evosimDir));
-    }
-
-    static void processVisibilityChange(final boolean[] changes) {
-        //TODO process visibility changes from the settings controller.
     }
 
     /**

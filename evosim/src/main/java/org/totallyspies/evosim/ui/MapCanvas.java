@@ -95,7 +95,8 @@ public final class MapCanvas extends ResizableCanvas {
                     controller.getChildCountLabel().setText(
                             "Child Count: " + followedEntity.getChildCount());
 
-                    int livingTime = followedEntity.getLivingTime(System.currentTimeMillis());
+                    int livingTime = followedEntity.getLivingTime(
+                            controller.getTimerProperty().getValue().getSeconds());
                     controller.getLivingTimeLabel().setText(
                             "Time Alive: " + (livingTime / 60) + "m : " + livingTime % 60 + "s");
                 }
@@ -314,6 +315,13 @@ public final class MapCanvas extends ResizableCanvas {
     private void update(final long now) {
         clearMap();
         drawGrids();
+
+        if (this.followingEntity.get() && this.followedEntity.isDead()) {
+            this.unfollowEntity(followedEntity);
+            followingEntity.set(false);
+            followedEntity = null;
+            untrackEntityStats();
+        }
 
         final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
         final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;

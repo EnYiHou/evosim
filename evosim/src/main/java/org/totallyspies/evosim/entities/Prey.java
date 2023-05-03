@@ -53,10 +53,12 @@ public final class Prey extends Entity {
     /**
      * Clones the prey and mutates its speed and neural network.
      *
+     * @param cloneTime the clone time in seconds
+     *
      * @return the cloned prey
      */
     @Override
-    public Prey clone() {
+    public Prey clone(final long cloneTime) {
         // Mutate the speed of the prey
         Prey prey = new Prey(
                 (Math.random()
@@ -64,8 +66,7 @@ public final class Prey extends Entity {
                         ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
                         : this.getSpeed(),
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians(),
-                System.currentTimeMillis());
+                this.getDirectionAngleInRadians(), cloneTime);
 
 
         // mutate the brain of the prey
