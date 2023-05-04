@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.totallyspies.evosim.neuralnetwork.Neuron;
 
-public class NeuronView extends StackPane {
+public final class NeuronView extends StackPane {
 
 
     /**
@@ -31,24 +31,37 @@ public class NeuronView extends StackPane {
 
     /**
      * Constructs a new NeuronView.
+     *
+     * @param newNeuron the neuron to display
      */
-    public NeuronView(Neuron neuron) {
-        this.neuron = neuron;
+    public NeuronView(final Neuron newNeuron) {
+        this.neuron = newNeuron;
         this.valueLabel = new Label();
         this.valueLabel.setText(String.valueOf(this.neuron.getValue()));
         this.getChildren().add(new Circle(NEURON_RADIUS, Color.LIGHTGRAY));
         this.getChildren().add(this.valueLabel);
     }
 
+    /**
+     * Updates the value of the neuron in the view.
+     */
     public void update() {
         this.valueLabel.setText(String.valueOf(this.neuron.getValue()));
     }
 
-    public void setCenterX(double centerX) {
+    /**
+     * Sets the center of the neuron in the view.
+     * @param centerX
+     */
+    public void setCenterX(final double centerX) {
         this.setTranslateX(centerX - NEURON_RADIUS);
     }
 
-    public void setCenterY(double centerY) {
+    /**
+     * Sets the center of the neuron in the view.
+     * @param centerY
+     */
+    public void setCenterY(final double centerY) {
         this.setTranslateY(centerY - NEURON_RADIUS);
     }
 

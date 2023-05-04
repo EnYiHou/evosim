@@ -370,7 +370,8 @@ public final class MapCanvas extends ResizableCanvas {
                         followingEntity.set(false);
                         followedEntity = null;
                         untrackEntityStats();
-                        MainController.getController().getTabPane().getSelectionModel().selectFirst();
+                        MainController.getController().getTabPane()
+                                .getSelectionModel().selectFirst();
                         MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
                     }
                 }

@@ -41,6 +41,9 @@ public final class Neuron {
    */
   private final double bias;
 
+  /**
+   * The value of the Neuron, which is the result of the activation function.
+   */
   @Getter
   private double value;
 
