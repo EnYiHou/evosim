@@ -87,11 +87,6 @@ public final class Neuron {
     this.activationFunction = newActivationFunction;
   }
 
-  @Override
-  public String toString() {
-    return "\nNeuron{" + "bias=" + this.bias + ", weights=" + this.weights + "}\n";
-  }
-
   /**
    * Feeds the input forward.
    *
@@ -103,11 +98,10 @@ public final class Neuron {
       throw new ArrayIndexOutOfBoundsException();
     }
 
-    return IntStream
+    return this.activationFunction.apply(IntStream
         .range(0, inputs.size())
-        .mapToDouble(i -> this.activationFunction.apply(inputs.get(i))
-            * this.weights.get(i))
-        .sum() * this.bias;
+        .mapToDouble(i -> (inputs.get(i)) * this.weights.get(i))
+        .sum() + this.bias);
   }
 
   /**

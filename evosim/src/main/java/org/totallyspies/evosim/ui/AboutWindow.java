@@ -1,11 +1,11 @@
 package org.totallyspies.evosim.ui;
 
-import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.totallyspies.evosim.utils.ResourceManager;
 
 /**
  * The AboutWindow is a small, locked modal window that displays basic information about the
@@ -17,25 +17,10 @@ import lombok.NoArgsConstructor;
 public final class AboutWindow {
 
     /**
-     * The fixed height of this window.
-     */
-    private static final double ABT_WINDOW_HEIGHT = 450.0;
-
-    /**
-     * The fixed width of this window.
-     */
-    private static final double ABT_WINDOW_WIDTH = 400.0;
-
-    /**
      * The sole stage used for the "about" window.
      */
     @Getter
     private Stage abtStage;
-
-    /**
-     * The JavaFX scene for the stage.
-     */
-    private Scene scene;
 
     /**
      * Constructs a new modal AboutWindow.
@@ -48,6 +33,9 @@ public final class AboutWindow {
         abtStage.initModality(Modality.APPLICATION_MODAL);
         abtStage.initOwner(parent);
         abtStage.setResizable(false);
-        abtStage.setScene(scene);
+
+        WindowUtils.setSceneRoot(this.abtStage,
+                this.getClass().getResource(ResourceManager.FXML_ABOUT),
+                "");
     }
 }

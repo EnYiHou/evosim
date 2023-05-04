@@ -4,33 +4,52 @@ import org.totallyspies.evosim.geometry.Point;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
+/**
+ * This class represents a moveable camera.
+ *
+ * @author EnYi
+ */
 public final class Camera {
-
-    /**
-     * The default zoom level of the camera.
-     */
-    public static final double DEFAULT_ZOOM = 1.0d;
 
     /**
      * The default position of the camera.
      */
-    public static final Point DEFAULT_POINT = new Point(0d, 0d);
+    public static final Point DEFAULT_POINT =
+            new Point(0, 0);
 
     /**
      * The maximum zoom level of the camera.
+     * <p>
+     * This value indicates the maximum scale constant when the camera is zoomed out to its min.
      */
-    public static final double MAX_ZOOM = 10.0d;
+    public static final double MAX_ZOOM = 1.60;
 
     /**
      * The minimum zoom level of the camera.
+     * <p>
+     * This value indicates the minimum scale constant when the camera is zoomed out to its max.
      */
-    public static final double MIN_ZOOM = 0.05d;
+    public static final double MIN_ZOOM = 0.140;
+
+    /**
+     * The default zoom level of the camera.
+     */
+    public static final double DEFAULT_ZOOM = 1.0;
 
     /**
      * The default zooming speed of the camera.
      */
-    public static final double DEFAULT_ZOOMING_SPEED = 0.003d;
+    public static final double DEFAULT_ZOOMING_SPEED = 0.003;
 
+    /**
+     * The speed at which the camera translates.
+     */
+    public static final double CAMERA_TRANSLATE_SPEED = 10.0;
+
+    /**
+     * The increment value of the camera's zoom.
+     */
+    public static final double CAMERA_ZOOM_INCREMENT = 0.01;
 
     /**
      * The position of the camera.
@@ -42,24 +61,51 @@ public final class Camera {
     /**
      * The zoom level of the camera.
      */
-    private AtomicDouble zoom;
+    private final AtomicDouble zoom;
+
+    /**
+     * Top left limit of pan.
+     */
+    private final Point topLeft;
+
+    /**
+     * Bottom right limit of pan.
+     */
+    private final Point bottomRight;
 
     /**
      * Creates a new camera with the given position and zoom level.
      *
-     * @param newPoint the position of the camera
-     * @param newZoom  the zoom level of the camera
+     * @param newPoint          the position of the camera
+     * @param newZoom           the zoom level of the camera
+     * @param newTopLeft        the new top left position
+     * @param newBottomRight    the new bottom right position
      */
-    public Camera(final Point newPoint, final double newZoom) {
+    public Camera(final Point newPoint, final double newZoom,
+                  final Point newTopLeft, final Point newBottomRight) {
         this.point = newPoint;
         this.zoom = new AtomicDouble(newZoom);
+        this.topLeft = newTopLeft;
+        this.bottomRight = newBottomRight;
     }
 
     /**
-     * Creates a new camera with a default point and a default zoom level of 1.
+     * Creates a camera with a default position and zoom.
+     *
+     * @param newTopLeft       the top-left Point
+     * @param newBottomRight   the bottom-right Point
      */
-    public Camera() {
-        this(DEFAULT_POINT, DEFAULT_ZOOM);
+    public Camera(final Point newTopLeft, final Point newBottomRight) {
+        this(DEFAULT_POINT, DEFAULT_ZOOM, newTopLeft, newBottomRight);
+    }
+
+    /**
+     * Sets the camera back to the position.
+     */
+    public void center() {
+        this.point.setX((this.bottomRight.getX() - this.topLeft.getX()) / 2.0);
+        this.point.setY((this.bottomRight.getY() - this.topLeft.getY()) / 2.0);
+        this.zoom.set(MIN_ZOOM);
     }
 
     /**
@@ -69,7 +115,10 @@ public final class Camera {
      *          (positive values move the camera to the right)
      */
     public void translateX(final double x) {
-        this.point.setX(this.point.getX() + x);
+        if (this.point.getX() + x >= this.topLeft.getX()
+                && this.point.getX() + x <= this.bottomRight.getX()) {
+            this.point.setX(this.point.getX() + x);
+        }
     }
 
     /**
@@ -79,7 +128,10 @@ public final class Camera {
      *          (positive values move the camera down)
      */
     public void translateY(final double y) {
-        this.point.setY(this.point.getY() + y);
+        if (this.point.getY() + y <= this.bottomRight.getY()
+                && this.point.getY() + y >= this.topLeft.getY()) {
+            this.point.setY(this.point.getY() + y);
+        }
     }
 
     /**
@@ -89,10 +141,24 @@ public final class Camera {
      *                  (positive values to zoom in the camera)
      */
     public void zoom(final double increment) {
-        if (this.zoom.addAndGet(increment) >= Camera.MIN_ZOOM
-                && this.zoom.addAndGet(increment) <= Camera.MAX_ZOOM) {
+        if (this.zoom.get() + increment >= Camera.MIN_ZOOM
+            && this.zoom.get() + increment <= Camera.MAX_ZOOM) {
             this.zoom.getAndAdd(increment);
         }
+    }
+
+    /**
+     * Zoom the camera by the default amount.
+     */
+    public void zoom() {
+        this.zoom(CAMERA_ZOOM_INCREMENT);
+    }
+
+    /**
+     * Unzoom the camera by the default amount.
+     */
+    public void unzoom() {
+        this.zoom(-CAMERA_ZOOM_INCREMENT);
     }
 
     /**
