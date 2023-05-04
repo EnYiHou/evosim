@@ -31,7 +31,7 @@ public final class Camera {
      * <p>
      * This value indicates the minimum scale constant when the camera is zoomed out to its max.
      */
-    public static final double MIN_ZOOM = 0.140;
+    public static final double MIN_ZOOM = 0.145;
 
     /**
      * The default zoom level of the camera.
@@ -63,7 +63,7 @@ public final class Camera {
     /**
      * The zoom level of the camera.
      */
-    private final AtomicDouble zoom;
+    private AtomicDouble zoom;
 
     /**
      * Whether the camera is zooming.

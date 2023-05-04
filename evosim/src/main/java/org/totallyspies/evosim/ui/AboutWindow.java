@@ -17,10 +17,25 @@ import org.totallyspies.evosim.utils.ResourceManager;
 public final class AboutWindow {
 
     /**
+     * The fixed height of this window.
+     */
+    private static final double ABT_WINDOW_HEIGHT = 450.0;
+
+    /**
+     * The fixed width of this window.
+     */
+    private static final double ABT_WINDOW_WIDTH = 400.0;
+
+    /**
      * The sole stage used for the "about" window.
      */
     @Getter
     private Stage abtStage;
+
+    /**
+     * The JavaFX scene for the stage.
+     */
+    private Scene scene;
 
     /**
      * Constructs a new modal AboutWindow.

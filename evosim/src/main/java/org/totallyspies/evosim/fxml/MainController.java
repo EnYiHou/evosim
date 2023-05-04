@@ -1,6 +1,5 @@
 package org.totallyspies.evosim.fxml;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,6 +12,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+
 import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -24,7 +25,6 @@ import javafx.util.Duration;
 import lombok.Getter;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,7 +37,6 @@ import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.ui.AboutWindow;
 
 import org.totallyspies.evosim.utils.Configuration;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -164,6 +163,30 @@ public final class MainController {
     private HBox energyBar;
 
     /**
+     * Rectangle for W key.
+     */
+    @FXML
+    private Rectangle wKey;
+
+    /**
+     * Rectangle for A key.
+     */
+    @FXML
+    private Rectangle aKey;
+
+    /**
+     * Rectangle for S key.
+     */
+    @FXML
+    private Rectangle sKey;
+
+    /**
+     * Rectangle for D key.
+     */
+    @FXML
+    private Rectangle dKey;
+
+    /**
      * An {@code #HBox} containing the progress bar and label for the entity energy.
      */
     @FXML
@@ -193,9 +216,14 @@ public final class MainController {
     private Simulation simulation;
 
     /**
-     * In order to explore the user's files.
+     *  In order to explore the user's files.
      */
-    private final FileChooser fileChooser;
+    private FileChooser fileChooser;
+
+    /**
+     * As if the variable is saved or not on the drive.
+     */
+    private boolean isSaved;
 
     /**
      * The global configuration of the application.
@@ -209,40 +237,167 @@ public final class MainController {
         controller = this;
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getConfiguration();
+        isSaved = false;
     }
 
     /**
      * Initializes {@code main.fxml}.
      */
-    public void initialize() {
+    public void initialize() throws IOException {
         this.simulation = new Simulation();
         this.mapCanvas.attach(simulation);
+
         this.setPlayPauseButtons();
         NeuralNetworkView neuronView = new NeuralNetworkView();
         neuronView.setDisable(true);
         tabPane.getTabs().add(neuronView);
         this.neuralNetworkTab = neuronView;
 
-
         this.setChart(totalPopulationChart);
         this.setChart(preyPopulationChart);
         this.setChart(predatorPopulationChart);
         this.setTimer();
+
+
+        this.setChosenEntityProperty();
+        this.setEntityInfoTab();
+        this.setKeyPress();
+
+        this.setupSavingDirectory();
+
+    }
+
+    /**
+     * Opens a modal AboutWindow when the "About" option is clicked under Help.
+     */
+    @FXML
+    private void aboutMenuClicked() {
+        AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
+        aw.getAbtStage().show();
+    }
+
+    /**
+     * Saving a configuration with the menu bar.
+     * @param event on click
+     * @throws IOException
+     */
+    @FXML
+    private void clickOnSave(final ActionEvent event) throws IOException {
+        if (!isSaved) {
+            fileChooser.setTitle("Save Configuration");
+            File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
+
+            if (file != null) {
+                configuration.saveConfiguration(file);
+            }
+            isSaved = true;
+        }
+    }
+
+    /**
+     * Loading the configuration.
+     * @param event on click
+     * @throws IOException
+     */
+    @FXML
+    private void clickOnLoad(final ActionEvent event) throws IOException {
+        fileChooser.setTitle("Load Configuration");
+        File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
+
+        if (file != null) {
+            configuration.loadConfiguration(file);
+            System.out.println(configuration.toString());
+        } else {
+            System.out.println("File doesn't exist or is not JSON.");
+        }
+
+    }
+
+    /**
+     * Loading the latest configuration.
+     * @param event on click
+     */
+    @FXML
+    private void clickOnLoadLatest(final ActionEvent event) {
+        configuration.loadLastConfiguration();
+        System.out.println(configuration.toString());
+    }
+
+    /**
+     * Loading the default configuration.
+     * @param event on click
+     */
+    @FXML
+    private void clickOnLoadDefault(final ActionEvent event) {
+        configuration.loadDefaultConfiguration();
+        System.out.println(configuration.toString());
+    }
+
+    /**
+     * Display an alert to the user to confirm if they'd like to close the app.
+     * @param event
+     */
+    @FXML
+    private void clickOnExit(final ActionEvent event) throws IOException {
+        Alert confirmation = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Are you sure you'd like to exit Evosim?",
+                ButtonType.YES,
+                ButtonType.NO
+        );
+
+        Optional<ButtonType> selection = confirmation.showAndWait();
+        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
+            confirmation.close();
+        } else if (selection.get() == ButtonType.YES) {
+            System.out.println("Shutting down application...");
+            EvosimApplication.getApplication().getStage().close();
+        }
+    }
+
+    /**
+     * Unfollow an entity clicking on the menu.
+     */
+    @FXML
+    private void clickOnUnfollow() {
+        Thread tread =  new Thread(() -> {
+            MapCanvas.getPRESSED_KEYS().add(KeyCode.B);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            MapCanvas.getPRESSED_KEYS().remove(KeyCode.B);
+        });
+    }
+
+    /**
+     * Setting the keys movements.
+     */
+    private void setKeyPress() {
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
 
         scene.setOnKeyPressed(event -> {
             KeyCode code = event.getCode();
-            if (code == KeyCode.ESCAPE) {
-                escapeClicked();
-            }
-            if (!MapCanvas.getPressedKeys().contains(code)) {
-                MapCanvas.getPressedKeys().push(code);
+            if (!MapCanvas.getPRESSED_KEYS().contains(code)
+                    && MapCanvas.getACCEPTED_KEYS().contains(code)
+                    && !event.isControlDown()) {
+                MapCanvas.getPRESSED_KEYS().push(code);
+                changeOpacityWASD(code, true);
             }
         });
 
-        scene.setOnKeyReleased(event ->
-                MapCanvas.getPressedKeys().remove(event.getCode()));
+        scene.setOnKeyReleased(event -> {
+            MapCanvas.getPRESSED_KEYS().remove(event.getCode());
+            changeOpacityWASD(event.getCode(), false);
+        });
+    }
 
+    /**
+     * Setting the saving directory for the project.
+     * @throws IOException
+     */
+    private void setupSavingDirectory() throws IOException {
         String evosimDir = Paths.get(
                 System.getProperty("user.home"), "Documents", "Evosim").toString();
         File evosimFolder = new File(evosimDir);
@@ -251,10 +406,11 @@ public final class MainController {
             evosimFolder.mkdir();
         }
 
-        fileChooser.getExtensionFilters().addAll(
+        this.fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
-        fileChooser.setInitialDirectory(
+        this.fileChooser.setInitialDirectory(
                 new File(evosimDir));
+        this.configuration.saveLatestConfiguration();
     }
 
     /**
@@ -275,7 +431,7 @@ public final class MainController {
     /**
      * Sets the timer of the simulation.
      */
-    public void setTimer() {
+    private void setTimer() {
         AtomicLong counter = new AtomicLong();
         this.timerProperty = new SimpleObjectProperty<>(java.time.Duration.ZERO);
         this.timerLabel.textProperty().bind(
@@ -319,6 +475,10 @@ public final class MainController {
         this.timerTimeLine.play();
     }
 
+    /**
+     * Verify the chart sizes.
+     * @param series chart series
+     */
     private void checkChartSize(final XYChart.Series<String, Number> series) {
         if (series.getData().size() > MAX_CHART_POINTS) {
             series.getData().remove(0);
@@ -332,6 +492,7 @@ public final class MainController {
         this.playBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().start();
             this.mapCanvas.play();
+
             this.playBtn.setDisable(true);
             this.pauseBtn.setDisable(false);
             this.timerTimeLine.play();
@@ -339,6 +500,7 @@ public final class MainController {
         this.pauseBtn.setOnAction(e -> {
             this.simulation.getAnimationLoop().stop();
             this.mapCanvas.pause();
+
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();
@@ -346,7 +508,7 @@ public final class MainController {
     }
 
     /**
-     * Opens a modal AboutWindow when the "About" option is clicked under Help.
+     * Set the chosen entity property that will be displayed.
      */
     @FXML
     private void aboutMenuClicked() {
@@ -404,11 +566,9 @@ public final class MainController {
     private void clickOnExit(final ActionEvent event) throws IOException {
         configuration.saveLatestConfiguration();
         Platform.exit();
-    }
 
-    /**
-     * Display an alert to the user to confirm if they'd like to close the app.
-     */
+    }
+    
     @FXML
     private void escapeClicked() {
         Alert confirmation = new Alert(
@@ -417,13 +577,28 @@ public final class MainController {
                 ButtonType.YES,
                 ButtonType.NO
         );
+    }
 
-        Optional<ButtonType> selection = confirmation.showAndWait();
-        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
-            confirmation.close();
-        } else if (selection.get() == ButtonType.YES) {
-            System.out.println("Shutting down application...");
-            EvosimApplication.getApplication().getStage().close();
+    /**
+     * Change the opacity of WASD keys rectangles.
+     * @param keyCode key associated with the rectangle
+     * @param darkerOpacity should the rectangle be darker
+     */\
+       private void changeOpacityWASD(final KeyCode keyCode, final boolean darkerOpacity) {
+
+        double opacityPercentage = darkerOpacity ? 1d : 0.55d;
+
+        if (keyCode == KeyCode.W) {
+            wKey.setOpacity(opacityPercentage);
+        }
+        if (keyCode == KeyCode.A) {
+            aKey.setOpacity(opacityPercentage);
+        }
+        if (keyCode == KeyCode.S) {
+            sKey.setOpacity(opacityPercentage);
+        }
+        if (keyCode == KeyCode.D) {
+            dKey.setOpacity(opacityPercentage);
         }
     }
 

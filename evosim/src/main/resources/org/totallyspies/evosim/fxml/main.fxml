@@ -15,30 +15,46 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 <?import org.totallyspies.evosim.ui.MapCanvas?>
 
-<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Save Configuration" />
+                  <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Save Configuration">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <Menu mnemonicParsing="false" text="Load">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadDefault" text="Default Configuration" />
-                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoad" text="Saved Configuration" />
-                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadLatest" text="Previous Configuration" />
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadDefault" text="Default Configuration">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoad" text="Saved Configuration">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnLoadLatest" text="Previous Configuration">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
                      </items>
                   </Menu>
-              <MenuItem mnemonicParsing="false" onAction="#clickOnExit" text="Exit" />
+              <MenuItem mnemonicParsing="false" onAction="#clickOnExit" text="Exit">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -54,6 +70,16 @@
                      </content>
                   </CustomMenuItem>
                </items>
+              <items>
+                  <Menu mnemonicParsing="false" text="Preferences">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#clickOnUnfollow" text="Unfollow Entity">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="B" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                    </items>
+                  </Menu>
+              </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
                <items>
@@ -140,19 +166,6 @@
                   </Tab>
               </tabs>
             </TabPane>
-                <VBox alignment="CENTER" prefHeight="274.0" prefWidth="200.0" style="-fx-border-width: 3px 0 0 0; -fx-border-color: black; -fx-spacing: 5;" VBox.vgrow="NEVER">
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Camera Controls" underline="true" VBox.vgrow="NEVER">
-                            <font>
-                                <Font name="System Bold" size="18.0" />
-                            </font>
-                        </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[WASD]&#13;Translate Camera&#13;[+/-]&#13;Zoom Camera&#13;[C]&#13;Center Camera&#13;[SPACE]&#13;Unfollow Entity&#13;[ESC]&#13;Exit Application" textAlignment="CENTER" wrappingWidth="178.55859375">
-                            <font>
-                                <Font size="14.0" />
-                            </font></Text>
-                    </children>
-                </VBox>
          </children>
       </VBox>
    </left>
@@ -248,9 +261,96 @@
                </styleClass>
             </Button>
          </children>
+      <AnchorPane fx:id="centerAnchor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
-      </StackPane>
+         <children>
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pickOnBounds="false" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <content>
+                  <MapCanvas fx:id="mapCanvas" />
+               </content>
+            </ScrollPane>
+            <HBox alignment="CENTER" layoutY="715.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <VBox alignment="TOP_CENTER">
+                     <children>
+                        <Label fx:id="timerLabel" text="Label" />
+                        <HBox alignment="CENTER" spacing="3.0">
+                           <children>
+                              <Button fx:id="playBtn" disable="true" focusTraversable="false" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Play">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <styleClass>
+                                    <String fx:value="button" />
+                                    <String fx:value="play" />
+                                 </styleClass>
+                              </Button>
+                              <Button fx:id="pauseBtn" focusTraversable="false" mnemonicParsing="false" prefHeight="35.0" prefWidth="60.0" text="Pause">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <styleClass>
+                                    <String fx:value="button" />
+                                    <String fx:value="pause" />
+                                 </styleClass>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox alignment="CENTER" layoutX="806.0" layoutY="665.0" mouseTransparent="true" spacing="3.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+               <children>
+                  <StackPane maxWidth="50.0">
+                     <children>
+                        <Rectangle fx:id="wKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                        <Label text="W" textFill="WHITE">
+                           <font>
+                              <Font name="Courier New" size="31.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </StackPane>
+                  <HBox mouseTransparent="true" spacing="3.0">
+                     <children>
+                        <StackPane maxHeight="50.0">
+                           <children>
+                              <Rectangle fx:id="aKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                              <Label text="A" textFill="WHITE">
+                                 <font>
+                                    <Font name="Courier New" size="31.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </StackPane>
+                        <StackPane maxHeight="50.0">
+                           <children>
+                              <Rectangle fx:id="sKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                              <Label text="S" textFill="WHITE">
+                                 <font>
+                                    <Font name="Courier New" size="31.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </StackPane>
+                        <StackPane maxHeight="50.0">
+                           <children>
+                              <Rectangle fx:id="dKey" arcHeight="5.0" arcWidth="5.0" fill="#695e5e" height="50.0" opacity="0.55" stroke="BLACK" strokeType="INSIDE" width="50.0" />
+                              <Label text="D" textFill="WHITE">
+                                 <font>
+                                    <Font name="Courier New" size="31.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
    </center>
 </BorderPane>

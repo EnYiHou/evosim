@@ -1,7 +1,5 @@
 package org.totallyspies.evosim.utils;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
 
@@ -10,6 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Configuration class consists of saving the settings the user configurations. If the user close
@@ -18,9 +18,8 @@ import java.io.IOException;
  *
  * @author niakouu
  */
-@Getter
-@Setter
 @ToString
+@SuppressWarnings("MissingJavadocMethod")
 public final class Configuration {
 
     /**
@@ -31,57 +30,57 @@ public final class Configuration {
         /**
          * The maximum speed at which the entity can rotate.
          */
-        public static final double ENTITY_MAX_ROTATION_SPEED = 0.02d;
+        public static final double ENTITY_MAX_ROTATION_SPEED = 0.02;
 
         /**
          * The energy regained passively by a prey for surviving.
          */
-        public static final double PREY_ENERGY_FILLING_SPEED = 0.0005d;
+        public static final double PREY_ENERGY_FILLING_SPEED = 0.0005;
 
         /**
          * The energy regained by a predator from eating prey.
          */
-        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.0005d;
+        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.0005;
 
         /**
          * The base energy lost rate of a predator.
          */
-        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01d;
+        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01;
 
         /**
          * The number of sensors each entity has.
          */
-        public static final int ENTITY_SENSORS_COUNT = 20;
+        public static final int ENTITY_SENSORS_COUNT = 30;
 
         /**
          * The radius of an entity.
          */
-        public static final double ENTITY_RADIUS = 15.0d;
+        public static final double ENTITY_RADIUS = 15.0;
 
         /**
          * The length of an entity's sensors.
          */
-        public static final double ENTITY_SENSORS_LENGTH = 300.0d;
+        public static final double ENTITY_SENSORS_LENGTH = 300.0;
 
         /**
          * The maximum speed of an entity.
          */
-        public static final double ENTITY_MAX_SPEED = 5.0d;
+        public static final double ENTITY_MAX_SPEED = 5.0;
 
         /**
          * The minimum possible speed of an entity.
          */
-        public static final double ENTITY_MIN_SPEED = 1.0d;
+        public static final double ENTITY_MIN_SPEED = 1.0;
 
         /**
          * The mutation rate of the speed of the entity.
          */
-        public static final double ENTITY_SPEED_MUTATION_RATE = 0.2d;
+        public static final double ENTITY_SPEED_MUTATION_RATE = 0.2;
 
         /**
          * The speed at which the energy of the entity will be drained.
          */
-        public static final double ENTITY_ENERGY_DRAIN_RATE = 0.01d;
+        public static final double ENTITY_ENERGY_DRAIN_RATE = 0.01;
 
         /**
          * The maximum number of predator that could be generated.
@@ -96,12 +95,12 @@ public final class Configuration {
         /**
          * The view angle of a predator.
          */
-        public static final double PREDATOR_VIEW_ANGLE = 60.0d;
+        public static final double PREDATOR_VIEW_ANGLE = 60.0;
 
         /**
          * The split energy that a predator will gain when it eats a prey.
          */
-        public static final double PREDATOR_SPLIT_ENERGY_FILLING_SPEED = 0.5d;
+        public static final double PREDATOR_SPLIT_ENERGY_FILLING_SPEED = 0.5;
 
         /**
          * The maximum number of prey that could be generated.
@@ -116,12 +115,12 @@ public final class Configuration {
         /**
          * The view angle of a prey.
          */
-        public static final double PREY_VIEW_ANGLE = 300.0d;
+        public static final double PREY_VIEW_ANGLE = 300.0;
 
         /**
          * The split energy that a prey will gain when it is not moving.
          */
-        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005d;
+        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005;
 
         /**
          * The number of layers the neural network will contain.
@@ -136,104 +135,14 @@ public final class Configuration {
     }
 
     /**
-     * The rate of energy that a prey will gain when it is not moving.
+     * All the variables needed for the configuration.
      */
-    private double preyEnergyFillingSpeed;
+    private HashMap<String, Number> variables;
 
     /**
-     * The rate of energy that a predator will gain when it eats a prey.
+     * All the defaults values needed for the application.
      */
-    private double predatorEnergyFillingSpeed;
-
-    /**
-     * The base energy lost rate of a predator.
-     */
-    private double predatorEnergyBaseDrainingSpeed;
-
-    /**
-     * The maximum speed at which the entity can rotate.
-     */
-    private double entityMaxRotationSpeed;
-
-    /**
-     * The number of sensors each entity has.
-     */
-    private int entitySensorsCount;
-
-    /**
-     * The radius of an entity.
-     */
-    private double entityRadius;
-
-    /**
-     * The length of an entity's sensors.
-     */
-    private double entitySensorsLength;
-
-    /**
-     * The maximum speed of an entity.
-     */
-    private double entityMaxSpeed;
-
-    /**
-     * The minimum speed of an entity.
-     */
-    private double entityMinSpeed;
-
-    /**
-     * The mutation rate of the speed of the entity.
-     */
-    private double entitySpeedMutationRate;
-
-    /**
-     * The speed at which the energy of the entity will be drained.
-     */
-    private double entityEnergyDrainRate;
-
-    /**
-     * The maximum number of predator that could be generated.
-     */
-    private double predatorMaxNumber;
-
-    /**
-     * The initial quantity of predators spawned.
-     */
-    private int predatorInitialPopulation;
-
-    /**
-     * The view angle of a predator.
-     */
-    private double predatorViewAngle;
-
-    /**
-     * The split energy that a predator will gain when it eats a prey.
-     */
-    private double predatorSplitEnergyFillingSpeed;
-
-    /**
-     * The maximum number of prey that could be generated.
-     */
-    private double preyMaxNumber;
-
-    /**
-     * The initial quantity of prey spawned.
-     */
-    private int preyInitialPopulation;
-
-    /**
-     * The view angle of a prey.
-     */
-    private double preyViewAngle;
-
-    /**
-     * The split energy that a prey will gain when it is not moving.
-     */
-    private double preySplitEnergyFillingSpeed;
-
-    /**
-     * The number of layers the neural network will contain.
-     */
-    private int neuralNetworkLayersNumber;
+    private HashMap<String, Number> defaultsValues;
 
     /**
      * The only configuration that exists using the Singleton Pattern.
@@ -244,6 +153,37 @@ public final class Configuration {
      * Create a new default Configuration object, and the setup.
      */
     private Configuration() {
+        this.defaultsValues = new HashMap<>();
+        this.defaultsValues.put("entityMaxRotationSpeed", Defaults.ENTITY_MAX_ROTATION_SPEED);
+        this.defaultsValues.put("entitySensorsCount", Defaults.ENTITY_SENSORS_COUNT);
+        this.defaultsValues.put("entityRadius", Defaults.ENTITY_RADIUS);
+        this.defaultsValues.put("entitySensorsLength", Defaults.ENTITY_SENSORS_LENGTH);
+        this.defaultsValues.put("entityMaxSpeed", Defaults.ENTITY_MAX_SPEED);
+        this.defaultsValues.put("entityMinSpeed", Defaults.ENTITY_MIN_SPEED);
+        this.defaultsValues.put("entitySpeedMutationRate", Defaults.ENTITY_SPEED_MUTATION_RATE);
+        this.defaultsValues.put("entityEnergyDrainRate", Defaults.ENTITY_ENERGY_DRAIN_RATE);
+
+        this.defaultsValues.put("predatorMaxNumber", Defaults.PREDATOR_MAX_NUMBER);
+        this.defaultsValues.put("predatorViewAngle", Defaults.PREDATOR_VIEW_ANGLE);
+        this.defaultsValues.put("predatorSplitEnergyFillingSpeed",
+                Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("predatorEnergyBaseDrainingSpeed",
+                Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
+        this.defaultsValues.put("predatorEnergyFillingSpeed",
+                Defaults.PREDATOR_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("predatorInitialPopulation", Defaults.PREDATOR_INITIAL_POPULATION);
+
+        this.defaultsValues.put("preyMaxNumber", Defaults.PREY_MAX_NUMBER);
+        this.defaultsValues.put("preyViewAngle", Defaults.PREY_VIEW_ANGLE);
+        this.defaultsValues.put("preySplitEnergyFillingSpeed",
+                Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("preyEnergyFillingSpeed", Defaults.PREY_ENERGY_FILLING_SPEED);
+        this.defaultsValues.put("preyInitialPopulation", Defaults.PREY_INITIAL_POPULATION);
+
+        this.defaultsValues.put("neuralNetworkLayersNumber", Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
+
+        this.variables = this.defaultsValues;
+
         restoreToDefaults();
     }
 
@@ -297,10 +237,9 @@ public final class Configuration {
      * @param jsonFile file we want to load.
      */
     public void loadConfiguration(final File jsonFile) {
-        JSONObject jsonObject = loadSavedConfiguration(jsonFile);
-
-        if (jsonObject != null) {
-            changeConfiguration(jsonObject);
+        JSONObject jsonConfiguration = loadSavedConfiguration(jsonFile);
+        if (jsonConfiguration != null) {
+            changeConfiguration(jsonConfiguration);
         }
     }
 
@@ -331,7 +270,8 @@ public final class Configuration {
             e.getMessage();
             return null;
         }
-        return new JSONObject(jsonText);
+        JSONObject jsonGlobalObject = new JSONObject(jsonText);
+        return jsonGlobalObject.getJSONObject("configuration");
     }
 
     /**
@@ -340,32 +280,19 @@ public final class Configuration {
      * @return JSONObject with Configuration's variables.
      */
     private JSONObject getJSONObject() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("preyEnergyFillingSpeed", this.preyEnergyFillingSpeed);
-        jsonObject.put("predatorEnergyFillingSpeed",
-                this.predatorEnergyFillingSpeed);
-        jsonObject.put("predatorEnergyBaseDrainingSpeed",
-                this.predatorEnergyBaseDrainingSpeed);
-        jsonObject.put("entityMaxRotationSpeed", this.entityMaxRotationSpeed);
-        jsonObject.put("entitySensorsCount", this.entitySensorsCount);
-        jsonObject.put("entityRadius", this.entityRadius);
-        jsonObject.put("entitySensorsLength", this.entitySensorsLength);
-        jsonObject.put("entityMaxSpeed", this.entityMaxSpeed);
-        jsonObject.put("entityMinSpeed", this.entityMinSpeed);
-        jsonObject.put("entitySpeedMutationRate", this.entitySpeedMutationRate);
-        jsonObject.put("entityEnergyDrainRate", this.entityEnergyDrainRate);
-        jsonObject.put("predatorMaxNumber", this.predatorMaxNumber);
-        jsonObject.put("predatorInitialPopulation", this.predatorInitialPopulation);
-        jsonObject.put("preyInitialPopulation", this.preyInitialPopulation);
-        jsonObject.put("predatorViewAngle", this.predatorViewAngle);
-        jsonObject.put("predatorSplitEnergyFillingSpeed",
-                this.predatorSplitEnergyFillingSpeed);
-        jsonObject.put("preyMaxNumber", this.preyMaxNumber);
-        jsonObject.put("preySplitEnergyFillingSpeed",
-                this.preySplitEnergyFillingSpeed);
-        jsonObject.put("preyViewAngle", this.preyViewAngle);
-        jsonObject.put("neuralNetworkLayersNumber", this.neuralNetworkLayersNumber);
-        return jsonObject;
+        JSONObject jsonObjectGlobal = new JSONObject();
+        jsonObjectGlobal.put("configuration", getConfigurationJson());
+        jsonObjectGlobal.put("neuralNetwork", getNeuralNetworkJSON());
+        return jsonObjectGlobal;
+    }
+
+    private JSONObject getConfigurationJson() {
+        return new JSONObject(this.variables);
+    }
+
+    private JSONObject getNeuralNetworkJSON() {
+        JSONObject jsonObjectNeuralNetworks = new JSONObject();
+        return jsonObjectNeuralNetworks;
     }
 
     /**
@@ -373,66 +300,177 @@ public final class Configuration {
      * @param jsonObject
      */
     private void changeConfiguration(final JSONObject jsonObject) {
-        this.preyEnergyFillingSpeed = jsonObject.getDouble(
-                "preyEnergyFillingSpeed");
-        this.predatorEnergyFillingSpeed = jsonObject.getDouble(
-                "predatorEnergyFillingSpeed");
-        this.predatorEnergyBaseDrainingSpeed = jsonObject.getDouble(
-                "predatorEnergyBaseDrainingSpeed");
-        this.entityMaxRotationSpeed = jsonObject.getDouble(
-                "entityMaxRotationSpeed");
-        this.entitySensorsCount = jsonObject.getInt("entitySensorsCount");
-        this.entityRadius = jsonObject.getDouble("entityRadius");
-        this.entitySensorsLength = jsonObject.getDouble("entitySensorsLength");
-        this.entityMaxSpeed = jsonObject.getDouble("entityMaxSpeed");
-        this.entityMinSpeed = jsonObject.getDouble("entityMinSpeed");
-        this.entitySpeedMutationRate = jsonObject.getDouble(
-                "entitySpeedMutationRate");
-        this.entityEnergyDrainRate = jsonObject.getDouble(
-                "entityEnergyDrainRate");
+        Set<String> keys = this.variables.keySet();
 
-        this.predatorMaxNumber = jsonObject.getInt("predatorMaxNumber");
-        this.predatorInitialPopulation = jsonObject.getInt("predatorInitialPopulation");
-        this.predatorViewAngle = jsonObject.getDouble("predatorViewAngle");
-        this.predatorSplitEnergyFillingSpeed = jsonObject.getDouble(
-                "predatorSplitEnergyFillingSpeed");
-
-        this.preyMaxNumber = jsonObject.getInt("preyMaxNumber");
-        this.preyInitialPopulation = jsonObject.getInt("preyInitialPopulation");
-        this.preyViewAngle = jsonObject.getDouble("preyViewAngle");
-        this.preySplitEnergyFillingSpeed = jsonObject.getDouble(
-                "preySplitEnergyFillingSpeed");
-
-        this.neuralNetworkLayersNumber = jsonObject.getInt(
-                "neuralNetworkLayersNumber");
+        keys.forEach((key) -> this.variables.replace(key, jsonObject.getNumber(key)));
     }
 
     private void restoreToDefaults() {
-        this.entityMaxRotationSpeed = Defaults.ENTITY_MAX_ROTATION_SPEED;
-        this.preyEnergyFillingSpeed = Defaults.PREY_ENERGY_FILLING_SPEED;
-        this.predatorEnergyFillingSpeed = Defaults.PREDATOR_ENERGY_FILLING_SPEED;
-        this.predatorEnergyBaseDrainingSpeed = Defaults.
-                PREDATOR_ENERGY_BASE_DRAINING_SPEED;
-        this.entitySensorsCount = Defaults.ENTITY_SENSORS_COUNT;
-        this.entityRadius = Defaults.ENTITY_RADIUS;
-        this.entitySensorsLength = Defaults.ENTITY_SENSORS_LENGTH;
-        this.entityMaxSpeed = Defaults.ENTITY_MAX_SPEED;
-        this.entityMinSpeed = Defaults.ENTITY_MIN_SPEED;
-        this.entitySpeedMutationRate = Defaults.ENTITY_SPEED_MUTATION_RATE;
-        this.entityEnergyDrainRate = Defaults.ENTITY_ENERGY_DRAIN_RATE;
+        this.variables = this.defaultsValues;
+    }
 
-        // Predator
-        this.predatorMaxNumber = Defaults.PREDATOR_MAX_NUMBER;
-        this.predatorInitialPopulation = Defaults.PREDATOR_INITIAL_POPULATION;
-        this.predatorViewAngle = Defaults.PREDATOR_VIEW_ANGLE;
-        this.predatorSplitEnergyFillingSpeed = Defaults.
-                PREDATOR_SPLIT_ENERGY_FILLING_SPEED;
+    public double getEntityMaxRotationSpeed() {
+        return this.variables.get("entityMaxRotationSpeed").doubleValue();
+    }
 
-        this.preyMaxNumber = Defaults.PREY_MAX_NUMBER;
-        this.preyInitialPopulation = Defaults.PREY_INITIAL_POPULATION;
-        this.preyViewAngle = Defaults.PREY_VIEW_ANGLE;
-        this.preySplitEnergyFillingSpeed = Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED;
+    public void setEntityMaxRotationSpeed(final double newEntityMaxRotationSpeed) {
+        this.variables.replace("entityMaxRotationSpeed", newEntityMaxRotationSpeed);
+    }
 
-        this.neuralNetworkLayersNumber = Defaults.NEURAL_NETWORK_LAYERS_NUMBER;
+    public int getEntitySensorsCount() {
+        return this.variables.get("entitySensorsCount").intValue();
+    }
+
+    public void setEntitySensorsCount(final int newEntitySensorsCount) {
+        this.variables.replace("entitySensorsCount", newEntitySensorsCount);
+    }
+
+    public double getEntityRadius() {
+        return this.variables.get("entityRadius").doubleValue();
+    }
+
+    public void setEntityRadius(final double newEntityRadius) {
+        this.variables.replace("entityEntityRadius", newEntityRadius);
+    }
+
+    public double getEntitySensorsLength() {
+        return this.variables.get("entitySensorsLength").doubleValue();
+    }
+
+    public void setEntitySensorsLength(final double newEntitySensorsLength) {
+        this.variables.replace("entitySensorsLength", newEntitySensorsLength);
+    }
+
+    public double getEntityMaxSpeed() {
+        return this.variables.get("entityMaxSpeed").doubleValue();
+    }
+
+    public void setEntityMaxSpeed(final double newEntityMaxSpeed) {
+        this.variables.replace("entityMaxSpeed", newEntityMaxSpeed);
+    }
+
+    public double getEntityMinSpeed() {
+        return this.variables.get("entityMinSpeed").doubleValue();
+    }
+
+    public void setEntityMinSpeed(final double newEntityMinSpeed) {
+        this.variables.replace("entityMinxSpeed", newEntityMinSpeed);
+    }
+
+    public double getEntitySpeedMutationRate() {
+        return this.variables.get("entitySpeedMutationRate").doubleValue();
+    }
+
+    public void setEntitySpeedMutationRate(final double newEntitySpeedMutationRate) {
+        this.variables.replace("entitySpeedMutationRate", newEntitySpeedMutationRate);
+    }
+
+    public double getEntityEnergyDrainRate() {
+        return this.variables.get("entityEnergyDrainRate").doubleValue();
+    }
+
+    public void setEntityEnergyDrainRate(final double newEntityEnergyDrainRate) {
+        this.variables.replace("entityEnergyDrainRat", newEntityEnergyDrainRate);
+    }
+
+    public int getPredatorMaxNumber() {
+        return this.variables.get("predatorMaxNumber").intValue();
+    }
+
+    public void setPredatorMaxNumber(final int newPredatorMaxNumber) {
+        this.variables.replace("predatorMaxNumber", newPredatorMaxNumber);
+    }
+
+    public double getPredatorViewAngle() {
+        return this.variables.get("predatorViewAngle").doubleValue();
+    }
+
+    public void setPredatorViewAngle(final double newPredatorViewAngle) {
+        this.variables.replace("predatorViewAngle", newPredatorViewAngle);
+    }
+
+    public double getPredatorSplitEnergyFillingSpeed() {
+        return this.variables.get("predatorSplitEnergyFillingSpeed").doubleValue();
+    }
+
+    public void setPredatorSplitEnergyFillingSpeed(
+            final double newPredatorSplitEnergyFillingSpeed) {
+        this.variables.replace(
+                "predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
+    }
+
+    public double getPredatorEnergyFillingSpeed() {
+        return this.variables.get("predatorEnergyFillingSpeed").doubleValue();
+    }
+
+    public void setPredatorEnergyFillingSpeed(final double newPredatorEnergyFillingSpeed) {
+        this.variables.replace("predatorEnergyFillingSpeed", newPredatorEnergyFillingSpeed);
+    }
+
+    public double getPredatorEnergyBaseDrainingSpeed() {
+        return this.variables.get("predatorEnergyBaseDrainingSpeed").doubleValue();
+    }
+
+    public void setPredatorEnergyBaseDrainingSpeed(
+            final double newPredatorEnergyBaseDrainingSpeed) {
+        this.variables.replace(
+                "predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
+    }
+
+    public int getPredatorInitialPopulation() {
+        return this.variables.get("predatorInitialPopulation").intValue();
+    }
+
+    public void setPredatorInitialPopulation(final int newPredatorInitialPopulation) {
+        this.variables.replace("predatorInitialPopulation", newPredatorInitialPopulation);
+    }
+
+    public int getPreyInitialPopulation() {
+        return this.variables.get("preyInitialPopulation").intValue();
+    }
+
+    public void setPreyInitialPopulation(final int newPreyInitialPopulation) {
+        this.variables.replace("preyInitialPopulation", newPreyInitialPopulation);
+    }
+
+    public int getPreyMaxNumber() {
+        return this.variables.get("preyMaxNumber").intValue();
+    }
+
+    public void setPreyMaxNumber(final int newPreyMaxNumber) {
+        this.variables.replace("preyMaxNumber", newPreyMaxNumber);
+    }
+
+    public double getPreyViewAngle() {
+        return this.variables.get("preyViewAngle").doubleValue();
+    }
+
+    public void setPreyViewAngle(final double newPreyViewAngle) {
+        this.variables.replace("preyViewAngle", newPreyViewAngle);
+    }
+
+    public double getPreySplitEnergyFillingSpeed() {
+        return this.variables.get("preySplitEnergyFillingSpeed").doubleValue();
+    }
+
+    public void setPreySplitEnergyFillingSpeed(final double newPreySplitEnergyFillingSpeed) {
+        this.variables.replace("preySplitEnergyFillingSpeed", newPreySplitEnergyFillingSpeed);
+    }
+
+    public double getPreyEnergyFillingSpeed() {
+        return this.variables.get("preyEnergyFillingSpeed").doubleValue();
+    }
+
+    public void setPreyEnergyFillingSpeed(final double newPreyEnergyFillingSpeed) {
+        this.variables.replace("preyEnergyFillingSpeed", newPreyEnergyFillingSpeed);
+    }
+
+    public int getNeuralNetworkLayersNumber() {
+        return this.variables.get("neuralNetworkLayersNumber").intValue();
+    }
+
+    public void setNeuralNetworkLayersNumber(final double newNeuralNetworkLayersNumber) {
+        this.variables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
     }
 }
+
