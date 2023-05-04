@@ -46,7 +46,7 @@ public final class Configuration {
         /**
          * The base energy lost rate of a predator.
          */
-        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.01d;
+        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.0001d;
 
         /**
          * The number of sensors each entity has.
@@ -81,7 +81,7 @@ public final class Configuration {
         /**
          * The speed at which the energy of the entity will be drained.
          */
-        public static final double ENTITY_ENERGY_DRAIN_RATE = 0.01d;
+        public static final double ENTITY_ENERGY_DRAIN_RATE = 0;
 
         /**
          * The maximum number of predator that could be generated.

@@ -27,11 +27,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
-
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.utils.Configuration;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -188,12 +186,8 @@ public final class MainController {
         this.setChart(predatorPopulationChart);
         this.setTimer();
         this.chosenEntityProperty = new SimpleObjectProperty<>();
-        this.chosenEntityProperty.set(new Predator(
-                1,
-                new Point(0, 0),
-                1,
-                System.currentTimeMillis())
-        );
+        this.chosenEntityProperty.set(new Predator(1, new Point(0, 0),
+                1, System.currentTimeMillis()));
         this.setEntityInfoTab();
         Scene scene = EvosimApplication.getApplication().getStage().getScene();
 
@@ -225,9 +219,10 @@ public final class MainController {
     }
 
     /**
-     * Sets entity information in the info tab.
+     * Sets the play and pause buttons.
      */
     private void setEntityInfoTab() {
+
         this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
         this.energyLabel.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Energy: %.2f",
@@ -249,7 +244,7 @@ public final class MainController {
     }
 
     /**
-     * Sets the chart of the simulation.
+     * Sets the charts of the simulation.
      *
      * @param chart the chart to be set
      */
@@ -325,13 +320,13 @@ public final class MainController {
      */
     public void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
-            this.simulation.getAnimationLoop().start();
+            this.simulation.playUpdate();
             this.playBtn.setDisable(true);
             this.pauseBtn.setDisable(false);
             this.timerTimeLine.play();
         });
         this.pauseBtn.setOnAction(e -> {
-            this.simulation.getAnimationLoop().stop();
+            this.simulation.pauseUpdate();
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();
