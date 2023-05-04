@@ -7,12 +7,14 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Assert;
+import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 
@@ -27,8 +29,30 @@ public final class MapCanvas extends ResizableCanvas {
     public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
 
     /**
+     * A list of keycodes being pressed.
+     */
+    @Getter
+    private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
+
+    /**
+     * The Keys that are accepted to PRESSED_KEYS array.
+     */
+    @Getter
+    private static final LinkedList<KeyCode> ACCEPTED_KEYS = new LinkedList<>() {{
+        add(KeyCode.W);
+        add(KeyCode.S);
+        add(KeyCode.A);
+        add(KeyCode.D);
+        add(KeyCode.MINUS);
+        add(KeyCode.EQUALS);
+        add(KeyCode.C);
+        add(KeyCode.B);
+    }};
+
+    /**
      * The camera of the map.
      */
+    @Getter
     private final Camera camera;
 
     /**
@@ -40,11 +64,6 @@ public final class MapCanvas extends ResizableCanvas {
      * The simulation that is being rendered by the map.
      */
     private Simulation simulation;
-
-    /**
-     * A list of keycodes being pressed.
-     */
-    private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
 
     /**
      * Whether the camera is following an entity or not.
@@ -83,12 +102,7 @@ public final class MapCanvas extends ResizableCanvas {
         };
         this.followingEntity = new AtomicBoolean(false);
 
-        this.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                checkForEntityOnClick(event);
-            }
-        });
+        this.setOnMouseClicked(this::checkEntityonClick);
     }
 
     /**
@@ -236,15 +250,6 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     /**
-     * Returns the camera of the map.
-     *
-     * @return the camera of the map
-     */
-    public Camera getCamera() {
-        return this.camera;
-    }
-
-    /**
      * Attaches a simulation to this map.
      * @param newSimulation Simulation to be attached.
      */
@@ -260,6 +265,7 @@ public final class MapCanvas extends ResizableCanvas {
 
         final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
         final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
+
         if (!PRESSED_KEYS.isEmpty()) {
             if (!followingEntity.get()) { // cannot control camera when tracking
                 for (KeyCode code : PRESSED_KEYS) {
@@ -278,14 +284,10 @@ public final class MapCanvas extends ResizableCanvas {
                         default -> { }
                     }
                 }
-            } else {
-                if (PRESSED_KEYS.contains(KeyCode.SPACE)) {
-                    if (followedEntity != null) {
-                        this.unfollowEntity(followedEntity);
-                        followingEntity.set(false);
-                        this.camera.center();
-                    }
-                }
+            } else if (PRESSED_KEYS.contains(KeyCode.B)) {
+                this.unfollowEntity(followedEntity);
+                followingEntity.set(false);
+                followedEntity = null;
             }
         }
 
@@ -313,8 +315,34 @@ public final class MapCanvas extends ResizableCanvas {
      *
      * @param e the click event
      */
-    private void checkForEntityOnClick(final MouseEvent e) {
-        // TODO determine which chunk was clicked, check if mouse clicked entity.
+    private void checkEntityonClick(final MouseEvent e) {
+        double x = e.getX();
+        double y = e.getY();
+
+        Point abs = this.computePointPosition(x, y);
+
+        int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
+        int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
+
+        if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
+                || chunkY < 0 || chunkY >= Simulation.MAP_SIZE_Y) {
+            return;
+        }
+
+        simulation.forEachGridEntities(chunkX, chunkY, entity -> {
+            Point entityCenter = entity.getBodyCenter();
+            if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
+                    abs.getX(), abs.getY())
+                    <= Configuration.getConfiguration().getEntityRadius() * 2
+            ) {
+
+                if (!followingEntity.get()) {
+                    this.followEntity(entity);
+                    followingEntity.set(true);
+                    followedEntity = entity;
+                }
+            }
+        });
     }
 
 }
