@@ -7,6 +7,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Coordinate;
@@ -26,26 +27,49 @@ public final class MapCanvas extends ResizableCanvas {
      * The color of the map.
      */
     public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
+
     /**
      * A list of keycodes being pressed.
      */
+    @Getter
     private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
+
+    /**
+     * The Keys that are accepted to PRESSED_KEYS array.
+     */
+    @Getter
+    private static final LinkedList<KeyCode> ACCEPTED_KEYS = new LinkedList<>() {{
+        add(KeyCode.W);
+        add(KeyCode.S);
+        add(KeyCode.A);
+        add(KeyCode.D);
+        add(KeyCode.MINUS);
+        add(KeyCode.EQUALS);
+        add(KeyCode.C);
+        add(KeyCode.B);
+    }};
+
     /**
      * The camera of the map.
      */
+    @Getter
     private final Camera camera;
+
     /**
      * The loop to render the map.
      */
     private final AnimationTimer anim;
+
     /**
      * Whether the camera is following an entity or not.
      */
     private final AtomicBoolean followingEntity;
+
     /**
      * The simulation that is being rendered by the map.
      */
     private Simulation simulation;
+
     /**
      * The entity currently being followed.
      */
@@ -75,10 +99,6 @@ public final class MapCanvas extends ResizableCanvas {
         this.followingEntity = new AtomicBoolean(false);
 
         this.setOnMouseClicked(this::checkEntityonClick);
-    }
-
-    public static LinkedList<KeyCode> getPressedKeys() {
-        return PRESSED_KEYS;
     }
 
     /**
@@ -246,15 +266,6 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     /**
-     * Returns the camera of the map.
-     *
-     * @return the camera of the map
-     */
-    public Camera getCamera() {
-        return this.camera;
-    }
-
-    /**
      * Attaches a simulation to this map.
      *
      * @param newSimulation Simulation to be attached.
@@ -270,6 +281,7 @@ public final class MapCanvas extends ResizableCanvas {
 
         final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
         final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
+
         if (!PRESSED_KEYS.isEmpty()) {
             if (!followingEntity.get()) { // cannot control camera when tracking
                 for (KeyCode code : PRESSED_KEYS) {
@@ -289,14 +301,10 @@ public final class MapCanvas extends ResizableCanvas {
                         }
                     }
                 }
-            } else {
-                if (PRESSED_KEYS.contains(KeyCode.SPACE)) {
-                    if (followedEntity != null) {
-                        this.unfollowEntity(followedEntity);
-                        followingEntity.set(false);
-                        followedEntity = null;
-                    }
-                }
+            } else if (PRESSED_KEYS.contains(KeyCode.B)) {
+                this.unfollowEntity(followedEntity);
+                followingEntity.set(false);
+                followedEntity = null;
             }
         }
         Coordinate camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
@@ -319,6 +327,7 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
 
+
     /**
      * Checks if the mouse is clicking on an entity.
      *
@@ -332,10 +341,6 @@ public final class MapCanvas extends ResizableCanvas {
 
         int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
         int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
-
-//            System.out.println("Clicked on " + abs.getX() + " " + abs.getY());
-//            System.out.println("Chunk " + chunkX + " " + chunkY);
-
 
         if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
                 || chunkY < 0 || chunkY >= Simulation.MAP_SIZE_Y) {
@@ -360,6 +365,5 @@ public final class MapCanvas extends ResizableCanvas {
         }
 
     }
-
 
 }
