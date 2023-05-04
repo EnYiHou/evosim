@@ -26,11 +26,9 @@ import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.utils.Configuration;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -368,9 +366,10 @@ public final class MainController {
     }
 
     /**
-     * Sets entity information in the info tab.
+     * Sets the play and pause buttons.
      */
     private void setEntityInfoTab() {
+
         this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
         this.energyLabel.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Energy: %.2f",
@@ -391,7 +390,7 @@ public final class MainController {
     }
 
     /**
-     * Sets the chart of the simulation.
+     * Sets the charts of the simulation.
      *
      * @param chart the chart to be set
      */
@@ -471,13 +470,13 @@ public final class MainController {
      */
     private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
-            this.simulation.getAnimationLoop().start();
+            this.simulation.playUpdate();
             this.playBtn.setDisable(true);
             this.pauseBtn.setDisable(false);
             this.timerTimeLine.play();
         });
         this.pauseBtn.setOnAction(e -> {
-            this.simulation.getAnimationLoop().stop();
+            this.simulation.pauseUpdate();
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();

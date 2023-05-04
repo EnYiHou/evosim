@@ -1,8 +1,10 @@
 package org.totallyspies.evosim.geometry;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * This class represents a point in 2D space.
@@ -11,6 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Coordinate {
 
     /**
