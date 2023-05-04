@@ -3,13 +3,9 @@ package org.totallyspies.evosim.fxml;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
@@ -21,16 +17,13 @@ import javafx.scene.chart.XYChart;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.ui.AboutWindow;
-import org.totallyspies.evosim.ui.EvosimApplication;
-import org.totallyspies.evosim.ui.MapCanvas;
+import org.totallyspies.evosim.ui.*;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
 
 import java.io.File;
@@ -88,6 +81,19 @@ public final class MainController {
      */
     @FXML
     private LineChart predatorPopulationChart;
+
+    /**
+     * Tab pane containing the charts and the neural network view.
+     */
+    @FXML
+    @Getter
+    private TabPane tabPane;
+
+    /**
+     * The neural network view.
+     */
+    @Getter
+    private NeuralNetworkView neuralNetworkTab;
 
     /**
      * A {@code #AnchorPane} containing the entity stats. Disabled when no entities are tracked.
@@ -175,7 +181,7 @@ public final class MainController {
     private Simulation simulation;
 
     /**
-     *  In order to explore the user's files.
+     * In order to explore the user's files.
      */
     private final FileChooser fileChooser;
 
@@ -200,6 +206,12 @@ public final class MainController {
         this.simulation = new Simulation();
         this.mapCanvas.attach(simulation);
         this.setPlayPauseButtons();
+        NeuralNetworkView neuronView = new NeuralNetworkView();
+        neuronView.setDisable(true);
+        tabPane.getTabs().add(neuronView);
+        this.neuralNetworkTab = neuronView;
+
+
         this.setChart(totalPopulationChart);
         this.setChart(preyPopulationChart);
         this.setChart(predatorPopulationChart);

@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import lombok.Getter;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
@@ -26,6 +27,7 @@ public class NeuralNetwork {
     /**
      * A list containing each list of Neurons, which each represent a layer.
      */
+    @Getter
     private List<List<Neuron>> neuronLayers;
 
     /**

@@ -74,6 +74,7 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private Entity followedEntity;
 
+
     /**
      * Construct an instance of MapCanvas.
      */
@@ -115,7 +116,7 @@ public final class MapCanvas extends ResizableCanvas {
         };
 
         this.followingEntity = new AtomicBoolean(false);
-        this.setOnMouseClicked(this::checkEntityonClick);
+        this.setOnMouseClicked(this::checkEntityOnClick);
     }
 
     public static LinkedList<KeyCode> getPressedKeys() {
@@ -248,7 +249,6 @@ public final class MapCanvas extends ResizableCanvas {
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY()));
         autoZoom(0.5);
-
     }
 
     /**
@@ -258,6 +258,8 @@ public final class MapCanvas extends ResizableCanvas {
      * @param value The value to be zoomed to
      */
     public void autoZoom(final double value) {
+
+        camera.setZooming(true);
         Thread thread = new Thread(() -> {
             double minIncrement = Math.signum(
                     value - this.camera.getZoom()) * Camera.DEFAULT_ZOOMING_SPEED;
@@ -272,8 +274,10 @@ public final class MapCanvas extends ResizableCanvas {
                     e.printStackTrace();
                 }
             }
+            camera.setZooming(false);
         });
         thread.start();
+
     }
 
     /**
@@ -361,11 +365,13 @@ public final class MapCanvas extends ResizableCanvas {
                 }
             } else {
                 if (PRESSED_KEYS.contains(KeyCode.SPACE)) {
-                    if (followedEntity != null) {
+                    if (followedEntity != null && !camera.isZooming()) {
                         this.unfollowEntity(followedEntity);
                         followingEntity.set(false);
                         followedEntity = null;
                         untrackEntityStats();
+                        MainController.getController().getTabPane().getSelectionModel().selectFirst();
+                        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
                     }
                 }
             }
@@ -395,7 +401,7 @@ public final class MapCanvas extends ResizableCanvas {
      *
      * @param e the click event
      */
-    private void checkEntityonClick(final MouseEvent e) {
+    private void checkEntityOnClick(final MouseEvent e) {
         double x = e.getX();
         double y = e.getY();
 
@@ -422,11 +428,13 @@ public final class MapCanvas extends ResizableCanvas {
                     <= Configuration.getConfiguration().getEntityRadius() * 2
             ) {
 
-                if (!followingEntity.get()) {
+                if (!followingEntity.get() && !camera.isZooming()) {
                     this.followEntity(entity);
                     followingEntity.set(true);
                     followedEntity = entity;
                     trackEntityStats();
+                    MainController.getController().getNeuralNetworkTab()
+                            .setNeuralNetwork(entity.getBrain());
                 }
             }
         }

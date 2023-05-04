@@ -51,7 +51,7 @@ public final class Configuration {
         /**
          * The number of sensors each entity has.
          */
-        public static final int ENTITY_SENSORS_COUNT = 30;
+        public static final int ENTITY_SENSORS_COUNT = 20;
 
         /**
          * The radius of an entity.

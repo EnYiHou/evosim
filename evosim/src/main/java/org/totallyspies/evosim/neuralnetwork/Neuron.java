@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import lombok.Getter;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -38,6 +40,9 @@ public final class Neuron {
    * A double value to shift the results neural network's activation.
    */
   private final double bias;
+
+  @Getter
+  private double value;
 
   /**
    * The weights the Neuron has, which are necessary for computations.

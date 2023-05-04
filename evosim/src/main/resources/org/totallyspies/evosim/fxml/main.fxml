@@ -24,7 +24,7 @@
 <?import javafx.scene.text.Text?>
 <?import org.totallyspies.evosim.ui.MapCanvas?>
 
-<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="rootView" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -70,7 +70,7 @@
    <left>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <TabPane prefHeight="773.0" prefWidth="234.0" style="-fx-background-color: #F2F5F8;" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" prefHeight="773.0" prefWidth="234.0" style="-fx-background-color: #F2F5F8;" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="Graphs">
                      <content>
@@ -136,21 +136,6 @@
                               </VBox>
                            </content>
                         </ScrollPane>
-                     </content>
-                  </Tab>
-                <Tab text="Entity Information">
-                     <content>
-                        <VBox alignment="TOP_CENTER" prefHeight="710.0" prefWidth="233.0" spacing="35.0">
-                           <children>
-                              <Label prefHeight="44.0" prefWidth="178.0" text="placeholder" />
-                           </children>
-                           <padding>
-                              <Insets top="40.0" />
-                           </padding>
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </VBox>
                      </content>
                   </Tab>
               </tabs>
