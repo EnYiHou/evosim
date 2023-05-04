@@ -2,8 +2,6 @@ package org.totallyspies.evosim.utils;
 
 import lombok.ToString;
 import org.json.JSONObject;
-import org.totallyspies.evosim.entities.Entity;
-import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,7 +9,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 /**
