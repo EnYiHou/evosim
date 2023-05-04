@@ -52,3 +52,6 @@ gradle-app.setting
 
 # Mac...
 .DS_Store
+
+# PDF
+*.pdf
