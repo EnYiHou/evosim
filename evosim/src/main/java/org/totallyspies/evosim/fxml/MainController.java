@@ -365,8 +365,8 @@ public final class MainController {
 
             if (file != null) {
                 configuration.saveConfiguration(file);
+                isSaved = true;
             }
-            isSaved = true;
         }
     }
 

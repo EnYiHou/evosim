@@ -240,10 +240,9 @@ public final class Configuration {
      * @param jsonFile file we want to load.
      */
     public void loadConfiguration(final File jsonFile) {
-        JSONObject jsonObject = loadSavedConfiguration(jsonFile);
-
-        if (jsonObject != null) {
-            changeConfiguration(jsonObject);
+        JSONObject jsonConfiguration = loadSavedConfiguration(jsonFile);
+        if (jsonConfiguration != null) {
+            changeConfiguration(jsonConfiguration);
         }
     }
 
@@ -274,7 +273,8 @@ public final class Configuration {
             e.getMessage();
             return null;
         }
-        return new JSONObject(jsonText);
+        JSONObject jsonGlobalObject = new JSONObject(jsonText);
+        return jsonGlobalObject.getJSONObject("configuration");
     }
 
     /**
@@ -283,25 +283,19 @@ public final class Configuration {
      * @return JSONObject with Configuration's variables.
      */
     private JSONObject getJSONObject() {
-        //JSONObject jsonObjectGlobal = new JSONObject();
-        //jsonObjectGlobal.put("configuration", getConfigurationJson());
-
-        return getConfigurationJson();
+        JSONObject jsonObjectGlobal = new JSONObject();
+        jsonObjectGlobal.put("configuration", getConfigurationJson());
+        jsonObjectGlobal.put("neuralNetwork", getNeuralNetworkJSON());
+        return jsonObjectGlobal;
     }
 
     private JSONObject getConfigurationJson() {
         return new JSONObject(this.variables);
     }
 
-    private JSONObject getNeuralNetworkJSON(final List<Entity> entityList) {
+    private JSONObject getNeuralNetworkJSON() {
         JSONObject jsonObjectNeuralNetworks = new JSONObject();
-
-        for (int i = 0; i < entityList.size(); i++) {
-            NeuralNetwork neuralNetwork = entityList.get(i).getBrain();
-
-        }
-
-        return null;
+        return jsonObjectNeuralNetworks;
     }
 
     /**
@@ -319,7 +313,7 @@ public final class Configuration {
     }
 
     public double getEntityMaxRotationSpeed() {
-        return (double) this.variables.get("entityMaxRotationSpeed");
+        return this.variables.get("entityMaxRotationSpeed").doubleValue();
     }
 
     public void setEntityMaxRotationSpeed(final double newEntityMaxRotationSpeed) {
@@ -327,7 +321,7 @@ public final class Configuration {
     }
 
     public int getEntitySensorsCount() {
-        return (int) this.variables.get("entitySensorsCount");
+        return this.variables.get("entitySensorsCount").intValue();
     }
 
     public void setEntitySensorsCount(final int newEntitySensorsCount) {
@@ -335,7 +329,7 @@ public final class Configuration {
     }
 
     public double getEntityRadius() {
-        return (double) this.variables.get("entityRadius");
+        return this.variables.get("entityRadius").doubleValue();
     }
 
     public void setEntityRadius(final double newEntityRadius) {
@@ -343,7 +337,7 @@ public final class Configuration {
     }
 
     public double getEntitySensorsLength() {
-        return (double) this.variables.get("entitySensorsLength");
+        return this.variables.get("entitySensorsLength").doubleValue();
     }
 
     public void setEntitySensorsLength(final double newEntitySensorsLength) {
@@ -351,7 +345,7 @@ public final class Configuration {
     }
 
     public double getEntityMaxSpeed() {
-        return (double) this.variables.get("entityMaxSpeed");
+        return this.variables.get("entityMaxSpeed").doubleValue();
     }
 
     public void setEntityMaxSpeed(final double newEntityMaxSpeed) {
@@ -359,7 +353,7 @@ public final class Configuration {
     }
 
     public double getEntityMinSpeed() {
-        return (double) this.variables.get("entityMinSpeed");
+        return this.variables.get("entityMinSpeed").doubleValue();
     }
 
     public void setEntityMinSpeed(final double newEntityMinSpeed) {
@@ -367,7 +361,7 @@ public final class Configuration {
     }
 
     public double getEntitySpeedMutationRate() {
-        return (double) this.variables.get("entitySpeedMutationRate");
+        return this.variables.get("entitySpeedMutationRate").doubleValue();
     }
 
     public void setEntitySpeedMutationRate(final double newEntitySpeedMutationRate) {
@@ -375,7 +369,7 @@ public final class Configuration {
     }
 
     public double getEntityEnergyDrainRate() {
-        return (double) this.variables.get("entityEnergyDrainRate");
+        return this.variables.get("entityEnergyDrainRate").doubleValue();
     }
 
     public void setEntityEnergyDrainRate(final double newEntityEnergyDrainRate) {
@@ -383,7 +377,7 @@ public final class Configuration {
     }
 
     public int getPredatorMaxNumber() {
-        return (int) this.variables.get("predatorMaxNumber");
+        return this.variables.get("predatorMaxNumber").intValue();
     }
 
     public void setPredatorMaxNumber(final int newPredatorMaxNumber) {
@@ -391,7 +385,7 @@ public final class Configuration {
     }
 
     public double getPredatorViewAngle() {
-        return (double) this.variables.get("predatorViewAngle");
+        return this.variables.get("predatorViewAngle").doubleValue();
     }
 
     public void setPredatorViewAngle(final double newPredatorViewAngle) {
@@ -399,7 +393,7 @@ public final class Configuration {
     }
 
     public double getPredatorSplitEnergyFillingSpeed() {
-        return (double) this.variables.get("predatorSplitEnergyFillingSpeed");
+        return this.variables.get("predatorSplitEnergyFillingSpeed").doubleValue();
     }
 
     public void setPredatorSplitEnergyFillingSpeed(
@@ -409,7 +403,7 @@ public final class Configuration {
     }
 
     public double getPredatorEnergyFillingSpeed() {
-        return (double) this.variables.get("predatorEnergyFillingSpeed");
+        return this.variables.get("predatorEnergyFillingSpeed").doubleValue();
     }
 
     public void setPredatorEnergyFillingSpeed(final double newPredatorEnergyFillingSpeed) {
@@ -417,7 +411,7 @@ public final class Configuration {
     }
 
     public double getPredatorEnergyBaseDrainingSpeed() {
-        return (double) this.variables.get("predatorEnergyBaseDrainingSpeed");
+        return this.variables.get("predatorEnergyBaseDrainingSpeed").doubleValue();
     }
 
     public void setPredatorEnergyBaseDrainingSpeed(
@@ -427,7 +421,7 @@ public final class Configuration {
     }
 
     public int getPredatorInitialPopulation() {
-        return (int) this.variables.get("predatorInitialPopulation");
+        return this.variables.get("predatorInitialPopulation").intValue();
     }
 
     public void setPredatorInitialPopulation(final int newPredatorInitialPopulation) {
@@ -435,7 +429,7 @@ public final class Configuration {
     }
 
     public int getPreyInitialPopulation() {
-        return (int) this.variables.get("preyInitialPopulation");
+        return this.variables.get("preyInitialPopulation").intValue();
     }
 
     public void setPreyInitialPopulation(final int newPreyInitialPopulation) {
@@ -443,7 +437,7 @@ public final class Configuration {
     }
 
     public int getPreyMaxNumber() {
-        return (int) this.variables.get("preyMaxNumber");
+        return this.variables.get("preyMaxNumber").intValue();
     }
 
     public void setPreyMaxNumber(final int newPreyMaxNumber) {
@@ -451,7 +445,7 @@ public final class Configuration {
     }
 
     public double getPreyViewAngle() {
-        return (double) this.variables.get("preyViewAngle");
+        return this.variables.get("preyViewAngle").doubleValue();
     }
 
     public void setPreyViewAngle(final double newPreyViewAngle) {
@@ -459,7 +453,7 @@ public final class Configuration {
     }
 
     public double getPreySplitEnergyFillingSpeed() {
-        return (double) this.variables.get("preySplitEnergyFillingSpeed");
+        return this.variables.get("preySplitEnergyFillingSpeed").doubleValue();
     }
 
     public void setPreySplitEnergyFillingSpeed(final double newPreySplitEnergyFillingSpeed) {
@@ -467,7 +461,7 @@ public final class Configuration {
     }
 
     public double getPreyEnergyFillingSpeed() {
-        return (double) this.variables.get("preyEnergyFillingSpeed");
+        return this.variables.get("preyEnergyFillingSpeed").doubleValue();
     }
 
     public void setPreyEnergyFillingSpeed(final double newPreyEnergyFillingSpeed) {
@@ -475,7 +469,7 @@ public final class Configuration {
     }
 
     public int getNeuralNetworkLayersNumber() {
-        return (int) this.variables.get("neuralNetworkLayersNumber");
+        return this.variables.get("neuralNetworkLayersNumber").intValue();
     }
 
     public void setNeuralNetworkLayersNumber(final double newNeuralNetworkLayersNumber) {
