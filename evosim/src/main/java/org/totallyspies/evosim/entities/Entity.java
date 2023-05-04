@@ -33,7 +33,7 @@ public abstract class Entity {
     /**
      * A list of detected distances from the sensors.
      */
-    private final Double[] sensorsData;
+    private final double[] sensorsData;
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
@@ -150,7 +150,7 @@ public abstract class Entity {
         for (int i = 0; i < sensorCount; i++) {
             this.sensors[i] = new Line(0, 0, 0, 0);
         }
-        this.sensorsData = new Double[sensorCount];
+        this.sensorsData = new double[sensorCount];
         Arrays.fill(this.sensorsData, Configuration.getConfiguration().getEntitySensorsLength());
         this.adjustSensors();
     }
@@ -188,6 +188,8 @@ public abstract class Entity {
                 position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
                 Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
         ));
+
+        //this.updateGridRegistration(new Point(positionX, positionY), this.getBodyCenter());
 
         position.setX(positionX);
         position.setY(positionY);
@@ -228,6 +230,10 @@ public abstract class Entity {
      * Processes data from this entity's sensors and moves according to its decision.
      */
     public final void update() {
+        if (this.isDead()) {
+            return;
+        }
+
         this.adjustSensors();
 
         // check for collisions and update sensors data;
@@ -238,14 +244,14 @@ public abstract class Entity {
             this.split = true;
         }
 
-        List<Double> calculatedDecision =
-                this.brain.calcNetworkDecision(Arrays.asList(this.sensorsData));
+        final double[] calculatedDecision =
+                this.brain.calcNetworkDecision(this.sensorsData);
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
         this.directionAngleInRadians += Configuration.getConfiguration()
-                .getEntityMaxRotationSpeed() * calculatedDecision.get(0);
-        this.move(this.speed * calculatedDecision.get(1));
+                .getEntityMaxRotationSpeed() * calculatedDecision[0];
+        this.move(this.speed * calculatedDecision[1]);
 
     }
 
@@ -256,9 +262,8 @@ public abstract class Entity {
      * @return If both entities collide.
      */
     public boolean collidesWith(final Entity other) {
-        if (other.getClass().equals(this.getClass())) {
+        if (other.getClass().equals(this.getClass()) || this.dead || other.dead) {
             return false;
-
         }
 
         double distance = Formulas.distance(
@@ -304,5 +309,4 @@ public abstract class Entity {
     public final int getLivingTime(final long currentTime) {
         return (int) ((currentTime - this.birthTime) / 1000d);
     }
-
 }
