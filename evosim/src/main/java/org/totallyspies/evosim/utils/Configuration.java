@@ -312,8 +312,7 @@ public final class Configuration {
 
         for (int x = 0; x < Simulation.MAP_SIZE_X; x++) {
             for (int y = 0; y < Simulation.MAP_SIZE_Y; y++) {
-                List<Entity> entityList = simulation.getGridEntities(x, y);
-                allEntities.addAll(entityList);
+                simulation.forEachGridEntities(x, y, allEntities::add);
             }
         }
         String allEntitiesTxt = mapper.writeValueAsString(allEntities);
