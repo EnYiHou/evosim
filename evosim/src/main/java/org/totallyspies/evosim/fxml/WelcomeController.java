@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import org.totallyspies.evosim.ui.WindowUtils;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.ui.EvosimApplication;
-import org.totallyspies.evosim.utils.Configuration.Defaults;
 import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public final class WelcomeController {
                 this.createSliderDefault(
                         "Entity energy drain rate",
                         config::setEntityEnergyDrainRate,
-                        Defaults.ENTITY_ENERGY_DRAIN_RATE
+                        Configuration.Defaults.ENTITY_RADIUS
                 ),
                 this.createSliderDefault(
                         "Entity max speed",

@@ -46,7 +46,7 @@ public final class EvosimApplication extends Application {
     public void stop() throws Exception {
         super.stop();
 
-        Simulation.shutdownAll();
+        Simulation.stopAll();
     }
 
     private static void createTempDirectory() throws IOException {

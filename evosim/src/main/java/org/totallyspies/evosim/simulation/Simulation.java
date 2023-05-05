@@ -2,13 +2,7 @@ package org.totallyspies.evosim.simulation;
 
 import java.util.LinkedList;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
+import javafx.animation.AnimationTimer;
 import lombok.Getter;
 import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
@@ -17,10 +11,10 @@ import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.fxml.MainController;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.utils.ChunkedListWorkerManager;
 import org.totallyspies.evosim.utils.Configuration;
-import org.totallyspies.evosim.utils.NamedThreadFactory;
-import org.totallyspies.evosim.utils.ReadWriteLockedItem;
 import org.totallyspies.evosim.utils.Rng;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,59 +23,44 @@ import java.util.List;
  * @author mattlep11, EnYi
  */
 public final class Simulation {
+    /**
+     * A list of all simulations.
+     */
+    private static final List<Simulation> SIMULATIONS = new LinkedList<>();
 
     /**
-     * List of all simulation created until now to shutdown cleanly.
+     * Stops all threads for any active simulation.
      */
-     
-    private static final LinkedList<Simulation> SIMULATIONS = new LinkedList<>();
-
-    /**
-     * Shuts down all instantiated simulations.
-     */
-    public static void shutdownAll() {
-        SIMULATIONS.forEach(Simulation::shutdown);
+    public static void stopAll() {
+        SIMULATIONS.forEach(simulation -> simulation.entityGrids.stopWorkers());
     }
 
     /**
      * The width of the whole map.
      */
-    public static final int MAP_SIZE_X = 20;
+    public static final int MAP_SIZE_X = 10;
 
     /**
      * The height of the whole map.
      */
-    public static final int MAP_SIZE_Y = 20;
+    public static final int MAP_SIZE_Y = 10;
 
     /**
      * The x and y size of a single grid.
      */
-    public static final int GRID_SIZE = 250;
+    public static final int GRID_SIZE = 500;
 
     /**
      * Grids of entities.
      */
-    private final ReadWriteLockedItem<List<Entity>>[][] entityGrids;
+    @Getter
+    private final ChunkedListWorkerManager<Entity> entityGrids;
 
     /**
-     * Entities to add on every update.
+     * The animation loop of the simulation that runs every frame.
      */
-    private final ReadWriteLockedItem<List<Entity>>[][] updateToAdd;
-
-    /**
-     * Entities to remove on every update.
-     */
-    private final ReadWriteLockedItem<List<Entity>>[][] updateToRemove;
-
-    /**
-     * Service to create updates.
-     */
-    private final ScheduledExecutorService updateService;
-
-    /**
-     * Current update being executed.
-     */
-    private ScheduledFuture<?> currentUpdate;
+    @Getter
+    private final AnimationTimer animationLoop;
 
     /**
      * The number of prey alive in the simulation.
@@ -98,29 +77,13 @@ public final class Simulation {
     private int predatorCount;
 
     /**
-     * Executor service that controls all the threads calculating collisions.
-     */
-    private final ExecutorService collisionCheckerService;
-
-    /**
      * Constructs a new simulation based on the default configuration.
      */
     public Simulation() {
-        this.entityGrids = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToAdd = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToRemove = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-
-        for (int i = 0; i < this.entityGrids.length; ++i) {
-            for (int j = 0; j < this.entityGrids[i].length; ++j) {
-                this.entityGrids[i][j] = new ReadWriteLockedItem<>(new LinkedList<>());
-                this.updateToAdd[i][j] = new ReadWriteLockedItem<>(new LinkedList<>());
-                this.updateToRemove[i][j] = new ReadWriteLockedItem<>(new LinkedList<>());
-            }
-        }
-
-        this.collisionCheckerService = Executors.newFixedThreadPool(
-            12,
-            new NamedThreadFactory("collision")
+        this.entityGrids = new ChunkedListWorkerManager<>(
+                MAP_SIZE_X * MAP_SIZE_Y,
+                100,
+                this::checkGridCollisions
         );
 
         this.populateEntityList(
@@ -128,17 +91,55 @@ public final class Simulation {
                 Configuration.getConfiguration().getPredatorInitialPopulation()
         );
 
-        this.updateService = Executors.newSingleThreadScheduledExecutor(
-            new NamedThreadFactory("update")
-        );
-        
+        this.animationLoop = new AnimationTimer() {
+            @Override
+            public void handle(final long now) {
+                update(now);
+            }
+        };
+
+        this.animationLoop.start();
+        this.entityGrids.startWorkers();
+
         SIMULATIONS.add(this);
     }
 
     /**
+     * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
+     *
+     * @param point Point to be converted.
+     * @return Index of chunk for this point.
+     */
+    public static int pointToChunk(final Point point) {
+        return coordsToChunk((int) point.getX() / GRID_SIZE, (int) point.getY() / GRID_SIZE);
+    }
+
+    /**
+     * Converts a coordinate to a chunk index for {@link #entityGrids}.
+     *
+     * @param x X axis index.
+     * @param y Y axis index.
+     * @return Index of chunk for this point.
+     */
+    public static int coordsToChunk(final int x, final int y) {
+        return x + y * MAP_SIZE_X;
+    }
+
+    /**
+     * Converts a {@code Point} into coordinates of a chunk index for {@link #entityGrids}.
+     *
+     * @param point point to be converted
+     * @return the coordinates of the chunk
+     */
+    public static Coordinate coordsToChunkCoords(final Point point) {
+        int index = pointToChunk(point);
+        return new Coordinate(index % Simulation.MAP_SIZE_X, index / Simulation.MAP_SIZE_Y);
+    }
+
+
+    /**
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
-     *
      *
      * @param initPrey     the initial number of prey spawned
      * @param initPredator the initial number of predators spawned
@@ -146,23 +147,10 @@ public final class Simulation {
     private void populateEntityList(final int initPrey, final int initPredator) {
         final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
         final double minSpeed = Configuration.getConfiguration().getEntityMinSpeed();
-
-        final Consumer<Entity> addToGrid = entity -> {
-            final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
-
-            final ReadWriteLockedItem<List<Entity>> chunk =
-                this.entityGrids[coord.getX()][coord.getY()];
-
-            chunk.writeLock().lock();
-            try {
-                chunk.get().add(entity);
-            } finally {
-                chunk.writeLock().unlock();
-            }
-        };
+        final List<Entity> entities = new ArrayList<>(initPrey + initPredator);
 
         for (int i = 0; i < initPrey; i++) {
-            addToGrid.accept(new Prey(
+            entities.add(new Prey(
                     Rng.RNG.nextDouble(minSpeed, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
@@ -173,235 +161,97 @@ public final class Simulation {
         }
 
         for (int i = 0; i < initPredator; i++) {
-            addToGrid.accept(new Predator(
-                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
+            entities.add(new Predator(
+                    Rng.RNG.nextDouble(1, maxSpeed),
                     new Point(
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
                     ), Rng.RNG.nextDouble(0, 2 * Math.PI), 0L));
         }
 
+        entities.forEach(
+                entity -> this.entityGrids.add(entity, pointToChunk(entity.getBodyCenter()))
+        );
+
         this.preyCount += initPrey;
         this.predatorCount += initPredator;
     }
 
-    private void checkCollisions(final Entity a, final Entity b) {
-        if (a.collidesWith(b)) {
-            a.onCollide(b);
-            b.onCollide(a);
+    private void checkGridCollisions(final int i, final List<Entity> entities) {
+        List<Entity> chunk;
+        synchronized (entities) {
+            for (Entity cur : entities) {
+                for (int x = i - 1; x < i + 1; ++x) {
+                    if (x < 0 || MAP_SIZE_X <= x) {
+                        continue;
+                    }
+
+                    for (int y = i - 1; y < i + 1; ++y) {
+                        if (y < 0 || MAP_SIZE_Y <= y) {
+                            continue;
+                        }
+
+                        chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
+                        synchronized (chunk) {
+                            for (Entity toCompare : chunk) {
+                                if (cur.collidesWith(toCompare)) {
+                                    cur.onCollide(toCompare);
+                                    toCompare.onCollide(cur);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private void update() {
-        IntStream.range(0, MAP_SIZE_X * MAP_SIZE_Y).parallel().forEach(
-            (chunkIndex) -> {
-                final Coordinate chunkCoord = new Coordinate(
-                    chunkIndex % MAP_SIZE_X,
-                    chunkIndex / MAP_SIZE_X
-                );
-
-                final ReadWriteLockedItem<List<Entity>> chunk =
-                    this.entityGrids[chunkCoord.getX()][chunkCoord.getY()];
-
-                chunk.readLock().lock();
-                try {
-                    final int entityCount = chunk.get().size();
-                    IntStream.range(0, entityCount).parallel().forEach((i) -> {
-                        final Entity entity = chunk.get().get(i);
-
-                        final Coordinate oldCoord = pointToGridCoord(entity.getBodyCenter());
-
-                        entity.update();
-                        if (entity.isDead()) {
-                            if (entity instanceof Prey) {
-                                --this.preyCount;
-                            } else if (entity instanceof Predator) {
-                                --this.predatorCount;
-                            }
-
-                            final ReadWriteLockedItem<List<Entity>> chk =
-                                this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
-
-                            chk.writeLock().lock();
-                            try {
-                                chk.get().add(entity);
-                            } finally {
-                                chk.writeLock().unlock();
-                            }
-
-                            return;
-                        } else if (entity.isSplit()) {
-                            final ReadWriteLockedItem<List<Entity>> chk =
-                                    this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
-
-                            chk.writeLock().lock();
-                            try {
-                                chk.get().add(entity.clone());
-                            } finally {
-                                chk.writeLock().unlock();
-                            }
-
-                            entity.setSplitEnergy(0);
-                            entity.setChildCount(entity.getChildCount() + 1);
-                            entity.setSplit(false);
-
-                            if (entity instanceof Prey) {
-                                ++this.preyCount;
-                            } else if (entity instanceof Predator) {
-                                ++this.predatorCount;
-                            }
+    private void update(final long now) {
+        for (int i = 0; i < this.entityGrids.getChunkCount(); ++i) {
+            List<Entity> chunk = this.entityGrids.getChunk(i);
+            synchronized (chunk) {
+                for (int j = chunk.size() - 1; j >= 0; --j) {
+                    final Entity entity = chunk.get(j);
+                    entity.update();
+                    if (entity.isDead()) {
+                        chunk.remove(j);
+                        if (entity instanceof Prey) {
+                            this.preyCount--;
+                        } else if (entity instanceof Predator) {
+                            this.predatorCount--;
                         }
+                    } else if (entity.isSplit()) {
+                        chunk.add(entity.clone(MainController.getController()
+                                .getTimerProperty().getValue().toSeconds()));
+                        entity.setSplitEnergy(0);
+                        entity.setSplit(false);
 
-                        final Coordinate curCoord = pointToGridCoord(entity.getBodyCenter());
-
-                        if (!curCoord.equals(oldCoord)) {
-                            final ReadWriteLockedItem<List<Entity>> chkFrom =
-                                    this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
-
-                            chkFrom.writeLock().lock();
-                            try {
-                                chkFrom.get().add(entity);
-                            } finally {
-                                chkFrom.writeLock().unlock();
-                            }
-
-                            final ReadWriteLockedItem<List<Entity>> chkTo =
-                                    this.updateToAdd[curCoord.getX()][curCoord.getY()];
-
-                            chkTo.writeLock().lock();
-                            try {
-                                chkTo.get().add(entity);
-                            } finally {
-                                chkTo.writeLock().unlock();
-                            }
+                        if (entity instanceof Prey) {
+                            this.preyCount++;
+                        } else if (entity instanceof Predator) {
+                            this.predatorCount++;
                         }
-
-                        IntStream.range(i + 1, entityCount).parallel().forEach(
-                                (j) -> {
-                                    final Entity other = chunk.get().get(j);
-
-                                    this.collisionCheckerService.execute(
-                                        () -> this.checkCollisions(entity, other)
-                                    );
-                                }
-                        );
-                    });
-                } finally {
-                    chunk.readLock().unlock();
-                }
-            }
-        );
-
-        for (int i = 0; i < MAP_SIZE_X; ++i) {
-            for (int j = 0; j < MAP_SIZE_Y; ++j) {
-                final ReadWriteLockedItem<List<Entity>> chunk = this.entityGrids[i][j];
-                final ReadWriteLockedItem<List<Entity>> toRemove = this.updateToRemove[i][j];
-                final ReadWriteLockedItem<List<Entity>> toAdd = this.updateToAdd[i][j];
-
-                chunk.writeLock().lock();
-                try {
-                    toRemove.writeLock().lock();
-                    try {
-                        chunk.get().removeAll(toRemove.get());
-                        toRemove.get().clear();
-                    } finally {
-                        toRemove.writeLock().unlock();
                     }
-
-                    toAdd.writeLock().lock();
-                    try {
-                        chunk.get().addAll(toAdd.get());
-                        toAdd.get().clear();
-                    } finally {
-                        toAdd.writeLock().unlock();
-                    }
-                } finally {
-                    chunk.writeLock().unlock();
                 }
             }
         }
     }
 
     /**
-     * Runs a function on all entities in a grid.
+     * Gets a copy of all entiries within a grid at this instant.
      *
      * @param x X position of grid
      * @param y Y position of grid
-     * @param r Function to map on the entities
+     * @return Frozen list of entities within the grid.
      */
-    public void forEachGridEntities(final int x, final int y, final Consumer<Entity> r) {
-        final ReadWriteLockedItem<List<Entity>> chunk = this.entityGrids[x][y];
+    public List<Entity> getGridEntities(final int x, final int y) {
+        List<Entity> entities;
+        List<Entity> chunk = this.entityGrids.getChunk(coordsToChunk(x, y));
 
-        chunk.readLock().lock();
-
-        try {
-            chunk.get().forEach(r);
-        } finally {
-            chunk.readLock().unlock();
-        }
-    }
-
-    /**
-     * Tests if a point is within the map.
-     * @param point The point to check
-     * @return If the point is in the map
-     */
-    public static boolean isPointValid(final Point point) {
-        return (
-            0 <= point.getX() && point.getX() < Simulation.MAP_SIZE_X * GRID_SIZE
-            && 0 <= point.getY() && point.getY() < Simulation.MAP_SIZE_Y * GRID_SIZE
-        );
-    }
-
-    /**
-     * Converts a point to the grid coordinate it is in.
-     * @param point THe point to be converted.
-     * @return The coordinate of the grid containing the point.
-     */
-    public static Coordinate pointToGridCoord(final Point point) {
-        return new Coordinate(
-            (int) (point.getX() / GRID_SIZE) % MAP_SIZE_X,
-            (int) (point.getY() / GRID_SIZE) / MAP_SIZE_Y
-        );
-    }
-
-    /**
-     * Starts updating the simulation.
-     */
-    public void playUpdate() {
-        if (this.currentUpdate != null) {
-            return;
+        synchronized (chunk) {
+            entities = chunk.stream().toList();
         }
 
-        this.currentUpdate = this.updateService.scheduleAtFixedRate(
-            this::update, 0, 16666666, TimeUnit.NANOSECONDS
-        );
-    }
-
-    /**
-     * Pauses updating the simulation.
-     */
-    public void pauseUpdate() {
-        if (this.currentUpdate != null) {
-            this.currentUpdate.cancel(false);
-            this.currentUpdate = null;
-        }
-    }
-
-    /**
-     * Kills the simulation. Cannot be restarted after.
-     */
-    public void shutdown() {
-        this.pauseUpdate();
-        this.updateService.shutdown();
-        this.collisionCheckerService.shutdown();
-
-        try {
-            this.updateService.awaitTermination(1, TimeUnit.SECONDS);
-            this.collisionCheckerService.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException ex) {
-            this.updateService.shutdownNow();
-            this.collisionCheckerService.shutdownNow();
-        }
+        return entities;
     }
 }

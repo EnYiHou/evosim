@@ -98,7 +98,7 @@ public final class Formulas {
             double distance2 = distance(x, -sqrt
                     + circleCenterY, lineStartX, lineStartY);
 
-            return Math.min(distance1, distance2);
+            return (distance1 <= distance2 ? distance1 : distance2);
         }
 
         if (distance(circleCenterX, circleCenterY, lineStartX, lineStartY)
