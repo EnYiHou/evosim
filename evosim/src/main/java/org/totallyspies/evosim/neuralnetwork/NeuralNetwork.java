@@ -7,6 +7,9 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
@@ -21,6 +24,8 @@ import org.totallyspies.evosim.utils.Rng;
  *
  * @author mattlep11, niakouu
  */
+@ToString
+@Getter
 public class NeuralNetwork {
 
     /**
@@ -37,9 +42,7 @@ public class NeuralNetwork {
     public NeuralNetwork(final List<Integer> layerSizes) {
         this.neuronLayers = new ArrayList<>();
 
-        Function<Double, Double> activationFunction =
-                Formulas.ACTIVATION_FUNCTIONS
-                .get(Rng.RNG.nextInt(0, Formulas.ACTIVATION_FUNCTIONS.size()));
+        int activationFunctionIndex = Rng.RNG.nextInt(0, Formulas.ACTIVATION_FUNCTIONS.size());
 
         // populate neural network
         int lastSize = 0;
@@ -49,8 +52,8 @@ public class NeuralNetwork {
             this.neuronLayers.add(
                 Stream
                     .generate(() -> finalLastSize == 0
-                        ? new Neuron(1, activationFunction, false)
-                        : new Neuron(finalLastSize, activationFunction, true))
+                        ? new Neuron(1, activationFunctionIndex, false)
+                        : new Neuron(finalLastSize, activationFunctionIndex, true))
                     .limit(curSize)
                     .toList()
             );
@@ -122,5 +125,18 @@ public class NeuralNetwork {
                 .toList();
 
         return mutatedNeuralNetwork;
+    }
+
+    /**
+     * Function called by Jackson to deserialize the neural network.
+     * Cannot be a constructor as clashing constructor exists.
+     * @param neurons The neurons of the network.
+     * @return The neural network containing the given neurons.
+     */
+    @JsonCreator
+    public static NeuralNetwork fromNeurons(List<List<Neuron>> neurons) {
+        NeuralNetwork nn = new NeuralNetwork();
+        nn.neuronLayers = neurons;
+        return nn;
     }
 }

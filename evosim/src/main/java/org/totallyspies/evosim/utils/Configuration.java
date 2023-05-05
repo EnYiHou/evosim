@@ -1,14 +1,24 @@
 package org.totallyspies.evosim.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.ToString;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.totallyspies.evosim.entities.Entity;
+import org.totallyspies.evosim.entities.Predator;
+import org.totallyspies.evosim.entities.Prey;
+import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
+import org.totallyspies.evosim.simulation.Simulation;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -190,8 +200,8 @@ public final class Configuration {
     /**
      * Saves the default files that the user didn't have time to save.
      */
-    public void saveLatestConfiguration() throws IOException {
-        saveConfiguration(Defaults.LATEST_CONFIGURATION);
+    public void saveLatestConfiguration(Simulation simulation) throws IOException {
+        saveConfiguration(Defaults.LATEST_CONFIGURATION, simulation);
     }
 
     /**
@@ -199,8 +209,8 @@ public final class Configuration {
      *
      * @param jsonFile location of the new file place.
      */
-    public void saveConfiguration(final File jsonFile) throws IOException {
-        JSONObject jsonText = getJSONObject();
+    public void saveConfiguration(final File jsonFile, final Simulation simulation) throws IOException {
+        JSONObject jsonText = getJSONObject(simulation);
 
         if (jsonFile.exists()) {
             jsonFile.createNewFile();
@@ -279,10 +289,10 @@ public final class Configuration {
      *
      * @return JSONObject with Configuration's variables.
      */
-    private JSONObject getJSONObject() {
+    private JSONObject getJSONObject(Simulation simulation) throws JsonProcessingException {
         JSONObject jsonObjectGlobal = new JSONObject();
         jsonObjectGlobal.put("configuration", getConfigurationJson());
-        jsonObjectGlobal.put("neuralNetwork", getNeuralNetworkJSON());
+        jsonObjectGlobal.put("neuralNetwork", getNeuralNetworkJSON(simulation));
         return jsonObjectGlobal;
     }
 
@@ -290,9 +300,21 @@ public final class Configuration {
         return new JSONObject(this.variables);
     }
 
-    private JSONObject getNeuralNetworkJSON() {
-        JSONObject jsonObjectNeuralNetworks = new JSONObject();
-        return jsonObjectNeuralNetworks;
+    private JSONArray getNeuralNetworkJSON(Simulation simulation) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<NeuralNetwork> allNeuralNetworks = new ArrayList<>();
+        for (int x = 0; x < Simulation.MAP_SIZE_X; x++) {
+            for (int y = 0; y < Simulation.MAP_SIZE_Y; y++) {
+                List<Entity> entityList = simulation.getGridEntities(x, y);
+
+                entityList.forEach((entity) -> {
+                    allNeuralNetworks.add(entity.getBrain());
+                });
+            }
+        }
+        String allNeuralNetworksTxt = mapper.writeValueAsString(allNeuralNetworks);
+        System.out.println(allNeuralNetworksTxt);
+        return new JSONArray(allNeuralNetworksTxt);
     }
 
     /**

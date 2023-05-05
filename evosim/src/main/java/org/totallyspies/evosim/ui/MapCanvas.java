@@ -68,6 +68,7 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * The simulation that is being rendered by the map.
      */
+    @Getter
     private Simulation simulation;
 
     /**

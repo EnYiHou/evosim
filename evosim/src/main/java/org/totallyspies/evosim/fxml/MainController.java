@@ -181,6 +181,11 @@ public final class MainController {
     private FileChooser fileChooser;
 
     /**
+     * The configuration File running.
+     */
+    private File configurationFile;
+
+    /**
      * As if the variable is saved or not on the drive.
      */
     private boolean isSaved;
@@ -237,15 +242,12 @@ public final class MainController {
      */
     @FXML
     private void clickOnSave(final ActionEvent event) throws IOException {
-        if (!isSaved) {
+        if (configurationFile == null) {
             fileChooser.setTitle("Save Configuration");
-            File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
-
-            if (file != null) {
-                configuration.saveConfiguration(file);
-            }
-            isSaved = true;
+            configurationFile = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
         }
+
+        configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
     }
 
     /**
@@ -364,7 +366,7 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         this.fileChooser.setInitialDirectory(
                 new File(evosimDir));
-        this.configuration.saveLatestConfiguration();
+        this.configuration.saveLatestConfiguration(simulation);
     }
 
     /**

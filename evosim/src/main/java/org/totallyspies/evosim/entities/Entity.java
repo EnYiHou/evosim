@@ -1,8 +1,9 @@
 package org.totallyspies.evosim.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -28,47 +29,56 @@ public abstract class Entity {
      * An array of sensors represented by custom Line objects.
      */
     @Getter
+    @JsonProperty("sensors")
     private final Line[] sensors;
 
     /**
      * A list of detected distances from the sensors.
      */
+    @JsonProperty("sensorsData")
     private final Double[] sensorsData;
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     @Getter
+    @JsonProperty("speed")
     private final double speed;
     /**
      * The position of the entity.
      */
     @Getter
+    @JsonProperty("body")
     private final Circle body;
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
+    @JsonProperty("fovAngleInDegrees")
     private final double fovAngleInDegrees;
     /**
      * The color of the entity.
      */
     @Getter
+    @JsonProperty("color")
     private final Color color;
     /**
      * The birth time of the entity.
      */
     @Getter
+    @JsonProperty("birthTime")
     private final long birthTime;
     /**
      * If the entity is dead or not.
      */
     @Getter
     @Setter
+    @JsonProperty("dead")
     private boolean dead;
     /**
      * If the entity split.
      */
     @Getter
     @Setter
+    @JsonProperty("split")
     private boolean split;
 
     /**
@@ -80,6 +90,7 @@ public abstract class Entity {
      */
     @Getter
     @Setter
+    @JsonProperty("brain")
     private NeuralNetwork brain;
 
     /**
@@ -91,6 +102,7 @@ public abstract class Entity {
      */
     @Getter
     @Setter
+    @JsonProperty("energy")
     private double energy;
     /**
      * The current amount of split energy this Entity has accumulated.
@@ -101,17 +113,20 @@ public abstract class Entity {
      */
     @Getter
     @Setter
+    @JsonProperty("splitEnergy")
     private double splitEnergy;
     /**
      * The direction the entity is facing in radians.
      */
     @Getter
+    @JsonProperty("directionAngleInRadians")
     private double directionAngleInRadians;
     /**
      * The number of children born from this entity.
      */
     @Getter
     @Setter
+    @JsonProperty("childCount")
     private int childCount;
 
     /**

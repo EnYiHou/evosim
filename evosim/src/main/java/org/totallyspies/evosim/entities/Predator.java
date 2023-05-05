@@ -1,6 +1,12 @@
 package org.totallyspies.evosim.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javafx.scene.paint.Color;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 

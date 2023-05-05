@@ -4,6 +4,17 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import lombok.experimental.Delegate;
+import lombok.experimental.FieldNameConstants;
+import lombok.extern.jackson.Jacksonized;
+import org.json.JSONPropertyIgnore;
+import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -12,6 +23,8 @@ import org.totallyspies.evosim.utils.Rng;
  *
  * @author mattlep11, niakouu
  */
+@ToString
+@Getter
 public final class Neuron {
 
   /**
@@ -47,30 +60,37 @@ public final class Neuron {
   /**
    * The activation function randomly selected.
    */
-  private final Function<Double, Double> activationFunction;
+  @JsonIgnore
+  private Function<Double, Double> activationFunction;
+
+  /**
+   * The activation function id.
+   */
+  private final int activationFunctionIndex;
 
   /**
    * Creates a Neuron with a randomly generated bias.
    *
    * @param inputs                the inputs that feed the neuron
-   * @param newActivationFunction the function to initialize the value
+   * @param activationFunctionIndex the function index to initialize the value
    * @param randomizeWeights      if weight should be randomized
    */
   public Neuron(
       final int inputs,
-      final Function<Double, Double> newActivationFunction,
+      final int activationFunctionIndex,
       final boolean randomizeWeights
   ) {
-
     this.bias = Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX);
 
     this.weights = Stream
-        .generate(() -> randomizeWeights ? 1
-            : Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX))
+        .generate(() -> randomizeWeights ?
+            Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX) : 1)
         .limit(inputs)
         .toList();
 
-    this.activationFunction = newActivationFunction;
+    this.activationFunctionIndex = activationFunctionIndex;
+
+    this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(activationFunctionIndex);
   }
 
   /**
@@ -78,13 +98,18 @@ public final class Neuron {
    *
    * @param neuronBias            the bias used to shift the activation function
    * @param neuronWeights         the weights used to do the computations
-   * @param newActivationFunction new activation function to be used
+   * @param newActivationFunctionIndex new activation function to be used
    */
-  public Neuron(final double neuronBias, final List<Double> neuronWeights,
-      final Function<Double, Double> newActivationFunction) {
+  @JsonCreator
+  public Neuron(
+          @JsonProperty("bias") final double neuronBias,
+          @JsonProperty("weights") final List<Double> neuronWeights,
+          @JsonProperty("activationFunctionIndex") final int newActivationFunctionIndex
+  ) {
     this.bias = neuronBias;
     this.weights = neuronWeights;
-    this.activationFunction = newActivationFunction;
+    this.activationFunctionIndex = newActivationFunctionIndex;
+    this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(newActivationFunctionIndex);
   }
 
   /**
@@ -123,7 +148,7 @@ public final class Neuron {
                 ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
                 : w
         ).toList(),
-        this.activationFunction
+        this.activationFunctionIndex
     );
   }
 
