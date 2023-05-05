@@ -124,7 +124,7 @@ public abstract class Entity {
     @Getter
     @Setter
     private int childCount;
-
+    
     /**
      * Constructs a new Entity.
      *

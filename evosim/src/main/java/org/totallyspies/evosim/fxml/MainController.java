@@ -2,13 +2,7 @@ package org.totallyspies.evosim.fxml;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -23,18 +17,12 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.util.Duration;
 import lombok.Getter;
+import org.totallyspies.evosim.simulation.Simulation;
+import org.totallyspies.evosim.ui.*;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.totallyspies.evosim.simulation.Simulation;
-
-import org.totallyspies.evosim.ui.EvosimApplication;
-import org.totallyspies.evosim.ui.MapCanvas;
-import org.totallyspies.evosim.ui.NeuralNetworkView;
-import org.totallyspies.evosim.ui.SettingsWindow;
-import org.totallyspies.evosim.ui.AboutWindow;
 
 import org.totallyspies.evosim.utils.Configuration;
 import java.io.File;
