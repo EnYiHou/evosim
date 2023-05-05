@@ -143,7 +143,10 @@ public abstract class Entity {
         int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
 
         // initialize neural network
-        this.brain = new NeuralNetwork(List.of(sensorCount, 10, 2));
+        //TODO: List of layers
+        this.brain = new NeuralNetwork(
+            List.of(sensorCount, Configuration.getConfiguration().getNeuralNetworkLayersNumber(), 2)
+        );
 
         // initialize sensors
         this.sensors = new Line[sensorCount];
@@ -188,8 +191,6 @@ public abstract class Entity {
                 position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
                 Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
         ));
-
-        //this.updateGridRegistration(new Point(positionX, positionY), this.getBodyCenter());
 
         position.setX(positionX);
         position.setY(positionY);

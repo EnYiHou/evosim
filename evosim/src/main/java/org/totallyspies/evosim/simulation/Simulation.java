@@ -230,24 +230,37 @@ public final class Simulation {
 
                             return;
                         } else if (entity.isSplit()) {
-                            final ReadWriteLockedItem<List<Entity>> chk =
-                                    this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
+                            if (
+                                (
+                                    entity instanceof Prey
+                                    && this.preyCount
+                                        < Configuration.getConfiguration().getPreyMaxNumber()
+                                )
+                                || (
+                                    entity instanceof Predator
+                                        && this.predatorCount
+                                        < Configuration.getConfiguration().getPredatorMaxNumber()
+                                )
+                            ) {
+                                final ReadWriteLockedItem<List<Entity>> chk =
+                                        this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
 
-                            chk.writeLock().lock();
-                            try {
-                                chk.get().add(entity.clone());
-                            } finally {
-                                chk.writeLock().unlock();
-                            }
+                                chk.writeLock().lock();
+                                try {
+                                    chk.get().add(entity.clone());
+                                } finally {
+                                    chk.writeLock().unlock();
+                                }
 
-                            entity.setSplitEnergy(0);
-                            entity.setChildCount(entity.getChildCount() + 1);
-                            entity.setSplit(false);
+                                entity.setSplitEnergy(0);
+                                entity.setChildCount(entity.getChildCount() + 1);
+                                entity.setSplit(false);
 
-                            if (entity instanceof Prey) {
-                                ++this.preyCount;
-                            } else if (entity instanceof Predator) {
-                                ++this.predatorCount;
+                                if (entity instanceof Prey) {
+                                    ++this.preyCount;
+                                } else {
+                                    ++this.predatorCount;
+                                }
                             }
                         }
 

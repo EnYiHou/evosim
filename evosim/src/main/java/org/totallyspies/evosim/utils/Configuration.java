@@ -142,7 +142,7 @@ public final class Configuration {
     /**
      * All the defaults values needed for the application.
      */
-    private HashMap<String, Number> defaultsValues;
+    private final HashMap<String, Number> defaultsValues;
 
     /**
      * The only configuration that exists using the Singleton Pattern.
@@ -469,7 +469,7 @@ public final class Configuration {
         return this.variables.get("neuralNetworkLayersNumber").intValue();
     }
 
-    public void setNeuralNetworkLayersNumber(final double newNeuralNetworkLayersNumber) {
+    public void setNeuralNetworkLayersNumber(final int newNeuralNetworkLayersNumber) {
         this.variables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
     }
 }
