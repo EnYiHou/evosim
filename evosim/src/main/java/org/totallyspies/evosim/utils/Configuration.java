@@ -6,9 +6,6 @@ import lombok.ToString;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.totallyspies.evosim.entities.Entity;
-import org.totallyspies.evosim.entities.Predator;
-import org.totallyspies.evosim.entities.Prey;
-import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
 
 import java.io.BufferedReader;
@@ -223,9 +220,8 @@ public final class Configuration {
 
     /**
      * Render the default configuration.
-     *
      */
-    public void loadDefaultConfiguration() {
+    public void loadDefaultFileAndSetup() {
         restoreToDefaults();
     }
 
@@ -233,9 +229,9 @@ public final class Configuration {
      * Render the last configuration the user used before closing the
      * application.
      */
-    public void loadLastConfiguration() {
+    public void loadLastFile() {
         try {
-            loadConfiguration(Defaults.LATEST_CONFIGURATION);
+            loadFile(Defaults.LATEST_CONFIGURATION);
         } catch (Exception e) {
             System.out.println("Last Configuration doesn't exists yet.");
         }
@@ -246,20 +242,16 @@ public final class Configuration {
      *
      * @param jsonFile file we want to load.
      */
-    public void loadConfiguration(final File jsonFile) {
-        JSONObject jsonConfiguration = loadSavedConfiguration(jsonFile);
-        if (jsonConfiguration != null) {
-            changeConfiguration(jsonConfiguration);
-        }
-    }
+    public void loadFile(final File jsonFile) {
+        JSONObject jsonGlobal = loadSavedFile(jsonFile);
 
-    /**
-     * Get a default configuration.
-     *
-     * @return Configuration saved from a Json File
-     */
-    public static Configuration getConfiguration() {
-        return Configuration.CONFIGURATION;
+        JSONObject jsonConfiguration = jsonGlobal.getJSONObject("configuration");
+        if (jsonConfiguration != null) {
+            loadConfiguration(jsonConfiguration);
+        }
+
+        JSONArray jsonEntities = jsonGlobal.getJSONArray("entities");
+
     }
 
     /**
@@ -268,8 +260,9 @@ public final class Configuration {
      * @param jsonFile The file name of the json file we want to load.
      * @return JSONObject from a source JSON Configuration file.
      */
-    private static JSONObject loadSavedConfiguration(final File jsonFile) {
+    private static JSONObject loadSavedFile(final File jsonFile) {
         String jsonText = "";
+
         try {
             try (BufferedReader reader = new BufferedReader(
                     new FileReader(jsonFile))) {
@@ -280,8 +273,21 @@ public final class Configuration {
             e.getMessage();
             return null;
         }
-        JSONObject jsonGlobalObject = new JSONObject(jsonText);
-        return jsonGlobalObject.getJSONObject("configuration");
+
+        return new JSONObject(jsonText);
+    }
+
+    /**
+     * Change configuration based on the jsonObject.
+     * @param jsonConfiguration
+     */
+    private void loadConfiguration(final JSONObject jsonConfiguration) {
+        Set<String> keys = this.variables.keySet();
+        keys.forEach((key) -> this.variables.replace(key, jsonConfiguration.getNumber(key)));
+    }
+
+    private void loadEntities(final JSONArray jsonEntities) {
+
     }
 
     /**
@@ -292,7 +298,7 @@ public final class Configuration {
     private JSONObject getJSONObject(Simulation simulation) throws JsonProcessingException {
         JSONObject jsonObjectGlobal = new JSONObject();
         jsonObjectGlobal.put("configuration", getConfigurationJson());
-        jsonObjectGlobal.put("neuralNetwork", getNeuralNetworkJSON(simulation));
+        jsonObjectGlobal.put("entities", getEntitiesJSON(simulation));
         return jsonObjectGlobal;
     }
 
@@ -300,35 +306,32 @@ public final class Configuration {
         return new JSONObject(this.variables);
     }
 
-    private JSONArray getNeuralNetworkJSON(Simulation simulation) throws JsonProcessingException {
+    private JSONArray getEntitiesJSON(Simulation simulation) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        List<NeuralNetwork> allNeuralNetworks = new ArrayList<>();
+        List<Entity> allEntities = new ArrayList<>();
+
         for (int x = 0; x < Simulation.MAP_SIZE_X; x++) {
             for (int y = 0; y < Simulation.MAP_SIZE_Y; y++) {
                 List<Entity> entityList = simulation.getGridEntities(x, y);
-
-                entityList.forEach((entity) -> {
-                    allNeuralNetworks.add(entity.getBrain());
-                });
+                allEntities.addAll(entityList);
             }
         }
-        String allNeuralNetworksTxt = mapper.writeValueAsString(allNeuralNetworks);
-        System.out.println(allNeuralNetworksTxt);
-        return new JSONArray(allNeuralNetworksTxt);
-    }
+        String allEntitiesTxt = mapper.writeValueAsString(allEntities);
 
-    /**
-     * Change configuration based on the jsonObject.
-     * @param jsonObject
-     */
-    private void changeConfiguration(final JSONObject jsonObject) {
-        Set<String> keys = this.variables.keySet();
-
-        keys.forEach((key) -> this.variables.replace(key, jsonObject.getNumber(key)));
+        return new JSONArray(allEntitiesTxt);
     }
 
     private void restoreToDefaults() {
         this.variables = this.defaultsValues;
+    }
+
+    /**
+     * Get a default configuration.
+     *
+     * @return Configuration saved from a Json File
+     */
+    public static Configuration getConfiguration() {
+        return Configuration.CONFIGURATION;
     }
 
     public double getEntityMaxRotationSpeed() {

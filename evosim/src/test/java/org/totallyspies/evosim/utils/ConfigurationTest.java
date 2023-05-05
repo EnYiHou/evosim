@@ -25,7 +25,7 @@ public class ConfigurationTest {
   @Test
   public void loadDefaultConfiguration() throws IOException {
     configuration.saveLatestConfiguration(null);
-    Configuration.getConfiguration().loadLastConfiguration();
+    Configuration.getConfiguration().loadLastFile();
 
     Defaults.LATEST_CONFIGURATION.delete();
   }

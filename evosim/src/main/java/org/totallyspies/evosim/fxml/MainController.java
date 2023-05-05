@@ -247,7 +247,20 @@ public final class MainController {
             configurationFile = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
         }
 
-        configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
+    }
+
+    /**
+     * Saving as a configuration with the menu bar.
+     * @param event on click
+     * @throws IOException
+     */
+    @FXML
+    private void clickOnSaveAs(final ActionEvent event) throws IOException {
+        fileChooser.setTitle("Save Configuration");
+        configurationFile = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
+        if(configurationFile != null) {
+            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
+        }
     }
 
     /**
@@ -261,7 +274,7 @@ public final class MainController {
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
 
         if (file != null) {
-            configuration.loadConfiguration(file);
+            configuration.loadFile(file);
             System.out.println(configuration.toString());
         } else {
             System.out.println("File doesn't exist or is not JSON.");
@@ -275,7 +288,7 @@ public final class MainController {
      */
     @FXML
     private void clickOnLoadLatest(final ActionEvent event) {
-        configuration.loadLastConfiguration();
+        configuration.loadLastFile();
         System.out.println(configuration.toString());
     }
 
@@ -285,7 +298,7 @@ public final class MainController {
      */
     @FXML
     private void clickOnLoadDefault(final ActionEvent event) {
-        configuration.loadDefaultConfiguration();
+        configuration.loadDefaultFileAndSetup();
         System.out.println(configuration.toString());
     }
 

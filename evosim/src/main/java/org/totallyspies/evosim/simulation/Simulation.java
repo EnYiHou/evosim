@@ -103,6 +103,31 @@ public final class Simulation {
         simulations.add(this);
     }
 
+    public Simulation(List<Entity> entities) {
+        this.entityGrids = new ChunkedListWorkerManager<>(
+                MAP_SIZE_X * MAP_SIZE_Y,
+                100,
+                this::checkGridCollisions
+        );
+
+        this.populateEntityList(
+                Configuration.getConfiguration().getPreyInitialPopulation(),
+                Configuration.getConfiguration().getPredatorInitialPopulation()
+        );
+
+        this.animationLoop = new AnimationTimer() {
+            @Override
+            public void handle(final long now) {
+                update(now);
+            }
+        };
+
+        this.animationLoop.start();
+        this.entityGrids.startWorkers();
+
+        simulations.add(this);
+    }
+
     /**
      * Converts a {@code Point} to a chunk index for {@link #entityGrids}.
      *
