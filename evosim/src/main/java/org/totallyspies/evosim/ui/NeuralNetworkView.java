@@ -4,7 +4,6 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -37,6 +36,9 @@ public class NeuralNetworkView extends Tab {
     private final ArrayList<ArrayList<NeuronView>> neuralNetworkStructure;
 
 
+    /**
+     * Constructs a new Tab for displaying a NeuralNetwork.
+     */
     public NeuralNetworkView() {
         super("Neural Network View");
         this.neuralNetworkView = new Pane();
@@ -111,10 +113,12 @@ public class NeuralNetworkView extends Tab {
 
     /**
      * Sets the NeuralNetwork that this view is displaying.
+     *
+     * @param newNeuralNetwork The NeuralNetwork to display.
      */
-    public void setNeuralNetwork(final NeuralNetwork neuralNetwork) {
-        this.neuralNetwork = neuralNetwork;
-        if (neuralNetwork == null) {
+    public void setNeuralNetwork(final NeuralNetwork newNeuralNetwork) {
+        this.neuralNetwork = newNeuralNetwork;
+        if (newNeuralNetwork == null) {
             this.renderer.stop();
             this.setDisable(true);
         } else {
