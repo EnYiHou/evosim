@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.simulation;
 
 import java.util.LinkedList;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,17 +43,17 @@ public final class Simulation {
     /**
      * The width of the whole map.
      */
-    public static final int MAP_SIZE_X = 20;
+    public static final int MAP_SIZE_X = 10;
 
     /**
      * The height of the whole map.
      */
-    public static final int MAP_SIZE_Y = 20;
+    public static final int MAP_SIZE_Y = 10;
 
     /**
      * The x and y size of a single grid.
      */
-    public static final int GRID_SIZE = 250;
+    public static final int GRID_SIZE = 100;
 
     /**
      * Grids of entities.
@@ -117,7 +116,7 @@ public final class Simulation {
         }
 
         this.collisionCheckerService = Executors.newFixedThreadPool(
-            12,
+            120,
             new NamedThreadFactory("collision")
         );
 
@@ -288,15 +287,7 @@ public final class Simulation {
                             }
                         }
 
-                        IntStream.range(i + 1, entityCount).parallel().forEach(
-                                (j) -> {
-                                    final Entity other = chunk.get().get(j);
-
-                                    this.collisionCheckerService.execute(
-                                        () -> this.checkCollisions(entity, other)
-                                    );
-                                }
-                        );
+                        this.collisionCheckerService.execute(this.submitCollisionWork(entity));
                     });
                 } finally {
                     chunk.readLock().unlock();
@@ -366,6 +357,25 @@ public final class Simulation {
     }
 
     /**
+     * Verifies if a given grid coordinate is valid.
+     * @param x The x component of the coordinate to validate
+     * @param y The y component of the coordinate to validate
+     * @return Whether it is valid
+     */
+    public static boolean isCoordValid(final int x, final int y) {
+        return 0 <= x && x < MAP_SIZE_X && 0 <= y && y < MAP_SIZE_Y;
+    }
+
+    /**
+     * Verifies if a given grid coordinate is valid.
+     * @param coord The coordinate to validate
+     * @return Whether it is valid
+     */
+    public static boolean isCoordValid(final Coordinate coord) {
+        return isCoordValid(coord.getX(), coord.getY());
+    }
+
+    /**
      * Converts a point to the grid coordinate it is in.
      * @param point THe point to be converted.
      * @return The coordinate of the grid containing the point.
@@ -415,5 +425,21 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
+    }
+
+    private Runnable submitCollisionWork(final Entity entity) {
+        return () -> {
+            final Coordinate center = Simulation.pointToGridCoord(entity.getBodyCenter());
+
+            for (int x = center.getX() - 1; x <= center.getX() + 1; ++x) {
+                for (int y = center.getY() - 1; y <= center.getY() + 1; ++y) {
+                    if (!isCoordValid(x, y)) {
+                        continue;
+                    }
+
+                    this.forEachGridEntities(x, y, other -> this.checkCollisions(entity, other));
+                }
+            }
+        };
     }
 }

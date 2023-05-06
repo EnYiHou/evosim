@@ -33,7 +33,7 @@ public abstract class Entity {
     /**
      * A list of detected distances from the sensors.
      */
-    private final double[] sensorsData;
+    private final double[] inputs;
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
@@ -47,7 +47,7 @@ public abstract class Entity {
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
-    private final double fovAngleInDegrees;
+    private final double fovAngleInRadians;
     /**
      * The color of the entity.
      */
@@ -136,16 +136,19 @@ public abstract class Entity {
         this.childCount = 0;
         this.speed = entitySpeed;
         this.directionAngleInRadians = newRotationAngle;
-        this.fovAngleInDegrees = newViewAngle;
+        this.fovAngleInRadians = Math.toRadians(newViewAngle);
 
         this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
 
-        int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
+        final int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
+
+        // Inputs with distances from each side
+        final int inputCount = sensorCount + 4;
 
         // initialize neural network
         //TODO: List of layers
         this.brain = new NeuralNetwork(
-            List.of(sensorCount, Configuration.getConfiguration().getNeuralNetworkLayersNumber(), 2)
+            List.of(inputCount, 12, 6, 2)
         );
 
         // initialize sensors
@@ -153,9 +156,8 @@ public abstract class Entity {
         for (int i = 0; i < sensorCount; i++) {
             this.sensors[i] = new Line(0, 0, 0, 0);
         }
-        this.sensorsData = new double[sensorCount];
-        Arrays.fill(this.sensorsData, Configuration.getConfiguration().getEntitySensorsLength());
-        this.adjustSensors();
+        this.inputs = new double[inputCount];
+        Arrays.fill(this.inputs, Configuration.getConfiguration().getEntitySensorsLength());
     }
 
     /**
@@ -200,42 +202,12 @@ public abstract class Entity {
     }
 
     /**
-     * Adjusts this entity's sensors based on its position and its direction.
-     */
-    public void adjustSensors() {
-        double angleBetweenSensors = this.fovAngleInDegrees
-
-                / (Configuration.getConfiguration().getEntitySensorsCount() - 1);
-        for (int i = 0; i < Configuration.getConfiguration().getEntitySensorsCount(); i++) {
-
-            double angle = this.directionAngleInRadians
-                    + Math.toRadians(-this.fovAngleInDegrees / 2 + angleBetweenSensors * i);
-
-            this.sensors[i].getStartPoint()
-                    .setCoordinates(this.getBodyCenter().getX(), this.getBodyCenter().getY());
-
-            this.sensors[i].getEndPoint().setCoordinates(
-                    this.getBodyCenter().getX()
-                            + Math.cos(angle) * Configuration
-                            .getConfiguration()
-                            .getEntitySensorsLength(),
-                    this.getBodyCenter().getY()
-                            + Math.sin(angle)
-                            * Configuration.getConfiguration()
-                            .getEntitySensorsLength()
-            );
-        }
-    }
-
-    /**
      * Processes data from this entity's sensors and moves according to its decision.
      */
     public final void update() {
         if (this.isDead()) {
             return;
         }
-
-        this.adjustSensors();
 
         // check for collisions and update sensors data;
         this.onUpdate();
@@ -245,13 +217,21 @@ public abstract class Entity {
             this.split = true;
         }
 
+        final double xPos = this.getBodyCenter().getX();
+        final double yPos = this.getBodyCenter().getY();
+
+        this.inputs[this.inputs.length - 4] = xPos;
+        this.inputs[this.inputs.length - 3] = yPos;
+        this.inputs[this.inputs.length - 2] = Simulation.GRID_SIZE * Simulation.MAP_SIZE_X - xPos;
+        this.inputs[this.inputs.length - 1] = Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y - yPos;
+
         final double[] calculatedDecision =
-                this.brain.calcNetworkDecision(this.sensorsData);
+                this.brain.calcNetworkDecision(this.inputs);
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
         this.directionAngleInRadians += Configuration.getConfiguration()
-                .getEntityMaxRotationSpeed() * calculatedDecision[0];
+                .getEntityMaxRotationSpeed() * (calculatedDecision[0] - 0.5);
         this.move(this.speed * calculatedDecision[1]);
 
     }
@@ -268,13 +248,42 @@ public abstract class Entity {
         }
 
         double distance = Formulas.distance(
-                this.getBodyCenter().getX(),
-                this.getBodyCenter().getY(),
-                other.getBodyCenter().getX(),
-                other.getBodyCenter().getY()
+            this.getBodyCenter().getX(),
+            this.getBodyCenter().getY(),
+            other.getBodyCenter().getX(),
+            other.getBodyCenter().getY()
         );
 
+        final double angle = Math.atan2(
+            other.getBodyCenter().getY() - this.getBodyCenter().getY(),
+            other.getBodyCenter().getX() - this.getBodyCenter().getX()
+        );
+
+        this.updateSensors(distance, angle);
+
         return distance < Configuration.getConfiguration().getEntityRadius() * 2;
+    }
+
+    private void updateSensors(final double distance, final double angle) {
+        final double start = Formulas.normAngle(
+            this.directionAngleInRadians - this.fovAngleInRadians / 2
+        );
+
+        final double end = Formulas.normAngle(
+            this.directionAngleInRadians + this.fovAngleInRadians / 2
+        );
+
+        if (!(start < angle && angle < end)) {
+            return;
+        }
+
+        final double delta = angle - start;
+
+        final int sensorIndex = (int) ((delta * this.sensors.length) / (2 * Math.PI));
+
+        this.inputs[sensorIndex] = Math.min(
+            distance, Configuration.getConfiguration().getEntitySensorsLength()
+        );
     }
 
     protected abstract void onCollideHandler(Entity other);
@@ -285,13 +294,13 @@ public abstract class Entity {
      * @param other The entity that has been collided into.
      */
     public void onCollide(final Entity other) {
-        for (int sensorIndex = 0; sensorIndex < this.sensors.length; sensorIndex++) {
+        /*for (int sensorIndex = 0; sensorIndex < this.sensors.length; sensorIndex++) {
             Line sensor = this.sensors[sensorIndex];
             Double distanceToEntity =
                     Formulas.closestIntersection(sensor, other.getBody());
             this.sensorsData[sensorIndex] =
                     Math.min(this.sensorsData[sensorIndex], distanceToEntity);
-        }
+        }*/
 
         this.onCollideHandler(other);
     }
