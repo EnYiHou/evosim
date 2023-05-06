@@ -128,6 +128,21 @@ public final class Configuration {
         public static final int NEURAL_NETWORK_LAYERS_NUMBER = 2;
 
         /**
+         * Number of grids in the horizontal axis.
+         */
+        public static final int MAP_SIZE_X = 15;
+
+        /**
+         * Number of grids in the vertical axis.
+         */
+        public static final int MAP_SIZE_Y = 15;
+
+        /**
+         * Width and height of a single grid.
+         */
+        public static final int GRID_SIZE = 150;
+
+        /**
          * The default name of a configuration file.
          */
         public static final File LATEST_CONFIGURATION =
@@ -154,6 +169,9 @@ public final class Configuration {
      */
     private Configuration() {
         this.defaultsValues = new HashMap<>();
+        this.defaultsValues.put("mapSizeX", Defaults.MAP_SIZE_X);
+        this.defaultsValues.put("mapSizeY", Defaults.MAP_SIZE_Y);
+        this.defaultsValues.put("gridSize", Defaults.GRID_SIZE);
         this.defaultsValues.put("entityMaxRotationSpeed", Defaults.ENTITY_MAX_ROTATION_SPEED);
         this.defaultsValues.put("entitySensorsCount", Defaults.ENTITY_SENSORS_COUNT);
         this.defaultsValues.put("entityRadius", Defaults.ENTITY_RADIUS);
@@ -471,5 +489,29 @@ public final class Configuration {
 
     public void setNeuralNetworkLayersNumber(final int newNeuralNetworkLayersNumber) {
         this.variables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
+    }
+
+    public int getMapSizeX() {
+        return this.variables.get("mapSizeX").intValue();
+    }
+
+    public int getMapSizeY() {
+        return this.variables.get("mapSizeY").intValue();
+    }
+
+    public int getGridSize() {
+        return this.variables.get("gridSize").intValue();
+    }
+
+    public void setMapSizeX(final int newMapSizeX) {
+        this.variables.replace("mapSizeX", newMapSizeX);
+    }
+
+    public void setMapSizeY(final int newMapSizeY) {
+        this.variables.replace("mapSizeY", newMapSizeY);
+    }
+
+    public void setGridSize(final int newGridSize) {
+        this.variables.replace("gridSize", newGridSize);
     }
 }

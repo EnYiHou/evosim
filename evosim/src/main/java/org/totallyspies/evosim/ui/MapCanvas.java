@@ -52,7 +52,7 @@ public final class MapCanvas extends ResizableCanvas {
      * The camera of the map.
      */
     @Getter
-    private final Camera camera;
+    private Camera camera;
 
     /**
      * The loop to render the map.
@@ -83,15 +83,6 @@ public final class MapCanvas extends ResizableCanvas {
      */
     public MapCanvas() {
         super();
-        this.camera = new Camera(
-            new Point(0, 0),
-            new Point(
-                Simulation.MAP_SIZE_X * Simulation.GRID_SIZE,
-                Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
-            )
-        );
-
-        this.camera.center();
 
         this.anim = new AnimationTimer() {
             @Override
@@ -101,7 +92,7 @@ public final class MapCanvas extends ResizableCanvas {
         };
         this.followingEntity = new AtomicBoolean(false);
 
-        this.setOnMouseClicked(this::checkEntityonClick);
+        this.setOnMouseClicked(this::checkEntityOnClick);
     }
 
     /**
@@ -110,15 +101,23 @@ public final class MapCanvas extends ResizableCanvas {
     public void drawGrids() {
         this.getGraphicsContext2D().setStroke(Color.BLACK);
 
-        for (int i = 0; i <= Simulation.MAP_SIZE_X; i++) {
-            Point verticalStartingPoint = computePointPosition(i * Simulation.GRID_SIZE, 0);
-            Point verticalEndingPoint = computePointPosition(
-                i * Simulation.GRID_SIZE, Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y
+        for (int i = 0; i <= this.simulation.getMapSizeX(); i++) {
+            Point verticalStartingPoint = computePointPosition(
+                i * this.simulation.getGridSize(), 0
             );
 
-            Point horizontalStartingPoint = computePointPosition(0, i * Simulation.GRID_SIZE);
+            Point verticalEndingPoint = computePointPosition(
+                i * this.simulation.getGridSize(),
+                this.simulation.getGridSize() * this.simulation.getMapSizeY()
+            );
+
+            Point horizontalStartingPoint = computePointPosition(
+                0, i * this.simulation.getGridSize()
+            );
+
             Point horizontalEndingPoint = computePointPosition(
-                Simulation.GRID_SIZE * Simulation.MAP_SIZE_X, i * Simulation.GRID_SIZE
+                this.simulation.getGridSize() * this.simulation.getMapSizeX(),
+                i * this.simulation.getGridSize()
             );
 
             // draw vertical grids lines
@@ -253,8 +252,25 @@ public final class MapCanvas extends ResizableCanvas {
      * @param newSimulation Simulation to be attached.
      */
     public void attach(final Simulation newSimulation) {
+        this.anim.stop();
+
+        if (this.simulation != null) {
+            this.simulation.shutdown();
+        }
+
         this.simulation = newSimulation;
         this.simulation.playUpdate();
+
+        this.camera = new Camera(
+            new Point(0, 0),
+            new Point(
+                this.simulation.getMapSizeX() * this.simulation.getGridSize(),
+                this.simulation.getMapSizeX() * this.simulation.getGridSize()
+            )
+        );
+
+        this.camera.center();
+
         this.anim.start();
     }
 
@@ -290,17 +306,20 @@ public final class MapCanvas extends ResizableCanvas {
             }
         }
 
-        Coordinate camChunk = Simulation.pointToGridCoord(this.camera.getPoint());
+        Coordinate camChunk = this.simulation.pointToGridCoord(this.camera.getPoint());
 
         // only render entities if they're within the visible square radius
         int radiusX = (int) Math.ceil(
-                this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
+                this.getWidth() / (this.simulation.getGridSize() * this.camera.getZoom())) / 2 + 1;
         int radiusY = (int) Math.ceil(
-                this.getHeight() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
+                this.getHeight() / (this.simulation.getGridSize() * this.camera.getZoom())) / 2 + 1;
 
         for (int x = camChunk.getX() - radiusX; x <= camChunk.getX() + radiusX; ++x) {
             for (int y = camChunk.getY() - radiusY; y <= camChunk.getY() + radiusY; ++y) {
-                if (x < 0 || x >= Simulation.MAP_SIZE_X || y < 0 || y >= Simulation.MAP_SIZE_Y) {
+                if (
+                    x < 0 || x >= this.simulation.getMapSizeX()
+                    || y < 0 || y >= this.simulation.getMapSizeY()
+                ) {
                     continue;
                 }
 
@@ -314,17 +333,21 @@ public final class MapCanvas extends ResizableCanvas {
      *
      * @param e the click event
      */
-    private void checkEntityonClick(final MouseEvent e) {
+    private void checkEntityOnClick(final MouseEvent e) {
+        if (simulation == null) {
+            return;
+        }
+
         double x = e.getX();
         double y = e.getY();
 
         Point abs = this.computePointPosition(x, y);
 
-        int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
-        int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
+        int chunkX = (int) abs.getX() / this.simulation.getGridSize();
+        int chunkY = (int) abs.getY() / this.simulation.getGridSize();
 
-        if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
-                || chunkY < 0 || chunkY >= Simulation.MAP_SIZE_Y) {
+        if (chunkX < 0 || chunkX >= this.simulation.getMapSizeX()
+                || chunkY < 0 || chunkY >= this.simulation.getMapSizeY()) {
             return;
         }
 

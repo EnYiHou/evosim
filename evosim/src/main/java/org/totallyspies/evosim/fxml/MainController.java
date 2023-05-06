@@ -201,7 +201,11 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws IOException {
-        this.simulation = new Simulation();
+        this.simulation = new Simulation(
+            Configuration.getConfiguration().getMapSizeX(),
+            Configuration.getConfiguration().getMapSizeY(),
+            Configuration.getConfiguration().getGridSize()
+            );
         this.mapCanvas.attach(simulation);
 
         this.setPlayPauseButtons();
@@ -488,7 +492,9 @@ public final class MainController {
      */
     private void setChosenEntityProperty() {
         this.chosenEntityProperty = new SimpleObjectProperty<>();
+        //TODO: Make it null and working
         this.chosenEntityProperty.set(new Predator(
+                null,
                 1,
                 new Point(0, 0),
                 1,

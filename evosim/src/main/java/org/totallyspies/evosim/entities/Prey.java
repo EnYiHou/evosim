@@ -1,6 +1,7 @@
 package org.totallyspies.evosim.entities;
 
 import javafx.scene.paint.Color;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
@@ -17,16 +18,19 @@ public final class Prey extends Entity {
     /**
      * Constructs a new prey.
      *
+     * @param newSimulation    Simulation for the entity to be created in.
      * @param speed                  the speed of the prey
      * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
      * @param birthTime              the time the prey was born
      */
-    public Prey(final double speed,
+    public Prey(final Simulation newSimulation,
+                final double speed,
                 final Point position,
                 final double rotationAngleInRadians,
                 final long birthTime) {
-        super(speed, position, birthTime, Configuration.getConfiguration().getPreyViewAngle(),
+        super(newSimulation,
+            speed, position, birthTime, Configuration.getConfiguration().getPreyViewAngle(),
                 rotationAngleInRadians, Color.GREEN
         );
 
@@ -59,6 +63,7 @@ public final class Prey extends Entity {
     public Prey clone() {
         // Mutate the speed of the prey
         Prey prey = new Prey(
+                this.getSimulation(),
                 (Math.random()
                         < Configuration.getConfiguration().getEntitySpeedMutationRate())
                         ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()

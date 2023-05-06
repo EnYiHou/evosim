@@ -41,19 +41,22 @@ public final class Simulation {
     }
 
     /**
-     * The width of the whole map.
+     * X map size of this simulation.
      */
-    public static final int MAP_SIZE_X = 10;
+    @Getter
+    private final int mapSizeX;
 
     /**
-     * The height of the whole map.
+     * Y map size of this simulation.
      */
-    public static final int MAP_SIZE_Y = 10;
+    @Getter
+    private final int mapSizeY;
 
     /**
-     * The x and y size of a single grid.
+     * Grid size of this simulation.
      */
-    public static final int GRID_SIZE = 100;
+    @Getter
+    private final int gridSize;
 
     /**
      * Grids of entities.
@@ -100,12 +103,19 @@ public final class Simulation {
     private final ExecutorService collisionCheckerService;
 
     /**
-     * Constructs a new simulation based on the default configuration.
+     * Constructs a new simulation with given size.
+     * @param newMapSizeX X map size to use for the simulation.
+     * @param newMapSizeY Y map size to use for the simulation.
+     * @param newGridSize Grid size to use for the simulation.
      */
-    public Simulation() {
-        this.entityGrids = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToAdd = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToRemove = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
+    public Simulation(final int newMapSizeX, final int newMapSizeY, final int newGridSize) {
+        this.mapSizeX = newMapSizeX;
+        this.mapSizeY = newMapSizeY;
+        this.gridSize = newGridSize;
+
+        this.entityGrids = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
+        this.updateToAdd = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
+        this.updateToRemove = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
 
         for (int i = 0; i < this.entityGrids.length; ++i) {
             for (int j = 0; j < this.entityGrids[i].length; ++j) {
@@ -160,23 +170,28 @@ public final class Simulation {
 
         for (int i = 0; i < initPrey; i++) {
             addToGrid.accept(new Prey(
-                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
-                    new Point(
-                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI),
-                    System.currentTimeMillis()
+                this,
+                Rng.RNG.nextDouble(minSpeed, maxSpeed),
+                new Point(
+                        Rng.RNG.nextDouble(0, this.mapSizeX * this.gridSize),
+                        Rng.RNG.nextDouble(0, this.mapSizeY * this.gridSize)
+                ),
+                Rng.RNG.nextDouble(0, 2 * Math.PI),
+                System.currentTimeMillis()
             ));
         }
 
         for (int i = 0; i < initPredator; i++) {
             addToGrid.accept(new Predator(
-                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
-                    new Point(
-                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
+                this,
+                Rng.RNG.nextDouble(minSpeed, maxSpeed),
+                new Point(
+                        Rng.RNG.nextDouble(0, this.mapSizeX * this.gridSize),
+                        Rng.RNG.nextDouble(0, this.mapSizeY * this.gridSize)
+                ),
+                Rng.RNG.nextDouble(0, 2 * Math.PI),
+                System.currentTimeMillis())
+            );
         }
 
         this.preyCount += initPrey;
@@ -191,11 +206,11 @@ public final class Simulation {
     }
 
     private void update() {
-        IntStream.range(0, MAP_SIZE_X * MAP_SIZE_Y).parallel().forEach(
+        IntStream.range(0, this.mapSizeX * this.mapSizeY).parallel().forEach(
             (chunkIndex) -> {
                 final Coordinate chunkCoord = new Coordinate(
-                    chunkIndex % MAP_SIZE_X,
-                    chunkIndex / MAP_SIZE_X
+                    chunkIndex % this.mapSizeX,
+                    chunkIndex / this.mapSizeX
                 );
 
                 final ReadWriteLockedItem<List<Entity>> chunk =
@@ -295,8 +310,8 @@ public final class Simulation {
             }
         );
 
-        for (int i = 0; i < MAP_SIZE_X; ++i) {
-            for (int j = 0; j < MAP_SIZE_Y; ++j) {
+        for (int i = 0; i < this.mapSizeX; ++i) {
+            for (int j = 0; j < this.mapSizeY; ++j) {
                 final ReadWriteLockedItem<List<Entity>> chunk = this.entityGrids[i][j];
                 final ReadWriteLockedItem<List<Entity>> toRemove = this.updateToRemove[i][j];
                 final ReadWriteLockedItem<List<Entity>> toAdd = this.updateToAdd[i][j];
@@ -349,10 +364,10 @@ public final class Simulation {
      * @param point The point to check
      * @return If the point is in the map
      */
-    public static boolean isPointValid(final Point point) {
+    public boolean isPointValid(final Point point) {
         return (
-            0 <= point.getX() && point.getX() < Simulation.MAP_SIZE_X * GRID_SIZE
-            && 0 <= point.getY() && point.getY() < Simulation.MAP_SIZE_Y * GRID_SIZE
+            0 <= point.getX() && point.getX() < this.mapSizeX * this.gridSize
+            && 0 <= point.getY() && point.getY() < this.mapSizeY * this.gridSize
         );
     }
 
@@ -362,8 +377,8 @@ public final class Simulation {
      * @param y The y component of the coordinate to validate
      * @return Whether it is valid
      */
-    public static boolean isCoordValid(final int x, final int y) {
-        return 0 <= x && x < MAP_SIZE_X && 0 <= y && y < MAP_SIZE_Y;
+    public boolean isCoordValid(final int x, final int y) {
+        return 0 <= x && x < this.mapSizeX && 0 <= y && y < this.mapSizeY;
     }
 
     /**
@@ -371,7 +386,7 @@ public final class Simulation {
      * @param coord The coordinate to validate
      * @return Whether it is valid
      */
-    public static boolean isCoordValid(final Coordinate coord) {
+    public boolean isCoordValid(final Coordinate coord) {
         return isCoordValid(coord.getX(), coord.getY());
     }
 
@@ -380,10 +395,10 @@ public final class Simulation {
      * @param point THe point to be converted.
      * @return The coordinate of the grid containing the point.
      */
-    public static Coordinate pointToGridCoord(final Point point) {
+    public Coordinate pointToGridCoord(final Point point) {
         return new Coordinate(
-            (int) (point.getX() / GRID_SIZE) % MAP_SIZE_X,
-            (int) (point.getY() / GRID_SIZE) / MAP_SIZE_Y
+            (int) (point.getX() / this.gridSize) % this.mapSizeX,
+            (int) (point.getY() / this.gridSize) / this.mapSizeY
         );
     }
 
@@ -425,11 +440,13 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
+
+        Simulation.SIMULATIONS.remove(this);
     }
 
     private Runnable submitCollisionWork(final Entity entity) {
         return () -> {
-            final Coordinate center = Simulation.pointToGridCoord(entity.getBodyCenter());
+            final Coordinate center = this.pointToGridCoord(entity.getBodyCenter());
 
             for (int x = center.getX() - 1; x <= center.getX() + 1; ++x) {
                 for (int y = center.getY() - 1; y <= center.getY() + 1; ++y) {

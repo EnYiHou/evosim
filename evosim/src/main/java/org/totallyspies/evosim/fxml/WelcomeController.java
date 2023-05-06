@@ -70,6 +70,12 @@ public final class WelcomeController {
 
         Configuration config = Configuration.getConfiguration();
 
+        TitledPane generalDropdown = new TitledPane("General", new VBox(
+            this.createSliderDefault("Map size X", config::setMapSizeX, Defaults.MAP_SIZE_X),
+            this.createSliderDefault("Map size Y", config::setMapSizeY, Defaults.MAP_SIZE_Y),
+            this.createSliderDefault("Grid size", config::setGridSize, Defaults.GRID_SIZE)
+        ));
+
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(
                 "Entity max rotation speed",
@@ -184,10 +190,11 @@ public final class WelcomeController {
         ));
 
         this.options.getPanes().addAll(
-                entityDropdown,
-                predatorDropdown,
-                preyDropdown,
-                neuralNetworkDropdown
+            generalDropdown,
+            entityDropdown,
+            predatorDropdown,
+            preyDropdown,
+            neuralNetworkDropdown
         );
 
         this.hideLockDividers();

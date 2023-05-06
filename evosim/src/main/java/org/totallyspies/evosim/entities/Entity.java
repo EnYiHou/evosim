@@ -1,6 +1,7 @@
 package org.totallyspies.evosim.entities;
 
 import javafx.scene.paint.Color;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.totallyspies.evosim.geometry.Circle;
@@ -58,6 +59,13 @@ public abstract class Entity {
      */
     @Getter
     private final long birthTime;
+
+    /**
+     * Simulation this entity is in.
+     */
+    @Getter(AccessLevel.PROTECTED)
+    private final Simulation simulation;
+
     /**
      * If the entity is dead or not.
      */
@@ -117,6 +125,7 @@ public abstract class Entity {
     /**
      * Constructs a new Entity.
      *
+     * @param newSimulation    Simulation for the entity to be created in.
      * @param entitySpeed      The speed of the entity.
      * @param entityPosition   The position of the entity.
      * @param newBirthTime     The birth time of the entity.
@@ -124,9 +133,11 @@ public abstract class Entity {
      * @param newRotationAngle The rotation angle of the entity.
      * @param newCol            The color of the entity
      */
-    protected Entity(final double entitySpeed, final Point entityPosition, final long newBirthTime,
-                     final double newViewAngle, final double newRotationAngle, final Color newCol) {
+    protected Entity(final Simulation newSimulation, final double entitySpeed,
+        final Point entityPosition, final long newBirthTime, final double newViewAngle,
+        final double newRotationAngle, final Color newCol) {
         this.birthTime = newBirthTime;
+        this.simulation = newSimulation;
         this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
@@ -184,15 +195,13 @@ public abstract class Entity {
     public void move(final double movementSpeed) {
         Point position = this.body.getCenter();
 
-        double positionX = Math.max(0, Math.min(
-                position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
-                Simulation.MAP_SIZE_X * Simulation.GRID_SIZE
-        ));
+        double positionX = Math.max(0,
+            Math.min(position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
+                this.simulation.getMapSizeX() * this.simulation.getGridSize()));
 
-        double positionY = Math.max(0, Math.min(
-                position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
-                Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
-        ));
+        double positionY = Math.max(0,
+            Math.min(position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
+                this.simulation.getMapSizeY() * this.simulation.getGridSize()));
 
         position.setX(positionX);
         position.setY(positionY);
@@ -222,8 +231,11 @@ public abstract class Entity {
 
         this.inputs[this.inputs.length - 4] = xPos;
         this.inputs[this.inputs.length - 3] = yPos;
-        this.inputs[this.inputs.length - 2] = Simulation.GRID_SIZE * Simulation.MAP_SIZE_X - xPos;
-        this.inputs[this.inputs.length - 1] = Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y - yPos;
+        this.inputs[this.inputs.length - 2] =
+            this.simulation.getMapSizeX() * this.simulation.getGridSize() - xPos;
+
+        this.inputs[this.inputs.length - 1] =
+            this.simulation.getMapSizeY() * this.simulation.getGridSize() - yPos;
 
         final double[] calculatedDecision =
                 this.brain.calcNetworkDecision(this.inputs);
