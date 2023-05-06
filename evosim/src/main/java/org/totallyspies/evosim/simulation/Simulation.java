@@ -159,25 +159,21 @@ public final class Simulation {
             }
         };
 
-        for (int i = 0; i < initPrey; i++) {
-            addToGrid.accept(new Prey(
-                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
-                    new Point(
-                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI),
-                    System.currentTimeMillis()
-            ));
-        }
+        for (int i = 0; i < initPrey + initPredator; i++) {
+            final double speed = Rng.RNG.nextDouble(minSpeed, maxSpeed);
+            final Point spawnPoint = new Point(
+                Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
+                Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
+            );
 
-        for (int i = 0; i < initPredator; i++) {
-            addToGrid.accept(new Predator(
-                    Rng.RNG.nextDouble(minSpeed, maxSpeed),
-                    new Point(
-                            Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-                            Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
+            final double angle = Rng.RNG.nextDouble(0, 2 * Math.PI);
+            final long startTime = System.currentTimeMillis();
+
+            final Entity entity = i < initPrey
+                ? new Prey(speed, spawnPoint, angle, startTime)
+                : new Predator(speed, spawnPoint, angle, startTime);
+
+            addToGrid.accept(entity);
         }
 
         this.preyCount += initPrey;
