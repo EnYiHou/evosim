@@ -46,9 +46,9 @@ public final class Predator extends Entity {
         this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
                 .getPredatorEnergyBaseDrainingSpeed());
 
-        //if (this.getEnergy() <= 0) {
-        //    this.setDead(true);
-        //}
+        if (this.getEnergy() <= 0) {
+            this.setDead(true);
+        }
     }
 
     /**

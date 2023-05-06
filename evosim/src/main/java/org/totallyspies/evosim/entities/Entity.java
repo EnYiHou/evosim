@@ -306,14 +306,6 @@ public abstract class Entity {
      * @param other The entity that has been collided into.
      */
     public void onCollide(final Entity other) {
-        /*for (int sensorIndex = 0; sensorIndex < this.sensors.length; sensorIndex++) {
-            Line sensor = this.sensors[sensorIndex];
-            Double distanceToEntity =
-                    Formulas.closestIntersection(sensor, other.getBody());
-            this.sensorsData[sensorIndex] =
-                    Math.min(this.sensorsData[sensorIndex], distanceToEntity);
-        }*/
-
         this.onCollideHandler(other);
     }
 
