@@ -1,15 +1,13 @@
 package org.totallyspies.evosim.neuralnetwork;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import lombok.Getter;
+import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
+import java.util.Arrays;
+import java.util.function.Function;
+
 /**
- * A Neuron is a single node of the greater Neural Network system storing a double valued bias.
  * Each layer of the network is made up of many Neuron objects.
  *
  * @author mattlep11, niakouu
@@ -50,7 +48,7 @@ public final class Neuron {
   /**
    * The weights the Neuron has, which are necessary for computations.
    */
-  private final List<Double> weights;
+  private final double[] weights;
 
   /**
    * The activation function randomly selected.
@@ -72,11 +70,17 @@ public final class Neuron {
 
     this.bias = Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX);
 
-    this.weights = Stream
-        .generate(() -> randomizeWeights ? 1
-            : Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX))
-        .limit(inputs)
-        .toList();
+//    this.weights = Stream
+//        .generate(() -> randomizeWeights ? 1
+//            : Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX))
+//        .limit(inputs)
+//        .toList();
+    this.weights = new double[inputs];
+    for (int i = 0; i < this.weights.length; i++) {
+      this.weights[i] = randomizeWeights
+          ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
+          : 1;
+    }
 
     this.activationFunction = newActivationFunction;
   }
@@ -88,7 +92,7 @@ public final class Neuron {
    * @param neuronWeights         the weights used to do the computations
    * @param newActivationFunction new activation function to be used
    */
-  public Neuron(final double neuronBias, final List<Double> neuronWeights,
+  public Neuron(final double neuronBias, final double[] neuronWeights,
       final Function<Double, Double> newActivationFunction) {
     this.bias = neuronBias;
     this.weights = neuronWeights;
@@ -101,15 +105,27 @@ public final class Neuron {
    * @param inputs outputs from the previous layer or root inputs of the network
    * @return dot product of activated inputs and weights
    */
-  public double feed(final List<Double> inputs) {
-    if (inputs.size() != this.weights.size()) {
+  public double feed(final double[] inputs) {
+    if (inputs.length != this.weights.length) {
       throw new ArrayIndexOutOfBoundsException();
     }
 
-    return this.activationFunction.apply(IntStream
-        .range(0, inputs.size())
-        .mapToDouble(i -> (inputs.get(i)) * this.weights.get(i))
-        .sum() + this.bias);
+    return this.feedUnchecked(inputs);
+  }
+
+  /**
+   * Feeds the input forward without checking the input size.
+   *
+   * @param inputs outputs from the previous layer or root inputs of the network
+   * @return dot product of activated inputs and weights
+   */
+  public double feedUnchecked(final double[] inputs) {
+    double sum = this.bias;
+    for (int i = 0; i < this.weights.length; ++i) {
+      sum += inputs[i] * this.weights[i];
+    }
+
+    return Formulas.logistic(sum);
   }
 
   /**
@@ -126,11 +142,11 @@ public final class Neuron {
 
     return new Neuron(
         newBias,
-        this.weights.stream().map(
+        Arrays.stream(this.weights).map(
             w -> Rng.RNG.nextDouble() < mutationRate
                 ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
                 : w
-        ).toList(),
+        ).toArray(),
         this.activationFunction
     );
   }

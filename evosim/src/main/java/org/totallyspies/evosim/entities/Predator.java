@@ -80,9 +80,4 @@ public final class Predator extends Entity {
         this.setEnergy(Math.min(1, this.getEnergy()
                 + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
     }
-
-    @Override
-    public String toString() {
-        return "Predator";
-    }
 }

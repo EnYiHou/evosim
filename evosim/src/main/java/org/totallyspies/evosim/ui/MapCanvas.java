@@ -1,8 +1,5 @@
 package org.totallyspies.evosim.ui;
 
-import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -20,6 +17,9 @@ import org.totallyspies.evosim.math.Assert;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
+
+import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class represents the map of the simulation, on which entities will be drawn.
@@ -39,14 +39,17 @@ public final class MapCanvas extends ResizableCanvas {
     @Setter
     private static Image mapImage = null;
 
+
     /**
      * A list of keycodes being pressed.
      */
+    @Getter
     private static final LinkedList<KeyCode> PRESSED_KEYS = new LinkedList<>();
 
     /**
      * The camera of the map.
      */
+    @Getter
     private final Camera camera;
 
     /**
@@ -74,18 +77,17 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private Entity followedEntity;
 
-
     /**
      * Construct an instance of MapCanvas.
      */
     public MapCanvas() {
         super();
         this.camera = new Camera(
-                new Point(0, 0),
-                new Point(
-                        Simulation.MAP_SIZE_X * Simulation.GRID_SIZE,
-                        Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
-                )
+            new Point(0, 0),
+            new Point(
+                Simulation.MAP_SIZE_X * Simulation.GRID_SIZE,
+                Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
+            )
         );
 
         this.anim = new AnimationTimer() {
@@ -119,10 +121,6 @@ public final class MapCanvas extends ResizableCanvas {
         this.setOnMouseClicked(this::checkEntityOnClick);
     }
 
-    public static LinkedList<KeyCode> getPressedKeys() {
-        return PRESSED_KEYS;
-    }
-
     /**
      * Draw the grid lines on the map.
      */
@@ -132,12 +130,12 @@ public final class MapCanvas extends ResizableCanvas {
         for (int i = 0; i <= Simulation.MAP_SIZE_X; i++) {
             Point verticalStartingPoint = computePointPosition(i * Simulation.GRID_SIZE, 0);
             Point verticalEndingPoint = computePointPosition(
-                    i * Simulation.GRID_SIZE, Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y
+                i * Simulation.GRID_SIZE, Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y
             );
 
             Point horizontalStartingPoint = computePointPosition(0, i * Simulation.GRID_SIZE);
             Point horizontalEndingPoint = computePointPosition(
-                    Simulation.GRID_SIZE * Simulation.MAP_SIZE_X, i * Simulation.GRID_SIZE
+                Simulation.GRID_SIZE * Simulation.MAP_SIZE_X, i * Simulation.GRID_SIZE
             );
 
             // draw vertical grids lines
@@ -169,29 +167,13 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     /**
-     * Compute the absolute position of a relative point according to the camera
-     * and the map.
-     *
-     * @param x The x coordinate of the relative point.
-     * @param y The y coordinate of the relative point.
-     * @return The absolute position in a point.
-     */
-    private Point computePositionPoint(final double x, final double y) {
-        double zoom = this.camera.getZoom();
-        double newX = (x - this.getWidth() / 2) / zoom + this.camera.getX();
-        double newY = -(y - this.getHeight() / 2) / zoom + this.camera.getY();
-
-        return new Point(newX, newY);
-    }
-
-    /**
      * Draw an entity on the map.
      *
      * @param entity The entity to be drawn on the map
      */
     public void drawEntity(final Entity entity) {
-        double radius = Configuration.getConfiguration().getEntityRadius();
-        double zoom = camera.getZoom();
+        final double radius = Configuration.getConfiguration().getEntityRadius();
+        final double zoom = camera.getZoom();
         this.getGraphicsContext2D().setFill(entity.getColor());
 
         Point position = computePointPosition(entity.getBodyCenter().getX(),
@@ -202,10 +184,6 @@ public final class MapCanvas extends ResizableCanvas {
                 position.getY() - radius * zoom,
                 radius * 2 * zoom,
                 radius * 2 * zoom);
-
-        if (entity.equals(followedEntity)) {
-            this.drawEntitySensors(entity);
-        }
     }
 
     /**
@@ -291,21 +269,12 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     /**
-     * Returns the camera of the map.
-     *
-     * @return the camera of the map
-     */
-    public Camera getCamera() {
-        return this.camera;
-    }
-
-    /**
      * Attaches a simulation to this map.
-     *
      * @param newSimulation Simulation to be attached.
      */
     public void attach(final Simulation newSimulation) {
         this.simulation = newSimulation;
+        this.simulation.playUpdate();
         this.anim.start();
     }
 
@@ -344,6 +313,7 @@ public final class MapCanvas extends ResizableCanvas {
 
         final double camTranslateSpeed = Camera.CAMERA_TRANSLATE_SPEED;
         final double camZoomIncrement = Camera.CAMERA_ZOOM_INCREMENT;
+
         if (!PRESSED_KEYS.isEmpty()) {
             if (!followingEntity.get()) { // cannot control camera when tracking
                 for (KeyCode code : PRESSED_KEYS) {
@@ -377,13 +347,14 @@ public final class MapCanvas extends ResizableCanvas {
                 }
             }
         }
-        Coordinate camChunk = Simulation.coordsToChunkCoords(this.camera.getPoint());
+
+        Coordinate camChunk = Simulation.pointToGridCoord(this.camera.getPoint());
 
         // only render entities if they're within the visible square radius
         int radiusX = (int) Math.ceil(
                 this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
         int radiusY = (int) Math.ceil(
-                this.getWidth() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
+                this.getHeight() / (Simulation.GRID_SIZE * this.camera.getZoom())) / 2 + 1;
 
         for (int x = camChunk.getX() - radiusX; x <= camChunk.getX() + radiusX; ++x) {
             for (int y = camChunk.getY() - radiusY; y <= camChunk.getY() + radiusY; ++y) {
@@ -391,14 +362,13 @@ public final class MapCanvas extends ResizableCanvas {
                     continue;
                 }
 
-                simulation.getGridEntities(x, y).forEach(this::drawEntity);
+                simulation.forEachGridEntities(x, y, this::drawEntity);
             }
         }
     }
 
-
     /**
-     * Checks if the mouse is clicking on an entity.
+     * Checks all entities within the clicked chunk. If the mouse clicked an entity, follow it.
      *
      * @param e the click event
      */
@@ -406,23 +376,21 @@ public final class MapCanvas extends ResizableCanvas {
         double x = e.getX();
         double y = e.getY();
 
-        Point abs = this.computePositionPoint(x, y);
+        Point abs = this.computePointPosition(x, y);
 
         int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
         int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
 
-//            System.out.println("Clicked on " + abs.getX() + " " + abs.getY());
-//            System.out.println("Chunk " + chunkX + " " + chunkY);
-
+        //print the number of entity in this grid
+        System.out.println("Number of entity in this grid: "
+                + simulation.getEntityGrids()[chunkX][chunkY].get().size());
 
         if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
                 || chunkY < 0 || chunkY >= Simulation.MAP_SIZE_Y) {
             return;
         }
 
-        System.out.println("Number of entities in chunk: "
-                + simulation.getGridEntities(chunkX, chunkY).size());
-        for (Entity entity : simulation.getGridEntities(chunkX, chunkY)) {
+        simulation.forEachGridEntities(chunkX, chunkY, entity -> {
             Point entityCenter = entity.getBodyCenter();
             if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
                     abs.getX(), abs.getY())
@@ -438,15 +406,14 @@ public final class MapCanvas extends ResizableCanvas {
                             .setNeuralNetwork(entity.getBrain());
                 }
             }
-        }
-
+        });
     }
 
     /**
      * Enables the entity stats and begins {@code updStat} to update the values for the entity.
      */
     private void trackEntityStats() {
-        MainController.getController().getStatsContainer().setVisible(true);
+        MainController.getController().getEntityStats().setVisible(true);
         updStat.start();
     }
 
@@ -454,7 +421,7 @@ public final class MapCanvas extends ResizableCanvas {
      * Stops the animation timer tracking the entity.
      */
     private void untrackEntityStats() {
-        MainController.getController().getStatsContainer().setVisible(false);
+        MainController.getController().getEntityStats().setVisible(false);
         updStat.stop();
     }
 

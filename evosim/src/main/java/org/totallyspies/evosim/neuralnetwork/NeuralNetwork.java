@@ -1,13 +1,12 @@
 package org.totallyspies.evosim.neuralnetwork;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import lombok.Getter;
+
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
@@ -30,6 +29,13 @@ public class NeuralNetwork {
     @Getter
     private List<List<Neuron>> neuronLayers;
 
+
+    /**
+     * Arrays used for calculating the output of the neural network.
+     * This limits the number of newly instantiated classes on each calculation.
+     */
+    private double[][] calculationArrays;
+
     /**
      * Constructs a Neural Network with a set number of layers with specific sizes.
      *
@@ -45,6 +51,7 @@ public class NeuralNetwork {
 
         // populate neural network
         int lastSize = 0;
+        int maxSize = 0;
         for (int curSize : layerSizes) { // layer number
             int finalLastSize = lastSize;
 
@@ -58,7 +65,13 @@ public class NeuralNetwork {
             );
 
             lastSize = curSize;
+
+            if (maxSize < curSize) {
+                maxSize = curSize;
+            }
         }
+
+        this.calculationArrays = new double[2][maxSize];
     }
 
     /**
@@ -66,6 +79,7 @@ public class NeuralNetwork {
      */
     private NeuralNetwork() {
         this.neuronLayers = null;
+        this.calculationArrays = null;
     }
 
     /**
@@ -75,27 +89,27 @@ public class NeuralNetwork {
      * @return a List containing the final computations. the only values of importance are the
      * elements within the length equal to the number of neurons in the output layer.
      */
-    public List<Double> calcNetworkDecision(final List<Double> inputs) {
-        Iterator<List<Neuron>> iterator = this.neuronLayers.iterator();
-        List<Neuron> firstLayer = iterator.next();
+    public double[] calcNetworkDecision(final double[] inputs) {
+        int flipFlop = 0;
 
-        if (inputs.size() != firstLayer.size()) {
+        if (inputs.length != this.neuronLayers.get(0).size()) {
             throw new ArrayIndexOutOfBoundsException();
         }
 
-        List<Double> outputs = IntStream
-            .range(0, inputs.size())
-            .mapToDouble(i -> firstLayer.get(i).feed(List.of(inputs.get(i))))
-            .boxed()
-            .toList();
+        System.arraycopy(inputs, 0, this.calculationArrays[flipFlop], 0, inputs.length);
 
+        for (List<Neuron> layer : this.neuronLayers) {
+            final int newFlipFlop = ~flipFlop & 1;
+            for (int i = 0; i < layer.size(); ++i) {
+                this.calculationArrays[newFlipFlop][i] = layer.get(i).feedUnchecked(
+                    this.calculationArrays[flipFlop]
+                );
+            }
 
-        while (iterator.hasNext()) {
-            List<Double> latestOutputs = outputs;
-            outputs = iterator.next().stream().map(neuron -> neuron.feed(latestOutputs)).toList();
+            flipFlop = newFlipFlop;
         }
 
-        return outputs;
+        return this.calculationArrays[flipFlop];
     }
 
     /**
@@ -123,7 +137,9 @@ public class NeuralNetwork {
                 )
                 .toList();
 
+        mutatedNeuralNetwork.calculationArrays =
+            new double[this.calculationArrays.length][this.calculationArrays[0].length];
+
         return mutatedNeuralNetwork;
     }
-
 }

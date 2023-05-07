@@ -9,5 +9,4 @@ module org.totallyspies.evosim {
     opens org.totallyspies.evosim.ui to javafx.fxml;
     exports org.totallyspies.evosim.fxml;
     exports org.totallyspies.evosim.ui;
-    exports org.totallyspies.evosim.geometry;
 }
