@@ -157,7 +157,7 @@ public final class SettingsController {
         statsVisible = energyVisible || splitEnergyVisible || speedVisible
                 || childCountVisible || timerVisible;
 
-        MainController.getController().getStatsContainer().setOpacity(statsVisible ? 1 : 0);
+        MainController.getController().getEntityStats().setOpacity(statsVisible ? 1 : 0);
         clearAndResize();
     }
 
