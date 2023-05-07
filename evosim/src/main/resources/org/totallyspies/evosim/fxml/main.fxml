@@ -184,7 +184,7 @@
                         <Insets />
                     </StackPane.margin>
                 </MapCanvas>
-                <AnchorPane fx:id="statsContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" StackPane.alignment="TOP_LEFT">
+                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" StackPane.alignment="TOP_LEFT">
                     <children>
 
                         <VBox alignment="CENTER" layoutX="806.0" layoutY="665.0" mouseTransparent="true" spacing="3.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
