@@ -11,6 +11,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -48,6 +49,12 @@ public final class MainController {
      */
     @FXML
     private MapCanvas mapCanvas;
+
+    /**
+     * The AnchorPane containing all elements on top of the map.
+     */
+    @FXML
+    private AnchorPane mapOverlay;
 
     /**
      * Play button.
@@ -226,6 +233,7 @@ public final class MainController {
     public void initialize() throws IOException {
         this.simulation = new Simulation();
         this.mapCanvas.attach(simulation);
+
 
         this.setPlayPauseButtons();
 

@@ -26,6 +26,8 @@ public final class EvosimApplication extends Application {
     public void start(final Stage primaryStage) {
         application = this;
         stage = primaryStage;
+        stage.setMinHeight(600);
+        stage.setMinWidth(800);
         WindowUtils.setSceneRoot(primaryStage,
                 this.getClass().getResource(ResourceManager.FXML_WELCOME_VIEW),
                 this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());
