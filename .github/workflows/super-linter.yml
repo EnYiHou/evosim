@@ -12,6 +12,10 @@ on:
 jobs:
   run-lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,4 +28,5 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "main"
+          VALIDATE_GOOGLE_JAVA_FORMAT: false # Broken with switch/case
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
