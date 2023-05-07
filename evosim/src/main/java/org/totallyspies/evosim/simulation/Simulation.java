@@ -35,10 +35,17 @@ public final class Simulation {
     private static final LinkedList<Simulation> SIMULATIONS = new LinkedList<>();
 
     /**
+     * Nanoseconds to wait between each update. Defaults to 60 per second.
+     */
+    private static final long UPDATE_INTERVAL_NANO = 16666666;
+
+    /**
      * Shuts down all instantiated simulations.
      */
     public static void shutdownAll() {
-        SIMULATIONS.forEach(Simulation::shutdown);
+        while (SIMULATIONS.size() != 0) {
+            SIMULATIONS.getFirst().shutdown();
+        }
     }
 
     /**
@@ -55,6 +62,11 @@ public final class Simulation {
      * The x and y size of a single grid.
      */
     public static final int GRID_SIZE = 250;
+
+    /**
+     * Number of collision threads to create.
+     */
+    private static final int COLLISION_THREAD_COUNT = 12;
 
     /**
      * Grids of entities.
@@ -102,8 +114,9 @@ public final class Simulation {
 
     /**
      * Constructs a new simulation based on the default configuration.
+     * @param shouldPopulate Whether it should populate the entity list with random values.
      */
-    public Simulation() {
+    public Simulation(final boolean shouldPopulate) {
         this.entityGrids = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
         this.updateToAdd = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
         this.updateToRemove = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
@@ -117,18 +130,17 @@ public final class Simulation {
         }
 
         this.collisionCheckerService = Executors.newFixedThreadPool(
-            12,
+            COLLISION_THREAD_COUNT,
             new NamedThreadFactory("collision")
-        );
-
-        this.populateEntityList(
-                Configuration.getConfiguration().getPreyInitialPopulation(),
-                Configuration.getConfiguration().getPredatorInitialPopulation()
         );
 
         this.updateService = Executors.newSingleThreadScheduledExecutor(
             new NamedThreadFactory("update")
         );
+
+        if (shouldPopulate) {
+            this.defaultPopulateEntityList();
+        }
 
         SIMULATIONS.add(this);
     }
@@ -136,28 +148,12 @@ public final class Simulation {
     /**
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
-     *
-     *
-     * @param initPrey     the initial number of prey spawned
-     * @param initPredator the initial number of predators spawned
      */
-    private void populateEntityList(final int initPrey, final int initPredator) {
+    private void defaultPopulateEntityList() {
         final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
         final double minSpeed = Configuration.getConfiguration().getEntityMinSpeed();
-
-        final Consumer<Entity> addToGrid = entity -> {
-            final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
-
-            final ReadWriteLockedItem<List<Entity>> chunk =
-                this.entityGrids[coord.getX()][coord.getY()];
-
-            chunk.writeLock().lock();
-            try {
-                chunk.get().add(entity);
-            } finally {
-                chunk.writeLock().unlock();
-            }
-        };
+        final int initPrey = Configuration.getConfiguration().getPreyInitialPopulation();
+        final int initPredator = Configuration.getConfiguration().getPredatorInitialPopulation();
 
         for (int i = 0; i < initPrey + initPredator; i++) {
             final double speed = Rng.RNG.nextDouble(minSpeed, maxSpeed);
@@ -167,17 +163,39 @@ public final class Simulation {
             );
 
             final double angle = Rng.RNG.nextDouble(0, 2 * Math.PI);
-            final long startTime = System.currentTimeMillis();
 
             final Entity entity = i < initPrey
-                ? new Prey(speed, spawnPoint, angle, startTime)
-                : new Predator(speed, spawnPoint, angle, startTime);
+                ? new Prey(speed, spawnPoint, angle)
+                : new Predator(speed, spawnPoint, angle);
 
-            addToGrid.accept(entity);
+            this.addEntity(entity);
+        }
+    }
+
+    /**
+     * Adds an entity to the list of entities. Automatically adds it to the correct grid.
+     * @param entity The entity to be added
+     */
+    public void addEntity(final Entity entity) {
+        if (entity instanceof Predator) {
+            ++this.predatorCount;
+        } else if (entity instanceof Prey) {
+            ++this.preyCount;
+        } else {
+            throw new IllegalArgumentException("Unrecognized Entity: " + entity);
         }
 
-        this.preyCount += initPrey;
-        this.predatorCount += initPredator;
+        final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
+
+        final ReadWriteLockedItem<List<Entity>> chunk =
+            this.updateToAdd[coord.getX()][coord.getY()];
+
+        chunk.writeLock().lock();
+        try {
+            chunk.get().add(entity);
+        } finally {
+            chunk.writeLock().unlock();
+        }
     }
 
     private void checkCollisions(final Entity a, final Entity b) {
@@ -369,7 +387,7 @@ public final class Simulation {
         }
 
         this.currentUpdate = this.updateService.scheduleAtFixedRate(
-            this::update, 0, 16666666, TimeUnit.NANOSECONDS
+            this::update, 0, UPDATE_INTERVAL_NANO, TimeUnit.NANOSECONDS
         );
     }
 
@@ -378,7 +396,7 @@ public final class Simulation {
      */
     public void pauseUpdate() {
         if (this.currentUpdate != null) {
-            this.currentUpdate.cancel(false);
+            this.currentUpdate.cancel(true);
             this.currentUpdate = null;
         }
     }
@@ -387,6 +405,7 @@ public final class Simulation {
      * Kills the simulation. Cannot be restarted after.
      */
     public void shutdown() {
+        System.out.println("sup");
         this.pauseUpdate();
         this.updateService.shutdown();
         this.collisionCheckerService.shutdown();
@@ -398,5 +417,7 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
+
+        SIMULATIONS.remove(this);
     }
 }
