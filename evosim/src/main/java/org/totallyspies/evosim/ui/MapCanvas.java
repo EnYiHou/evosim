@@ -264,6 +264,9 @@ public final class MapCanvas extends ResizableCanvas {
     public void drawEntity(final Entity entity) throws EvosimException {
         final double radius = Configuration.getConfiguration().getEntityRadius();
         final double zoom = camera.getZoom();
+        final double lookAt = entity.getDirectionAngleInRadians();
+        final double eyeAngle = Math.PI / 10;
+        final double eyeRadius = radius / 3;
 
         if (entity instanceof Prey) {
             this.getGraphicsContext2D().setFill(Prey.getBodyColour());
@@ -279,6 +282,51 @@ public final class MapCanvas extends ResizableCanvas {
                 position.getY() - radius * zoom,
                 radius * 2 * zoom,
                 radius * 2 * zoom);
+
+        // Eyes
+        final Point leftEyePosition = new Point(
+            position.getX()
+                - (eyeRadius - ((radius - eyeRadius) * Math.cos(lookAt - eyeAngle))) * zoom,
+            position.getY()
+                - (eyeRadius + ((radius - eyeRadius) * Math.sin(lookAt - eyeAngle))) * zoom
+        );
+
+        final Point rightEyePosition = new Point(
+            position.getX()
+                - (eyeRadius - ((radius - eyeRadius) * Math.cos(lookAt + eyeAngle))) * zoom,
+            position.getY()
+                - (eyeRadius + ((radius - eyeRadius) * Math.sin(lookAt + eyeAngle))) * zoom
+        );
+
+        this.getGraphicsContext2D().setFill(Color.WHITE);
+        this.getGraphicsContext2D().fillOval(
+            leftEyePosition.getX(),
+            leftEyePosition.getY(),
+            eyeRadius * 2 * zoom,
+            eyeRadius * 2 * zoom
+        );
+
+        this.getGraphicsContext2D().fillOval(
+            rightEyePosition.getX(),
+            rightEyePosition.getY(),
+            eyeRadius * 2 * zoom,
+            eyeRadius * 2 * zoom
+        );
+
+        this.getGraphicsContext2D().setFill(Color.BLACK);
+        this.getGraphicsContext2D().fillOval(
+            leftEyePosition.getX(),
+            leftEyePosition.getY(),
+            eyeRadius * zoom,
+            eyeRadius * zoom
+        );
+
+        this.getGraphicsContext2D().fillOval(
+            rightEyePosition.getX(),
+            rightEyePosition.getY(),
+            eyeRadius * zoom,
+            eyeRadius * zoom
+        );
     }
 
     /**
