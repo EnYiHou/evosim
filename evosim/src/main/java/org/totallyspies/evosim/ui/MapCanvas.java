@@ -255,6 +255,9 @@ public final class MapCanvas extends ResizableCanvas {
      * @param newSimulation Simulation to be attached.
      */
     public void attach(final Simulation newSimulation) {
+        if (this.simulation != null) {
+            this.simulation.shutdown();
+        }
         this.simulation = newSimulation;
         this.simulation.playUpdate();
         this.anim.start();

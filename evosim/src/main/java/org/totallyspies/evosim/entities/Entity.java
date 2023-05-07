@@ -1,8 +1,12 @@
 package org.totallyspies.evosim.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import javafx.scene.paint.Color;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -22,63 +26,72 @@ import java.util.List;
  *
  * @author EnYi, Matthew
  */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Prey.class, name = "prey"),
+        @JsonSubTypes.Type(value = Predator.class, name = "predator")
+})
 @Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public abstract class Entity {
 
     /**
      * An array of sensors represented by custom Line objects.
      */
-    @JsonProperty("sensors")
+    //@JsonProperty("sensors")
     private final Line[] sensors;
 
     /**
      * A list of detected distances from the sensors.
      */
-    @JsonProperty("sensorsData")
+    //@JsonProperty("sensorsData")
     private final double[] sensorsData;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
-    @JsonProperty("speed")
+    //@JsonProperty("speed")
     private final double speed;
 
     /**
      * The position of the entity.
      */
-    @JsonProperty("body")
+    //@JsonProperty("body")
     private final Circle body;
 
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
-    @JsonProperty("fovAngleInDegrees")
+    //@JsonProperty("fovAngleInDegrees")
     private final double fovAngleInDegrees;
 
     /**
      * The color of the entity.
      */
-    @JsonProperty("color")
+    @JsonIgnore
     private final Color color;
 
     /**
      * The birth time of the entity.
      */
-
-    @JsonProperty("birthTime")
+    @JsonIgnore
     private final long birthTime;
+
     /**
      * If the entity is dead or not.
      */
     @Setter
-    @JsonProperty("dead")
+    //@JsonProperty("dead")
     private boolean dead;
 
     /**
      * If the entity split.
      */
     @Setter
-    @JsonProperty("split")
+    //@JsonProperty("split")
     private boolean split;
 
     /**
@@ -89,7 +102,7 @@ public abstract class Entity {
      * </p>
      */
     @Setter
-    @JsonProperty("brain")
+    //@JsonProperty("brain")
     private NeuralNetwork brain;
 
     /**
@@ -100,7 +113,7 @@ public abstract class Entity {
      * </p>
      */
     @Setter
-    @JsonProperty("energy")
+    //@JsonProperty("energy")
     private double energy;
 
     /**
@@ -111,20 +124,20 @@ public abstract class Entity {
      * </p>
      */
     @Setter
-    @JsonProperty("splitEnergy")
+    //@JsonProperty("splitEnergy")
     private double splitEnergy;
 
     /**
      * The direction the entity is facing in radians.
      */
-    @JsonProperty("directionAngleInRadians")
+    //@JsonProperty("directionAngleInRadians")
     private double directionAngleInRadians;
 
     /**
      * The number of children born from this entity.
      */
     @Setter
-    @JsonProperty("childCount")
+    //@JsonProperty("childCount")
     private int childCount;
 
     /**
@@ -132,14 +145,13 @@ public abstract class Entity {
      *
      * @param entitySpeed      The speed of the entity.
      * @param entityPosition   The position of the entity.
-     * @param newBirthTime     The birth time of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param newCol            The color of the entity
+     * @param newCol            The color of the entity.
      */
-    protected Entity(final double entitySpeed, final Point entityPosition, final long newBirthTime,
+    protected Entity(final double entitySpeed, final Point entityPosition,
                      final double newViewAngle, final double newRotationAngle, final Color newCol) {
-        this.birthTime = newBirthTime;
+        this.birthTime = System.currentTimeMillis();
         this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
@@ -166,6 +178,52 @@ public abstract class Entity {
         this.sensorsData = new double[sensorCount];
         Arrays.fill(this.sensorsData, Configuration.getConfiguration().getEntitySensorsLength());
         this.adjustSensors();
+    }
+
+    /**
+     * Construct a new entity from a JSON.
+     * @param speed                     The speed of entity.
+     * @param fovAngleInDegrees         The angle in degrees of entity.
+     * @param directionAngleInRadians   The direction angle in radians of entity.
+     * @param color                     The color of entity.
+     * @param sensors                   The sensors of entity.
+     * @param sensorsData               The sensors data of entity.
+     * @param body                      The body of entity.
+     * @param dead                      If dead of the entity.
+     * @param split                     The split energy of entity.
+     * @param brain                     The brain of entity.
+     * @param energy                    The energy of entity.
+     * @param splitEnergy               The split energy of entity.
+     * @param childCount                The child count of entity.
+     */
+    protected Entity(
+            final double speed,
+            final double fovAngleInDegrees,
+            final double directionAngleInRadians,
+            final Color color,
+            final Line[] sensors,
+            final double[] sensorsData,
+            final Circle body,
+            final boolean dead,
+            final boolean split,
+            final NeuralNetwork brain,
+            final double energy,
+            final double splitEnergy,
+            final int childCount) {
+        this.birthTime = System.currentTimeMillis();
+        this.color = color;
+        this.speed = speed;
+        this.directionAngleInRadians = directionAngleInRadians;
+        this.fovAngleInDegrees = fovAngleInDegrees;
+        this.sensors = sensors;
+        this.sensorsData = sensorsData;
+        this.body = body;
+        this.dead = dead;
+        this.split = split;
+        this.brain = brain;
+        this.energy = energy;
+        this.splitEnergy = splitEnergy;
+        this.childCount = childCount;
     }
 
     /**
@@ -308,7 +366,7 @@ public abstract class Entity {
         this.onCollideHandler(other);
     }
 
-
+    @JsonIgnore
     public final Point getBodyCenter() {
         return this.body.getCenter();
     }

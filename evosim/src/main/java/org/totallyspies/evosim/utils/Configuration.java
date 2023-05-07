@@ -1,6 +1,7 @@
 package org.totallyspies.evosim.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.ToString;
 import org.json.JSONArray;
@@ -157,6 +158,11 @@ public final class Configuration {
     private static final Configuration CONFIGURATION = new Configuration();
 
     /**
+     * An object mapper in order to serialize and deserialize values.
+     */
+    private ObjectMapper mapper;
+
+    /**
      * Create a new default Configuration object, and the setup.
      */
     private Configuration() {
@@ -190,6 +196,7 @@ public final class Configuration {
         this.defaultsValues.put("neuralNetworkLayersNumber", Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
 
         this.variables = this.defaultsValues;
+        this.mapper = new ObjectMapper();
 
         restoreToDefaults();
     }
@@ -242,7 +249,7 @@ public final class Configuration {
      *
      * @param jsonFile file we want to load.
      */
-    public void loadFile(final File jsonFile) {
+    public void loadFile(final File jsonFile) throws JsonProcessingException {
         JSONObject jsonGlobal = loadSavedFile(jsonFile);
 
         JSONObject jsonConfiguration = jsonGlobal.getJSONObject("configuration");
@@ -251,6 +258,7 @@ public final class Configuration {
         }
 
         JSONArray jsonEntities = jsonGlobal.getJSONArray("entities");
+        loadEntities(jsonEntities);
 
     }
 
@@ -286,8 +294,10 @@ public final class Configuration {
         keys.forEach((key) -> this.variables.replace(key, jsonConfiguration.getNumber(key)));
     }
 
-    private void loadEntities(final JSONArray jsonEntities) {
-
+    private void loadEntities(final JSONArray jsonEntities) throws JsonProcessingException {
+        List<Entity> entities = mapper.readValue(jsonEntities.toString(), new TypeReference<>(){});
+        System.out.println(entities);
+        Simulation simulation = new Simulation(entities);
     }
 
     /**
@@ -307,7 +317,6 @@ public final class Configuration {
     }
 
     private JSONArray getEntitiesJSON(Simulation simulation) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
         List<Entity> allEntities = new ArrayList<>();
 
         for (int x = 0; x < Simulation.MAP_SIZE_X; x++) {
@@ -315,7 +324,7 @@ public final class Configuration {
                 simulation.forEachGridEntities(x, y, allEntities::add);
             }
         }
-        String allEntitiesTxt = mapper.writeValueAsString(allEntities);
+        String allEntitiesTxt = mapper.writerFor(new TypeReference<List<Entity>>(){}).writeValueAsString(allEntities);
 
         return new JSONArray(allEntitiesTxt);
     }

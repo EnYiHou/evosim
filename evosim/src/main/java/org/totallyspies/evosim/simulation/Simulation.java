@@ -196,8 +196,7 @@ public final class Simulation {
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
                     ),
-                    Rng.RNG.nextDouble(0, 2 * Math.PI),
-                    System.currentTimeMillis()
+                    Rng.RNG.nextDouble(0, 2 * Math.PI)
             ));
         }
 
@@ -207,7 +206,8 @@ public final class Simulation {
                     new Point(
                             Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
                             Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
-                    ), Rng.RNG.nextDouble(0, 2 * Math.PI), System.currentTimeMillis()));
+                    ), Rng.RNG.nextDouble(0, 2 * Math.PI)
+            ));
         }
 
         this.preyCount += initPrey;

@@ -12,6 +12,8 @@ module org.totallyspies.evosim {
     opens org.totallyspies.evosim.ui to javafx.fxml;
     opens org.totallyspies.evosim.neuralnetwork to com.fasterxml.jackson.databind;
     opens org.totallyspies.evosim.utils to com.fasterxml.jackson.databind;
+    opens org.totallyspies.evosim.entities to com.fasterxml.jackson.databind;
+    opens org.totallyspies.evosim.geometry to com.fasterxml.jackson.databind;
     exports org.totallyspies.evosim.fxml;
     exports org.totallyspies.evosim.ui;
     exports org.totallyspies.evosim.geometry;

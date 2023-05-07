@@ -1,9 +1,7 @@
 package org.totallyspies.evosim.geometry;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * This class represents a point in 2D space.
@@ -11,6 +9,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Builder
+@Jacksonized
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Point {

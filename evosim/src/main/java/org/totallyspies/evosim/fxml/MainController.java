@@ -508,8 +508,7 @@ public final class MainController {
         this.chosenEntityProperty.set(new Predator(
                 1,
                 new Point(0, 0),
-                1,
-                System.currentTimeMillis())
+                1)
         );
     }
 
