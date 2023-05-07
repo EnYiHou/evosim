@@ -102,6 +102,7 @@ public final class MapCanvas extends ResizableCanvas {
             @Override
             public void handle(final long now) {
                 if (followedEntity != null) {
+                    drawEntitySensors(followedEntity);
                     controller.getPbEnergy().setProgress(followedEntity.getEnergy());
                     controller.getPbSplit().setProgress(followedEntity.getSplitEnergy());
                     controller.getSpeedLabel().setText(
@@ -231,7 +232,6 @@ public final class MapCanvas extends ResizableCanvas {
     public void followEntity(final Entity entity) {
         //Set the camera's position to the entity's position.
         this.camera.setPoint(entity.getBodyCenter());
-        drawEntitySensors(entity);
         autoZoom(1.2d);
     }
 
