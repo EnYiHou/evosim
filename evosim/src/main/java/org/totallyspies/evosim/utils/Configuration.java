@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.ToString;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONPointer;
+import org.json.JSONString;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.simulation.Simulation;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -233,7 +233,7 @@ public final class Configuration {
      * application.
      * @return entity list saved.
      */
-    public List<Entity> loadLastFile() throws JsonProcessingException {
+    public List<Entity> loadLastFile() throws IOException {
         return loadFile(Defaults.LATEST_CONFIGURATION);
     }
 
@@ -243,7 +243,7 @@ public final class Configuration {
      * @param jsonFile file we want to load.
      * @return entity list
      */
-    public List<Entity> loadFile(final File jsonFile) throws JsonProcessingException {
+    public List<Entity> loadFile(final File jsonFile) throws IOException {
         JSONObject jsonGlobal = loadSavedFile(jsonFile);
 
         JSONObject jsonConfiguration = jsonGlobal.getJSONObject("configuration");
@@ -253,29 +253,6 @@ public final class Configuration {
 
         JSONArray jsonEntities = jsonGlobal.getJSONArray("entities");
         return loadEntities(jsonEntities);
-    }
-
-    /**
-     * Load a saved Configuration JSON file and turn it into an JSONObject.
-     *
-     * @param jsonFile The file name of the json file we want to load.
-     * @return JSONObject from a source JSON Configuration file.
-     */
-    private static JSONObject loadSavedFile(final File jsonFile) {
-        String jsonText = "";
-
-        try {
-            try (BufferedReader reader = new BufferedReader(
-                    new FileReader(jsonFile))) {
-                jsonText = reader.readLine();
-            }
-
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
-
-        return new JSONObject(jsonText);
     }
 
     /**
@@ -292,6 +269,17 @@ public final class Configuration {
                 .readValue(jsonEntities.toString(), new TypeReference<>() { });
         System.out.println(entities);
         return entities;
+    }
+
+    /**
+     * Load a saved Configuration JSON file and turn it into an JSONObject.
+     *
+     * @param jsonFile The file name of the json file we want to load.
+     * @return JSONObject from a source JSON Configuration file.
+     */
+    private static JSONObject loadSavedFile(final File jsonFile) throws IOException {
+        String jsonText = Files.readString(Path.of(jsonFile.getPath()));
+        return new JSONObject(jsonText);
     }
 
     /**

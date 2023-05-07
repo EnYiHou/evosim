@@ -316,7 +316,7 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoadLatest(final ActionEvent event) throws JsonProcessingException {
+    private void clickOnLoadLatest(final ActionEvent event) throws IOException {
         this.newSimulation(configuration.loadLastFile());
         System.out.println(configuration.toString());
     }
