@@ -59,31 +59,26 @@ public abstract class Entity {
     /**
      * An array of sensors represented by custom Line objects.
      */
-    //@JsonProperty("sensors")
     private final Line[] sensors;
 
     /**
      * A list of detected distances from the sensors.
      */
-    //@JsonProperty("sensorsData")
     private final double[] sensorsData;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
-    //@JsonProperty("speed")
     private final double speed;
 
     /**
      * The position of the entity.
      */
-    //@JsonProperty("body")
     private final Circle body;
 
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
-    //@JsonProperty("fovAngleInDegrees")
     private final double fovAngleInDegrees;
 
     /**
@@ -102,14 +97,12 @@ public abstract class Entity {
      * If the entity is dead or not.
      */
     @Setter
-    //@JsonProperty("dead")
     private boolean dead;
 
     /**
      * If the entity split.
      */
     @Setter
-    //@JsonProperty("split")
     private boolean split;
 
     /**
@@ -120,7 +113,6 @@ public abstract class Entity {
      * </p>
      */
     @Setter
-    //@JsonProperty("brain")
     private NeuralNetwork brain;
 
     /**
@@ -131,7 +123,6 @@ public abstract class Entity {
      * </p>
      */
     @Setter
-    //@JsonProperty("energy")
     private double energy;
 
     /**
@@ -142,20 +133,17 @@ public abstract class Entity {
      * </p>
      */
     @Setter
-    //@JsonProperty("splitEnergy")
     private double splitEnergy;
 
     /**
      * The direction the entity is facing in radians.
      */
-    //@JsonProperty("directionAngleInRadians")
     private double directionAngleInRadians;
 
     /**
      * The number of children born from this entity.
      */
     @Setter
-    //@JsonProperty("childCount")
     private int childCount;
 
     /**
