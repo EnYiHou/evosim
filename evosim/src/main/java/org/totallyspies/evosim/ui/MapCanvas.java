@@ -83,11 +83,11 @@ public final class MapCanvas extends ResizableCanvas {
     public MapCanvas() {
         super();
         this.camera = new Camera(
-            new Point(0, 0),
-            new Point(
-                Simulation.MAP_SIZE_X * Simulation.GRID_SIZE,
-                Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
-            )
+                new Point(0, 0),
+                new Point(
+                        Simulation.MAP_SIZE_X * Simulation.GRID_SIZE,
+                        Simulation.MAP_SIZE_Y * Simulation.GRID_SIZE
+                )
         );
 
         this.anim = new AnimationTimer() {
@@ -128,14 +128,14 @@ public final class MapCanvas extends ResizableCanvas {
         this.getGraphicsContext2D().setStroke(Color.BLACK);
 
         for (int i = 0; i <= Simulation.MAP_SIZE_X; i++) {
-            Point verticalStartingPoint = computePointPosition(i * Simulation.GRID_SIZE, 0);
-            Point verticalEndingPoint = computePointPosition(
-                i * Simulation.GRID_SIZE, Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y
+            Point verticalStartingPoint = absToRelPosition(i * Simulation.GRID_SIZE, 0);
+            Point verticalEndingPoint = absToRelPosition(
+                    i * Simulation.GRID_SIZE, Simulation.GRID_SIZE * Simulation.MAP_SIZE_Y
             );
 
-            Point horizontalStartingPoint = computePointPosition(0, i * Simulation.GRID_SIZE);
-            Point horizontalEndingPoint = computePointPosition(
-                Simulation.GRID_SIZE * Simulation.MAP_SIZE_X, i * Simulation.GRID_SIZE
+            Point horizontalStartingPoint = absToRelPosition(0, i * Simulation.GRID_SIZE);
+            Point horizontalEndingPoint = absToRelPosition(
+                    Simulation.GRID_SIZE * Simulation.MAP_SIZE_X, i * Simulation.GRID_SIZE
             );
 
             // draw vertical grids lines
@@ -158,10 +158,26 @@ public final class MapCanvas extends ResizableCanvas {
      * @param y The y coordinate of the point.
      * @return The relative position in a point.
      */
-    private Point computePointPosition(final double x, final double y) {
+    private Point absToRelPosition(final double x, final double y) {
         double zoom = this.camera.getZoom();
         double newX = zoom * (x - this.camera.getX()) + this.getWidth() / 2;
         double newY = -(y - this.camera.getY()) * zoom + this.getHeight() / 2;
+
+        return new Point(newX, newY);
+    }
+
+    /**
+     * Compute the absolute position of a relative point according to the camera
+     * and the map.
+     *
+     * @param x The x coordinate of the relative point.
+     * @param y The y coordinate of the relative point.
+     * @return The absolute position in a point.
+     */
+    private Point relToAbsPosition(final double x, final double y) {
+        double zoom = this.camera.getZoom();
+        double newX = (x - this.getWidth() / 2) / zoom + this.camera.getX();
+        double newY = -(y - this.getHeight() / 2) / zoom + this.camera.getY();
 
         return new Point(newX, newY);
     }
@@ -176,7 +192,7 @@ public final class MapCanvas extends ResizableCanvas {
         final double zoom = camera.getZoom();
         this.getGraphicsContext2D().setFill(entity.getColor());
 
-        Point position = computePointPosition(entity.getBodyCenter().getX(),
+        Point position = absToRelPosition(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY());
 
         this.getGraphicsContext2D().fillOval(
@@ -195,10 +211,10 @@ public final class MapCanvas extends ResizableCanvas {
         this.getGraphicsContext2D().setStroke(Color.HOTPINK);
         for (Line sensor : entity.getSensors()) {
 
-            Point startPoint = computePointPosition(sensor.getStartPoint().getX(),
+            Point startPoint = absToRelPosition(sensor.getStartPoint().getX(),
                     sensor.getStartPoint().getY());
 
-            Point endPoint = computePointPosition(sensor.getEndPoint().getX(),
+            Point endPoint = absToRelPosition(sensor.getEndPoint().getX(),
                     sensor.getEndPoint().getY());
 
             this.getGraphicsContext2D().strokeLine(
@@ -215,6 +231,7 @@ public final class MapCanvas extends ResizableCanvas {
     public void followEntity(final Entity entity) {
         //Set the camera's position to the entity's position.
         this.camera.setPoint(entity.getBodyCenter());
+        drawEntitySensors(entity);
         autoZoom(1.2d);
     }
 
@@ -270,6 +287,7 @@ public final class MapCanvas extends ResizableCanvas {
 
     /**
      * Attaches a simulation to this map.
+     *
      * @param newSimulation Simulation to be attached.
      */
     public void attach(final Simulation newSimulation) {
@@ -376,14 +394,19 @@ public final class MapCanvas extends ResizableCanvas {
         double x = e.getX();
         double y = e.getY();
 
-        Point abs = this.computePointPosition(x, y);
+        Point abs = this.relToAbsPosition(x, y);
 
         int chunkX = (int) abs.getX() / Simulation.GRID_SIZE;
         int chunkY = (int) abs.getY() / Simulation.GRID_SIZE;
 
-        //print the number of entity in this grid
-        System.out.println("Number of entity in this grid: "
-                + simulation.getEntityGrids()[chunkX][chunkY].get().size());
+        System.out.println("Clicked chunk: " + chunkX + ", " + chunkY);
+
+        for (int i = Simulation.MAP_SIZE_X - 1; i >= 0; i--) {
+            for (int j = 0; j < Simulation.MAP_SIZE_Y; j++) {
+                System.out.print(simulation.getEntityGrids()[j][i].get().size() + " ");
+            }
+            System.out.println();
+        }
 
         if (chunkX < 0 || chunkX >= Simulation.MAP_SIZE_X
                 || chunkY < 0 || chunkY >= Simulation.MAP_SIZE_Y) {

@@ -28,6 +28,7 @@ public final class Predator extends Entity {
                     final long birthTime) {
         super(speed, position, birthTime, Configuration.getConfiguration().getPredatorViewAngle(),
                 rotationAngleInRadians, Color.RED);
+        this.setEnergy(1);
     }
 
     /**
@@ -39,8 +40,8 @@ public final class Predator extends Entity {
      */
     @Override
     public void onUpdate() {
-        this.setEnergy(Math.max(0, this.getEnergy() - Configuration.getConfiguration()
-                .getPredatorEnergyBaseDrainingSpeed()));
+        this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
+                .getPredatorEnergyBaseDrainingSpeed());
 
         if (this.getEnergy() <= 0) {
             this.setDead(true);
