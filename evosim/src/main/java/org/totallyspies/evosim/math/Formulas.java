@@ -1,9 +1,5 @@
 package org.totallyspies.evosim.math;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 
@@ -15,7 +11,7 @@ import java.util.function.Function;
  *
  * @author EnYi
  */
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({"checkstyle:HideUtilityClassConstructor", "checkstyle:MagicNumber"})
 public final class Formulas {
 
     /**

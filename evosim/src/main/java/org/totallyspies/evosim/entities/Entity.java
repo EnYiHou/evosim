@@ -1,12 +1,14 @@
 package org.totallyspies.evosim.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import javafx.scene.paint.Color;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -36,7 +38,23 @@ import java.util.List;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@SuppressWarnings({"checkstyle:ParameterNumber"})
 public abstract class Entity {
+
+    /**
+     * Number of nodes on the second layer.
+     */
+    private static final int SECOND_LAYER_NODES_NUMBER = 10;
+
+    /**
+     * Number of nodes on the third layer.
+     */
+    private static final int THIRD_LAYER_NODES_NUMBER = 2;
+
+    /**
+     * In order to convert MILLISECONDS_TO_SECONDS.
+     */
+    private static final double SECONDS_TO_MILLISECONDS = 1000d;
 
     /**
      * An array of sensors represented by custom Line objects.
@@ -168,7 +186,8 @@ public abstract class Entity {
         int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
 
         // initialize neural network
-        this.brain = new NeuralNetwork(List.of(sensorCount, 10, 2));
+        this.brain = new NeuralNetwork(
+                List.of(sensorCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
 
         // initialize sensors
         this.sensors = new Line[sensorCount];
@@ -182,48 +201,48 @@ public abstract class Entity {
 
     /**
      * Construct a new entity from a JSON.
-     * @param speed                     The speed of entity.
-     * @param fovAngleInDegrees         The angle in degrees of entity.
-     * @param directionAngleInRadians   The direction angle in radians of entity.
-     * @param color                     The color of entity.
-     * @param sensors                   The sensors of entity.
-     * @param sensorsData               The sensors data of entity.
-     * @param body                      The body of entity.
-     * @param dead                      If dead of the entity.
-     * @param split                     The split energy of entity.
-     * @param brain                     The brain of entity.
-     * @param energy                    The energy of entity.
-     * @param splitEnergy               The split energy of entity.
-     * @param childCount                The child count of entity.
+     * @param newSpeed                     The speed of entity.
+     * @param newFovAngleInDegrees         The angle in degrees of entity.
+     * @param newDirectionAngleInRadians   The direction angle in radians of entity.
+     * @param newColor                     The color of entity.
+     * @param newSensors                   The sensors of entity.
+     * @param newSensorsData               The sensors data of entity.
+     * @param newBody                      The body of entity.
+     * @param newDead                      If dead of the entity.
+     * @param newSplit                     The split energy of entity.
+     * @param newBrain                     The brain of entity.
+     * @param newEnergy                    The energy of entity.
+     * @param newSplitEnergy               The split energy of entity.
+     * @param newChildCount                The child count of entity.
      */
     protected Entity(
-            final double speed,
-            final double fovAngleInDegrees,
-            final double directionAngleInRadians,
-            final Color color,
-            final Line[] sensors,
-            final double[] sensorsData,
-            final Circle body,
-            final boolean dead,
-            final boolean split,
-            final NeuralNetwork brain,
-            final double energy,
-            final double splitEnergy,
-            final int childCount) {
+            final double newSpeed,
+            final double newFovAngleInDegrees,
+            final double newDirectionAngleInRadians,
+            final Color newColor,
+            final Line[] newSensors,
+            final double[] newSensorsData,
+            final Circle newBody,
+            final boolean newDead,
+            final boolean newSplit,
+            final NeuralNetwork newBrain,
+            final double newEnergy,
+            final double newSplitEnergy,
+            final int newChildCount) {
         this.birthTime = System.currentTimeMillis();
-        this.color = color;
-        this.speed = speed;
-        this.directionAngleInRadians = directionAngleInRadians;
-        this.fovAngleInDegrees = fovAngleInDegrees;
-        this.sensors = sensors;
-        this.sensorsData = sensorsData;
-        this.body = body;
-        this.dead = dead;
-        this.split = split;
-        this.brain = brain;
-        this.energy = energy;
-        this.splitEnergy = splitEnergy;
-        this.childCount = childCount;
+        this.color = newColor;
+        this.speed = newSpeed;
+        this.directionAngleInRadians = newDirectionAngleInRadians;
+        this.fovAngleInDegrees = newFovAngleInDegrees;
+        this.sensors = newSensors;
+        this.sensorsData = newSensorsData;
+        this.body = newBody;
+        this.dead = newDead;
+        this.split = newSplit;
+        this.brain = newBrain;
+        this.energy = newEnergy;
+        this.splitEnergy = newSplitEnergy;
+        this.childCount = newChildCount;
     }
 
     /**
@@ -378,6 +397,6 @@ public abstract class Entity {
      * @return The living time of this entity.
      */
     public final int getLivingTime(final long currentTime) {
-        return (int) ((currentTime - this.birthTime) / 1000d);
+        return (int) ((currentTime - this.birthTime) / SECONDS_TO_MILLISECONDS);
     }
 }

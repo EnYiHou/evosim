@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.fxml;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -26,6 +27,8 @@ import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.utils.Configuration;
@@ -42,6 +45,26 @@ public final class MainController {
      * Max chart points.
      */
     private static final int MAX_CHART_POINTS = 10;
+
+    /**
+     * One seconds in milliseconds.
+     */
+    private static final long ONE_SECOND_IN_MILLISECONDS = 1000;
+
+    /**
+     * One decisecond in milliseconds.
+     */
+    private static final long ONE_DECISECOND_IN_MILLISECONDS = 100;
+
+    /**
+     * Maximum opacity of WASD keys.
+     */
+    private static final double MAX_OPACITY = 1d;
+
+    /**
+     * Minimum opacity of WASD keys.
+     */
+    private static final double MIN_OPACITY = 0.55;
 
     /**
      * FXML reference to the map where simulation is rendered.
@@ -169,11 +192,6 @@ public final class MainController {
     private Timeline timerTimeLine;
 
     /**
-     * The simulation to be rendered.
-     */
-    private Simulation simulation;
-
-    /**
      *  In order to explore the user's files.
      */
     private FileChooser fileChooser;
@@ -206,8 +224,7 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws IOException {
-        this.simulation = new Simulation(true);
-        this.mapCanvas.attach(simulation);
+        this.newDefaultSimulation();
 
         this.setPlayPauseButtons();
         this.setTimer();
@@ -222,6 +239,10 @@ public final class MainController {
 
         this.setupSavingDirectory();
 
+    }
+
+    private void newDefaultSimulation() {
+        this.mapCanvas.attach(new Simulation(true));
     }
 
     /**
@@ -242,9 +263,10 @@ public final class MainController {
     private void clickOnSave(final ActionEvent event) throws IOException {
         if (configurationFile == null) {
             fileChooser.setTitle("Save Configuration");
-            configurationFile = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
+            configurationFile = fileChooser
+                    .showSaveDialog(EvosimApplication.getApplication().getStage());
         }
-        if(configurationFile != null) {
+        if (configurationFile != null) {
             configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
     }
@@ -257,8 +279,9 @@ public final class MainController {
     @FXML
     private void clickOnSaveAs(final ActionEvent event) throws IOException {
         fileChooser.setTitle("Save Configuration");
-        configurationFile = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
-        if(configurationFile != null) {
+        configurationFile = fileChooser
+                .showSaveDialog(EvosimApplication.getApplication().getStage());
+        if (configurationFile != null) {
             configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
     }
@@ -274,7 +297,7 @@ public final class MainController {
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
 
         if (file != null) {
-            configuration.loadFile(file);
+            newSimulation(configuration.loadFile(file));
             System.out.println(configuration.toString());
         } else {
             System.out.println("File doesn't exist or is not JSON.");
@@ -282,13 +305,19 @@ public final class MainController {
 
     }
 
+    private void newSimulation(final List<Entity> entityList) {
+        Simulation simulation = new Simulation(false);
+        entityList.forEach(simulation::addEntity);
+        mapCanvas.attach(simulation);
+    }
+
     /**
      * Loading the latest configuration.
      * @param event on click
      */
     @FXML
-    private void clickOnLoadLatest(final ActionEvent event) {
-        configuration.loadLastFile();
+    private void clickOnLoadLatest(final ActionEvent event) throws JsonProcessingException {
+        this.newSimulation(configuration.loadLastFile());
         System.out.println(configuration.toString());
     }
 
@@ -298,7 +327,8 @@ public final class MainController {
      */
     @FXML
     private void clickOnLoadDefault(final ActionEvent event) {
-        configuration.loadDefaultFileAndSetup();
+        configuration.restoreToDefaults();
+        this.newDefaultSimulation();
         System.out.println(configuration.toString());
     }
 
@@ -332,12 +362,13 @@ public final class MainController {
         Thread tread =  new Thread(() -> {
             MapCanvas.getPRESSED_KEYS().add(KeyCode.B);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             MapCanvas.getPRESSED_KEYS().remove(KeyCode.B);
         });
+        tread.start();
     }
 
     /**
@@ -379,7 +410,7 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         this.fileChooser.setInitialDirectory(
                 new File(evosimDir));
-        this.configuration.saveLatestConfiguration(simulation);
+        this.configuration.saveLatestConfiguration(this.mapCanvas.getSimulation());
     }
 
     /**
@@ -434,29 +465,32 @@ public final class MainController {
                                 timerProperty.getValue().toMinutesPart(),
                                 timerProperty.getValue().toSecondsPart()),
                         this.timerProperty));
-        this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(Duration.millis(100), e -> {
-            this.timerProperty.set(this.timerProperty.get().plusMillis(100));
+        this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
+                Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
+            this.timerProperty.set(
+                    this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
 
             XYChart.Series<String, Number> totalPopulationChartSeries;
             totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
                     .getData().get(0);
             totalPopulationChartSeries.getData().add(
                     new XYChart.Data<>(counter.toString(),
-                            this.simulation.getPreyCount() + this.simulation.getPredatorCount()));
+                            this.mapCanvas.getSimulation().getPreyCount()
+                                    + this.mapCanvas.getSimulation().getPredatorCount()));
 
             XYChart.Series<String, Number> preyPopulationChartSeries;
             preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
                     .getData().get(0);
             preyPopulationChartSeries.getData().add(
                     new XYChart.Data<>(
-                            counter.toString(), this.simulation.getPreyCount()));
+                            counter.toString(), this.mapCanvas.getSimulation().getPreyCount()));
 
             XYChart.Series<String, Number> predatorPopulationChartSeries;
             predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
                     .getData().get(0);
             predatorPopulationChartSeries.getData().add(
                     new XYChart.Data<>(counter.toString(),
-                            this.simulation.getPredatorCount()));
+                            this.mapCanvas.getSimulation().getPredatorCount()));
 
             livingTimeLabel.setText(
                     String.format("Living Time: %d s",
@@ -487,13 +521,13 @@ public final class MainController {
      */
     private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
-            this.simulation.playUpdate();
+            this.mapCanvas.getSimulation().playUpdate();
             this.playBtn.setDisable(true);
             this.pauseBtn.setDisable(false);
             this.timerTimeLine.play();
         });
         this.pauseBtn.setOnAction(e -> {
-            this.simulation.pauseUpdate();
+            this.mapCanvas.getSimulation().pauseUpdate();
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();
@@ -519,19 +553,14 @@ public final class MainController {
      */
     private void changeOpacityWASD(final KeyCode keyCode, final boolean darkerOpacity) {
 
-        double opacityPercentage = darkerOpacity ? 1d : 0.55d;
+        double opacityPercentage = darkerOpacity ? MAX_OPACITY : MIN_OPACITY;
 
-        if (keyCode == KeyCode.W) {
-            wKey.setOpacity(opacityPercentage);
-        }
-        if (keyCode == KeyCode.A) {
-            aKey.setOpacity(opacityPercentage);
-        }
-        if (keyCode == KeyCode.S) {
-            sKey.setOpacity(opacityPercentage);
-        }
-        if (keyCode == KeyCode.D) {
-            dKey.setOpacity(opacityPercentage);
+        switch (keyCode) {
+            case W -> wKey.setOpacity(opacityPercentage);
+            case A -> aKey.setOpacity(opacityPercentage);
+            case S -> sKey.setOpacity(opacityPercentage);
+            case D -> dKey.setOpacity(opacityPercentage);
+            default -> { }
         }
     }
 

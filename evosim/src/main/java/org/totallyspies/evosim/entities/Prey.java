@@ -3,7 +3,6 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
-import lombok.ToString;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -18,6 +17,7 @@ import org.totallyspies.evosim.geometry.Point;
  *
  * @author EnYi, Matthew
  */
+@SuppressWarnings({"checkstyle:ParameterNumber"})
 public final class Prey extends Entity {
 
     /**

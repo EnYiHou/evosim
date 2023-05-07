@@ -1,16 +1,8 @@
 package org.totallyspies.evosim.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.scene.paint.Color;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -25,6 +17,7 @@ import org.totallyspies.evosim.geometry.Point;
  *
  * @author EnYi, Matthew
  */
+@SuppressWarnings({"checkstyle:ParameterNumber"})
 public final class Predator extends Entity {
 
     /**

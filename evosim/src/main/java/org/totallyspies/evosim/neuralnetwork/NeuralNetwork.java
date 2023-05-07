@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
@@ -148,7 +149,7 @@ public class NeuralNetwork {
      * @return The neural network containing the given neurons.
      */
     @JsonCreator
-    public static NeuralNetwork fromNeurons(List<List<Neuron>> neurons) {
+    public static NeuralNetwork fromNeurons(final List<List<Neuron>> neurons) {
         NeuralNetwork nn = new NeuralNetwork();
         nn.neuronLayers = neurons;
         return nn;

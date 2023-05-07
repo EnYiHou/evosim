@@ -6,7 +6,8 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
@@ -65,12 +66,12 @@ public final class Neuron {
    * Creates a Neuron with a randomly generated bias.
    *
    * @param inputs                the inputs that feed the neuron
-   * @param activationFunctionIndex the function index to initialize the value
+   * @param newActivationFunctionIndex the function index to initialize the value
    * @param randomizeWeights      if weight should be randomized
    */
   public Neuron(
       final int inputs,
-      final int activationFunctionIndex,
+      final int newActivationFunctionIndex,
       final boolean randomizeWeights
   ) {
     this.bias = Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX);
@@ -82,9 +83,9 @@ public final class Neuron {
           : 1;
     }
 
-    this.activationFunctionIndex = activationFunctionIndex;
+    this.activationFunctionIndex = newActivationFunctionIndex;
 
-    this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(activationFunctionIndex);
+    this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(newActivationFunctionIndex);
   }
 
   /**

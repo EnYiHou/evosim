@@ -203,8 +203,9 @@ public final class Configuration {
 
     /**
      * Saves the default files that the user didn't have time to save.
+     * @param simulation The simulati
      */
-    public void saveLatestConfiguration(Simulation simulation) throws IOException {
+    public void saveLatestConfiguration(final Simulation simulation) throws IOException {
         saveConfiguration(Defaults.LATEST_CONFIGURATION, simulation);
     }
 
@@ -212,8 +213,10 @@ public final class Configuration {
      * Saves a Configuration file in the temporary files of the user's computer.
      *
      * @param jsonFile location of the new file place.
+     * @param simulation simulation used.
      */
-    public void saveConfiguration(final File jsonFile, final Simulation simulation) throws IOException {
+    public void saveConfiguration(
+            final File jsonFile, final Simulation simulation) throws IOException {
         JSONObject jsonText = getJSONObject(simulation);
 
         if (jsonFile.exists()) {
@@ -226,30 +229,21 @@ public final class Configuration {
     }
 
     /**
-     * Render the default configuration.
-     */
-    public void loadDefaultFileAndSetup() {
-        restoreToDefaults();
-    }
-
-    /**
      * Render the last configuration the user used before closing the
      * application.
+     * @return entity list saved.
      */
-    public void loadLastFile() {
-        try {
-            loadFile(Defaults.LATEST_CONFIGURATION);
-        } catch (Exception e) {
-            System.out.println("Last Configuration doesn't exists yet.");
-        }
+    public List<Entity> loadLastFile() throws JsonProcessingException {
+        return loadFile(Defaults.LATEST_CONFIGURATION);
     }
 
     /**
      * Get a saved configuration in the temp file.
      *
      * @param jsonFile file we want to load.
+     * @return entity list
      */
-    public void loadFile(final File jsonFile) throws JsonProcessingException {
+    public List<Entity> loadFile(final File jsonFile) throws JsonProcessingException {
         JSONObject jsonGlobal = loadSavedFile(jsonFile);
 
         JSONObject jsonConfiguration = jsonGlobal.getJSONObject("configuration");
@@ -258,8 +252,7 @@ public final class Configuration {
         }
 
         JSONArray jsonEntities = jsonGlobal.getJSONArray("entities");
-        loadEntities(jsonEntities);
-
+        return loadEntities(jsonEntities);
     }
 
     /**
@@ -294,19 +287,21 @@ public final class Configuration {
         keys.forEach((key) -> this.variables.replace(key, jsonConfiguration.getNumber(key)));
     }
 
-    private void loadEntities(final JSONArray jsonEntities) throws JsonProcessingException {
-        List<Entity> entities = mapper.readValue(jsonEntities.toString(), new TypeReference<>(){});
+    private List<Entity> loadEntities(final JSONArray jsonEntities) throws JsonProcessingException {
+        List<Entity> entities = mapper
+                .readValue(jsonEntities.toString(), new TypeReference<>() { });
         System.out.println(entities);
-        Simulation simulation = new Simulation(false);
-        entities.forEach(simulation::addEntity);
+        return entities;
     }
 
     /**
      * Makes a JSONObject, and put all the Configuration variables into it.
      *
+     * @param simulation simulation used by MapCanvas.
      * @return JSONObject with Configuration's variables.
      */
-    private JSONObject getJSONObject(Simulation simulation) throws JsonProcessingException {
+    private JSONObject getJSONObject(
+            final Simulation simulation) throws JsonProcessingException {
         JSONObject jsonObjectGlobal = new JSONObject();
         jsonObjectGlobal.put("configuration", getConfigurationJson());
         jsonObjectGlobal.put("entities", getEntitiesJSON(simulation));
@@ -317,7 +312,8 @@ public final class Configuration {
         return new JSONObject(this.variables);
     }
 
-    private JSONArray getEntitiesJSON(Simulation simulation) throws JsonProcessingException {
+    private JSONArray getEntitiesJSON(
+            final Simulation simulation) throws JsonProcessingException {
         List<Entity> allEntities = new ArrayList<>();
 
         for (int x = 0; x < Simulation.MAP_SIZE_X; x++) {
@@ -325,12 +321,13 @@ public final class Configuration {
                 simulation.forEachGridEntities(x, y, allEntities::add);
             }
         }
-        String allEntitiesTxt = mapper.writerFor(new TypeReference<List<Entity>>(){}).writeValueAsString(allEntities);
+        String allEntitiesTxt = mapper
+                .writerFor(new TypeReference<List<Entity>>() { }).writeValueAsString(allEntities);
 
         return new JSONArray(allEntitiesTxt);
     }
 
-    private void restoreToDefaults() {
+    public void restoreToDefaults() {
         this.variables = this.defaultsValues;
     }
 
