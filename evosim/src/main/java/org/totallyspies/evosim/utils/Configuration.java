@@ -297,7 +297,8 @@ public final class Configuration {
     private void loadEntities(final JSONArray jsonEntities) throws JsonProcessingException {
         List<Entity> entities = mapper.readValue(jsonEntities.toString(), new TypeReference<>(){});
         System.out.println(entities);
-        Simulation simulation = new Simulation(entities);
+        Simulation simulation = new Simulation(false);
+        entities.forEach(simulation::addEntity);
     }
 
     /**

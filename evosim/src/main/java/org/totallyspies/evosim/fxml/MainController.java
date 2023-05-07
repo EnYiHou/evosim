@@ -206,7 +206,7 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws IOException {
-        this.simulation = new Simulation();
+        this.simulation = new Simulation(true);
         this.mapCanvas.attach(simulation);
 
         this.setPlayPauseButtons();

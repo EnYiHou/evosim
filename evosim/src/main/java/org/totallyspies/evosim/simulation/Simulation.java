@@ -102,8 +102,9 @@ public final class Simulation {
 
     /**
      * Constructs a new simulation based on the default configuration.
+     * @param shouldPopulate Whether it should populate the entity list with random values.
      */
-    public Simulation() {
+    public Simulation(boolean shouldPopulate) {
         this.entityGrids = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
         this.updateToAdd = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
         this.updateToRemove = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
@@ -121,44 +122,13 @@ public final class Simulation {
             new NamedThreadFactory("collision")
         );
 
-        this.populateEntityList(
-                Configuration.getConfiguration().getPreyInitialPopulation(),
-                Configuration.getConfiguration().getPredatorInitialPopulation()
-        );
-
         this.updateService = Executors.newSingleThreadScheduledExecutor(
             new NamedThreadFactory("update")
         );
 
-        SIMULATIONS.add(this);
-    }
-
-    public Simulation(List<Entity> entities) {
-        this.entityGrids = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToAdd = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToRemove = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-
-        for (int i = 0; i < this.entityGrids.length; ++i) {
-            for (int j = 0; j < this.entityGrids[i].length; ++j) {
-                this.entityGrids[i][j] = new ReadWriteLockedItem<>(new LinkedList<>());
-                this.updateToAdd[i][j] = new ReadWriteLockedItem<>(new LinkedList<>());
-                this.updateToRemove[i][j] = new ReadWriteLockedItem<>(new LinkedList<>());
-            }
+        if (shouldPopulate) {
+            this.defaultPopulateEntityList();
         }
-
-        this.collisionCheckerService = Executors.newFixedThreadPool(
-                12,
-                new NamedThreadFactory("collision")
-        );
-
-        this.populateEntityList(
-                Configuration.getConfiguration().getPreyInitialPopulation(),
-                Configuration.getConfiguration().getPredatorInitialPopulation()
-        );
-
-        this.updateService = Executors.newSingleThreadScheduledExecutor(
-                new NamedThreadFactory("update")
-        );
 
         SIMULATIONS.add(this);
     }
@@ -166,29 +136,12 @@ public final class Simulation {
     /**
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
-     *
-     *
-     * @param initPrey     the initial number of prey spawned
-     * @param initPredator the initial number of predators spawned
      */
-    private void populateEntityList(final int initPrey, final int initPredator) {
+    private void defaultPopulateEntityList() {
         final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
         final double minSpeed = Configuration.getConfiguration().getEntityMinSpeed();
-
-        final Consumer<Entity> addToGrid = entity -> {
-            final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
-
-            final ReadWriteLockedItem<List<Entity>> chunk =
-                this.entityGrids[coord.getX()][coord.getY()];
-
-            chunk.writeLock().lock();
-            try {
-                chunk.get().add(entity);
-            } finally {
-                chunk.writeLock().unlock();
-            }
-        };
-
+        final int initPrey = Configuration.getConfiguration().getPreyInitialPopulation();
+        final int initPredator = Configuration.getConfiguration().getPredatorInitialPopulation();
 
         for (int i = 0; i < initPrey + initPredator; i++) {
             final double speed = Rng.RNG.nextDouble(minSpeed, maxSpeed);
@@ -198,17 +151,35 @@ public final class Simulation {
             );
 
             final double angle = Rng.RNG.nextDouble(0, 2 * Math.PI);
-            final long startTime = System.currentTimeMillis();
 
             final Entity entity = i < initPrey
-                ? new Prey(speed, spawnPoint, angle, startTime)
-                : new Predator(speed, spawnPoint, angle, startTime);
+                ? new Prey(speed, spawnPoint, angle)
+                : new Predator(speed, spawnPoint, angle);
 
-            addToGrid.accept(entity);
+            this.addEntity(entity);
+        }
+    }
+
+    public void addEntity(final Entity entity) {
+        if (entity instanceof Predator) {
+            ++this.predatorCount;
+        } else if (entity instanceof Prey) {
+            ++this.preyCount;
+        } else {
+            throw new IllegalArgumentException("Unrecognized Entity: " + entity);
         }
 
-        this.preyCount += initPrey;
-        this.predatorCount += initPredator;
+        final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
+
+        final ReadWriteLockedItem<List<Entity>> chunk =
+            this.updateToAdd[coord.getX()][coord.getY()];
+
+        chunk.writeLock().lock();
+        try {
+            chunk.get().add(entity);
+        } finally {
+            chunk.writeLock().unlock();
+        }
     }
 
     private void checkCollisions(final Entity a, final Entity b) {
