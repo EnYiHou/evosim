@@ -361,8 +361,8 @@ public final class Simulation {
      */
     public static Coordinate pointToGridCoord(final Point point) {
         return new Coordinate(
-                (int) (point.getX() / GRID_SIZE) % MAP_SIZE_X,
-                (int) (point.getY() / GRID_SIZE) / MAP_SIZE_Y
+                (int) (point.getX() / GRID_SIZE),
+                (int) (point.getY() / GRID_SIZE)
         );
     }
 
