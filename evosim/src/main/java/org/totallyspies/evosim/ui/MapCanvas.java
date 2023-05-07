@@ -60,7 +60,7 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * The loop updating the focused entities stats on focus.
      */
-    private final AnimationTimer updStat;
+    private final AnimationTimer updSensorsStats;
 
     /**
      * Whether the camera is following an entity or not.
@@ -96,7 +96,7 @@ public final class MapCanvas extends ResizableCanvas {
                 update(now);
             }
         };
-        this.updStat = new AnimationTimer() {
+        this.updSensorsStats = new AnimationTimer() {
             private final MainController controller = MainController.getController();
 
             @Override
@@ -301,16 +301,7 @@ public final class MapCanvas extends ResizableCanvas {
      */
     public void play() {
         if (followingEntity.get()) {
-            this.updStat.start();
-        }
-    }
-
-    /**
-     * Pauses playback of the stat tracker for this MapCanvas.
-     */
-    public void pause() {
-        if (followingEntity.get()) {
-            this.updStat.stop();
+            this.updSensorsStats.start();
         }
     }
 
@@ -437,7 +428,7 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private void trackEntityStats() {
         MainController.getController().getEntityStats().setVisible(true);
-        updStat.start();
+        updSensorsStats.start();
     }
 
     /**
@@ -445,7 +436,7 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private void untrackEntityStats() {
         MainController.getController().getEntityStats().setVisible(false);
-        updStat.stop();
+        updSensorsStats.stop();
     }
 
 }

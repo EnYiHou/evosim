@@ -489,7 +489,6 @@ public final class MainController {
         });
         this.pauseBtn.setOnAction(e -> {
             this.simulation.pauseUpdate();
-            this.mapCanvas.pause();
             this.playBtn.setDisable(false);
             this.pauseBtn.setDisable(true);
             this.timerTimeLine.stop();
