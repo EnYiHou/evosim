@@ -18,14 +18,14 @@ public class ConfigurationTest {
 
   @Test
   public void saveConfiguration() throws IOException {
-    configuration.saveLatestConfiguration();
+    configuration.saveLatestConfiguration(null);
     Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
   public void loadDefaultConfiguration() throws IOException {
-    configuration.saveLatestConfiguration();
-    Configuration.getConfiguration().loadLastConfiguration();
+    configuration.saveLatestConfiguration(null);
+    Configuration.getConfiguration().loadLastFile();
 
     Defaults.LATEST_CONFIGURATION.delete();
   }
@@ -34,7 +34,7 @@ public class ConfigurationTest {
   public void loadLastConfiguration() throws IOException {
     configuration.setEntityMaxSpeed(67d);
     configuration.setPreySplitEnergyFillingSpeed(45d);
-    configuration.saveLatestConfiguration();
+    configuration.saveLatestConfiguration(null);
 
     Defaults.LATEST_CONFIGURATION.delete();
   }
