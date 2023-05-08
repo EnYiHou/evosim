@@ -70,7 +70,6 @@ public final class AboutController {
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
         }
 

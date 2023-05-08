@@ -242,7 +242,12 @@ public final class MainController {
     }
 
     private void newDefaultSimulation() {
-        this.mapCanvas.attach(new Simulation(true));
+        this.mapCanvas.attach(new Simulation(
+            Configuration.getConfiguration().getMapSizeX(),
+            Configuration.getConfiguration().getMapSizeY(),
+            Configuration.getConfiguration().getGridSize(),
+            true
+        ));
     }
 
     /**
@@ -295,13 +300,18 @@ public final class MainController {
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
         if (file != null) {
             newSimulation(configuration.loadFile(file));
-            return;
         }
         playAnimation();
     }
 
     private void newSimulation(final List<Entity> entityList) {
-        Simulation simulation = new Simulation(false);
+        Simulation simulation = new Simulation(
+            Configuration.getConfiguration().getMapSizeX(),
+            Configuration.getConfiguration().getMapSizeY(),
+            Configuration.getConfiguration().getGridSize(),
+            false
+        );
+
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
     }
@@ -536,7 +546,9 @@ public final class MainController {
      */
     private void setChosenEntityProperty() {
         this.chosenEntityProperty = new SimpleObjectProperty<>();
+        //TODO: Make it null and working
         this.chosenEntityProperty.set(new Predator(
+                null,
                 1,
                 new Point(0, 0),
                 1)

@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.simulation;
 
 import java.util.LinkedList;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,19 +35,22 @@ public final class Simulation {
     private static final long UPDATE_INTERVAL_NANO = 16666666;
 
     /**
-     * The width of the whole map.
+     * X map size of this simulation.
      */
-    public static final int MAP_SIZE_X = 20;
+    @Getter
+    private final int mapSizeX;
 
     /**
-     * The height of the whole map.
+     * Y map size of this simulation.
      */
-    public static final int MAP_SIZE_Y = 20;
+    @Getter
+    private final int mapSizeY;
 
     /**
-     * The x and y size of a single grid.
+     * Grid size of this simulation.
      */
-    public static final int GRID_SIZE = 250;
+    @Getter
+    private final int gridSize;
 
     /**
      * Number of collision threads to create.
@@ -100,13 +102,25 @@ public final class Simulation {
     private final ExecutorService collisionCheckerService;
 
     /**
-     * Constructs a new simulation based on the default configuration.
-     * @param shouldPopulate Whether it should populate the entity list with random values.
+     * Constructs a new simulation with given size.
+     * @param newMapSizeX X map size to use for the simulation.
+     * @param newMapSizeY Y map size to use for the simulation.
+     * @param newGridSize Grid size to use for the simulation.
+     * @param shouldPopulate Whether the simulation should be initialized with random values.
      */
-    public Simulation(final boolean shouldPopulate) {
-        this.entityGrids = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToAdd = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
-        this.updateToRemove = new ReadWriteLockedItem[MAP_SIZE_X][MAP_SIZE_Y];
+    public Simulation(
+        final int newMapSizeX,
+        final int newMapSizeY,
+        final int newGridSize,
+        final boolean shouldPopulate
+    ) {
+        this.mapSizeX = newMapSizeX;
+        this.mapSizeY = newMapSizeY;
+        this.gridSize = newGridSize;
+
+        this.entityGrids = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
+        this.updateToAdd = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
+        this.updateToRemove = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
 
         for (int i = 0; i < this.entityGrids.length; ++i) {
             for (int j = 0; j < this.entityGrids[i].length; ++j) {
@@ -145,15 +159,15 @@ public final class Simulation {
         for (int i = 0; i < initPrey + initPredator; i++) {
             final double speed = Rng.RNG.nextDouble(minSpeed, maxSpeed);
             final Point spawnPoint = new Point(
-                Rng.RNG.nextDouble(0, MAP_SIZE_X * GRID_SIZE),
-                Rng.RNG.nextDouble(0, MAP_SIZE_Y * GRID_SIZE)
+                Rng.RNG.nextDouble(0, this.mapSizeX * this.gridSize),
+                Rng.RNG.nextDouble(0, this.mapSizeY * this.gridSize)
             );
 
             final double angle = Rng.RNG.nextDouble(0, 2 * Math.PI);
 
             final Entity entity = i < initPrey
-                ? new Prey(speed, spawnPoint, angle)
-                : new Predator(speed, spawnPoint, angle);
+                ? new Prey(this, speed, spawnPoint, angle)
+                : new Predator(this, speed, spawnPoint, angle);
 
             this.addEntity(entity);
         }
@@ -164,6 +178,7 @@ public final class Simulation {
      * @param entity The entity to be added
      */
     public void addEntity(final Entity entity) {
+        entity.setSimulation(this);
         if (entity instanceof Predator) {
             ++this.predatorCount;
         } else if (entity instanceof Prey) {
@@ -193,11 +208,11 @@ public final class Simulation {
     }
 
     private void update() {
-        IntStream.range(0, MAP_SIZE_X * MAP_SIZE_Y).parallel().forEach(
+        IntStream.range(0, this.mapSizeX * this.mapSizeY).forEach(
             (chunkIndex) -> {
                 final Coordinate chunkCoord = new Coordinate(
-                    chunkIndex % MAP_SIZE_X,
-                    chunkIndex / MAP_SIZE_X
+                    chunkIndex % this.mapSizeX,
+                    chunkIndex / this.mapSizeX
                 );
 
                 final ReadWriteLockedItem<List<Entity>> chunk =
@@ -212,6 +227,7 @@ public final class Simulation {
                         final Coordinate oldCoord = pointToGridCoord(entity.getBodyCenter());
 
                         entity.update();
+
                         if (entity.isDead()) {
                             if (entity instanceof Prey) {
                                 --this.preyCount;
@@ -231,24 +247,37 @@ public final class Simulation {
 
                             return;
                         } else if (entity.isSplit()) {
-                            final ReadWriteLockedItem<List<Entity>> chk =
-                                    this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
+                            if (
+                                (
+                                    entity instanceof Prey
+                                    && this.preyCount
+                                        < Configuration.getConfiguration().getPreyMaxNumber()
+                                )
+                                || (
+                                    entity instanceof Predator
+                                        && this.predatorCount
+                                        < Configuration.getConfiguration().getPredatorMaxNumber()
+                                )
+                            ) {
+                                final ReadWriteLockedItem<List<Entity>> chk =
+                                        this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
 
-                            chk.writeLock().lock();
-                            try {
-                                chk.get().add(entity.clone());
-                            } finally {
-                                chk.writeLock().unlock();
-                            }
+                                chk.writeLock().lock();
+                                try {
+                                    chk.get().add(entity.clone());
+                                } finally {
+                                    chk.writeLock().unlock();
+                                }
 
-                            entity.setSplitEnergy(0);
-                            entity.setChildCount(entity.getChildCount() + 1);
-                            entity.setSplit(false);
+                                entity.setSplitEnergy(0);
+                                entity.setChildCount(entity.getChildCount() + 1);
+                                entity.setSplit(false);
 
-                            if (entity instanceof Prey) {
-                                ++this.preyCount;
-                            } else if (entity instanceof Predator) {
-                                ++this.predatorCount;
+                                if (entity instanceof Prey) {
+                                    ++this.preyCount;
+                                } else {
+                                    ++this.predatorCount;
+                                }
                             }
                         }
 
@@ -256,7 +285,10 @@ public final class Simulation {
 
                         if (!curCoord.equals(oldCoord)) {
                             final ReadWriteLockedItem<List<Entity>> chkFrom =
-                                    this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
+                                this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
+
+                            final ReadWriteLockedItem<List<Entity>> chkTo =
+                                this.updateToAdd[curCoord.getX()][curCoord.getY()];
 
                             chkFrom.writeLock().lock();
                             try {
@@ -264,9 +296,6 @@ public final class Simulation {
                             } finally {
                                 chkFrom.writeLock().unlock();
                             }
-
-                            final ReadWriteLockedItem<List<Entity>> chkTo =
-                                    this.updateToAdd[curCoord.getX()][curCoord.getY()];
 
                             chkTo.writeLock().lock();
                             try {
@@ -276,15 +305,7 @@ public final class Simulation {
                             }
                         }
 
-                        IntStream.range(i + 1, entityCount).parallel().forEach(
-                                (j) -> {
-                                    final Entity other = chunk.get().get(j);
-
-                                    this.collisionCheckerService.execute(
-                                        () -> this.checkCollisions(entity, other)
-                                    );
-                                }
-                        );
+                        this.collisionCheckerService.execute(this.submitCollisionWork(entity));
                     });
                 } finally {
                     chunk.readLock().unlock();
@@ -292,8 +313,8 @@ public final class Simulation {
             }
         );
 
-        for (int i = 0; i < MAP_SIZE_X; ++i) {
-            for (int j = 0; j < MAP_SIZE_Y; ++j) {
+        for (int i = 0; i < this.mapSizeX; ++i) {
+            for (int j = 0; j < this.mapSizeY; ++j) {
                 final ReadWriteLockedItem<List<Entity>> chunk = this.entityGrids[i][j];
                 final ReadWriteLockedItem<List<Entity>> toRemove = this.updateToRemove[i][j];
                 final ReadWriteLockedItem<List<Entity>> toAdd = this.updateToAdd[i][j];
@@ -346,11 +367,30 @@ public final class Simulation {
      * @param point The point to check
      * @return If the point is in the map
      */
-    public static boolean isPointValid(final Point point) {
+    public boolean isPointValid(final Point point) {
         return (
-            0 <= point.getX() && point.getX() < Simulation.MAP_SIZE_X * GRID_SIZE
-            && 0 <= point.getY() && point.getY() < Simulation.MAP_SIZE_Y * GRID_SIZE
+            0 <= point.getX() && point.getX() < this.mapSizeX * this.gridSize
+            && 0 <= point.getY() && point.getY() < this.mapSizeY * this.gridSize
         );
+    }
+
+    /**
+     * Verifies if a given grid coordinate is valid.
+     * @param x The x component of the coordinate to validate
+     * @param y The y component of the coordinate to validate
+     * @return Whether it is valid
+     */
+    public boolean isCoordValid(final int x, final int y) {
+        return 0 <= x && x < this.mapSizeX && 0 <= y && y < this.mapSizeY;
+    }
+
+    /**
+     * Verifies if a given grid coordinate is valid.
+     * @param coord The coordinate to validate
+     * @return Whether it is valid
+     */
+    public boolean isCoordValid(final Coordinate coord) {
+        return isCoordValid(coord.getX(), coord.getY());
     }
 
     /**
@@ -358,10 +398,10 @@ public final class Simulation {
      * @param point THe point to be converted.
      * @return The coordinate of the grid containing the point.
      */
-    public static Coordinate pointToGridCoord(final Point point) {
+    public Coordinate pointToGridCoord(final Point point) {
         return new Coordinate(
-            (int) (point.getX() / GRID_SIZE) % MAP_SIZE_X,
-            (int) (point.getY() / GRID_SIZE) / MAP_SIZE_Y
+            Math.min((int) (point.getX() / this.gridSize), this.mapSizeX - 1),
+            Math.min((int) (point.getY() / this.gridSize), this.mapSizeY - 1)
         );
     }
 
@@ -403,5 +443,21 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
+    }
+
+    private Runnable submitCollisionWork(final Entity entity) {
+        return () -> {
+            final Coordinate center = this.pointToGridCoord(entity.getBodyCenter());
+
+            for (int x = center.getX() - 1; x <= center.getX() + 1; ++x) {
+                for (int y = center.getY() - 1; y <= center.getY() + 1; ++y) {
+                    if (!isCoordValid(x, y)) {
+                        continue;
+                    }
+
+                    this.forEachGridEntities(x, y, other -> this.checkCollisions(entity, other));
+                }
+            }
+        };
     }
 }
