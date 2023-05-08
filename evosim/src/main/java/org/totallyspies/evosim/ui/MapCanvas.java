@@ -316,15 +316,15 @@ public final class MapCanvas extends ResizableCanvas {
         //TODO: Follow closest sensor. Assignee: ptrstr
         this.getGraphicsContext2D().setFill(Color.BLACK);
         this.getGraphicsContext2D().fillOval(
-            leftEyePosition.getX(),
-            leftEyePosition.getY(),
+            leftEyePosition.getX() + eyeRadius/2 * zoom,
+            leftEyePosition.getY() + eyeRadius/2 * zoom,
             eyeRadius * zoom,
             eyeRadius * zoom
         );
 
         this.getGraphicsContext2D().fillOval(
-            rightEyePosition.getX(),
-            rightEyePosition.getY(),
+            rightEyePosition.getX() + eyeRadius/2 * zoom,
+            rightEyePosition.getY() + eyeRadius/2 * zoom,
             eyeRadius * zoom,
             eyeRadius * zoom
         );
