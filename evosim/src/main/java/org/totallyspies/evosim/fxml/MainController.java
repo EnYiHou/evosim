@@ -257,10 +257,9 @@ public final class MainController {
     /**
      * Saving a configuration with the menu bar.
      * @param event on click
-     * @throws IOException
      */
     @FXML
-    private void clickOnSave(final ActionEvent event) throws ConfigurationException {
+    private void clickOnSave(final ActionEvent event) {
         pauseAnimation();
         if (configurationFile == null) {
             fileChooser.setTitle("Save Configuration");
@@ -272,7 +271,6 @@ public final class MainController {
     /**
      * Saving as a configuration with the menu bar.
      * @param event on click
-     * @throws IOException
      */
     @FXML
     private void clickOnSaveAs(final ActionEvent event) throws ConfigurationException {
@@ -289,14 +287,17 @@ public final class MainController {
     /**
      * Loading the configuration.
      * @param event on click
-     * @throws IOException
      */
     @FXML
     private void clickOnLoad(final ActionEvent event) throws ConfigurationException {
         pauseAnimation();
         fileChooser.setTitle("Load Configuration");
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
-        newSimulation(configuration.loadFile(file));
+        if (file != null) {
+            newSimulation(configuration.loadFile(file));
+            return;
+        }
+        playAnimation();
     }
 
     private void newSimulation(final List<Entity> entityList) {
