@@ -1,6 +1,5 @@
 package org.totallyspies.evosim.utils;
 
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.totallyspies.evosim.utils.Configuration.Defaults;
 
@@ -11,7 +10,9 @@ import org.totallyspies.evosim.utils.Configuration.Defaults;
  */
 @SuppressWarnings({
         "checkstyle:JavadocVariable",
-        "checkstyle:MissingJavadocMethod"})
+        "checkstyle:MissingJavadocMethod",
+        "checkstyle:MagicNumber"
+})
 public class ConfigurationTest {
 
   private Configuration configuration = Configuration.getConfiguration();
