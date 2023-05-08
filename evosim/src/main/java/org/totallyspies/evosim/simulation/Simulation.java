@@ -15,6 +15,7 @@ import org.totallyspies.evosim.entities.Predator;
 import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.NamedThreadFactory;
 import org.totallyspies.evosim.utils.ReadWriteLockedItem;
@@ -29,23 +30,9 @@ import java.util.List;
 public final class Simulation {
 
     /**
-     * List of all simulation created until now to shutdown cleanly.
-     */
-    private static final LinkedList<Simulation> SIMULATIONS = new LinkedList<>();
-
-    /**
      * Nanoseconds to wait between each update. Defaults to 60 per second.
      */
     private static final long UPDATE_INTERVAL_NANO = 16666666;
-
-    /**
-     * Shuts down all instantiated simulations.
-     */
-    public static void shutdownAll() {
-        while (SIMULATIONS.size() != 0) {
-            SIMULATIONS.getFirst().shutdown();
-        }
-    }
 
     /**
      * X map size of this simulation.
@@ -156,7 +143,7 @@ public final class Simulation {
             this.defaultPopulateEntityList();
         }
 
-        SIMULATIONS.add(this);
+        EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
     /**
@@ -456,8 +443,6 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
-
-        SIMULATIONS.remove(this);
     }
 
     private Runnable submitCollisionWork(final Entity entity) {

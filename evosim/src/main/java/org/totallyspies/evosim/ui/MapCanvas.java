@@ -246,7 +246,7 @@ public final class MapCanvas extends ResizableCanvas {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    return;
                 }
             }
         });
@@ -275,7 +275,6 @@ public final class MapCanvas extends ResizableCanvas {
         }
 
         this.simulation = newSimulation;
-        this.simulation.playUpdate();
 
         this.camera = new Camera(
             new Point(0, 0),

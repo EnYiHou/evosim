@@ -1,11 +1,8 @@
 package org.totallyspies.evosim.fxml;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.shape.Rectangle;
@@ -29,9 +26,10 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.utils.Configuration;
+import org.totallyspies.evosim.utils.ConfigurationException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -218,6 +216,7 @@ public final class MainController {
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getConfiguration();
         isSaved = false;
+        EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
     /**
@@ -239,6 +238,7 @@ public final class MainController {
 
         this.setupSavingDirectory();
 
+        playAnimation();
     }
 
     private void newDefaultSimulation() {
@@ -262,51 +262,46 @@ public final class MainController {
     /**
      * Saving a configuration with the menu bar.
      * @param event on click
-     * @throws IOException
      */
     @FXML
-    private void clickOnSave(final ActionEvent event) throws IOException {
+    private void clickOnSave(final ActionEvent event) {
+        pauseAnimation();
         if (configurationFile == null) {
             fileChooser.setTitle("Save Configuration");
             configurationFile = fileChooser
                     .showSaveDialog(EvosimApplication.getApplication().getStage());
-        }
-        if (configurationFile != null) {
-            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
     }
 
     /**
      * Saving as a configuration with the menu bar.
      * @param event on click
-     * @throws IOException
      */
     @FXML
-    private void clickOnSaveAs(final ActionEvent event) throws IOException {
+    private void clickOnSaveAs(final ActionEvent event) throws ConfigurationException {
+        pauseAnimation();
         fileChooser.setTitle("Save Configuration");
         configurationFile = fileChooser
                 .showSaveDialog(EvosimApplication.getApplication().getStage());
         if (configurationFile != null) {
             configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
+        playAnimation();
     }
 
     /**
      * Loading the configuration.
      * @param event on click
-     * @throws IOException
      */
     @FXML
-    private void clickOnLoad(final ActionEvent event) throws IOException {
+    private void clickOnLoad(final ActionEvent event) throws ConfigurationException {
+        pauseAnimation();
         fileChooser.setTitle("Load Configuration");
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
-
         if (file != null) {
             newSimulation(configuration.loadFile(file));
-        } else {
-            System.out.println("File doesn't exist or is not JSON.");
         }
-
+        playAnimation();
     }
 
     private void newSimulation(final List<Entity> entityList) {
@@ -326,7 +321,8 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoadLatest(final ActionEvent event) throws JsonProcessingException {
+    private void clickOnLoadLatest(final ActionEvent event) throws ConfigurationException {
+        pauseAnimation();
         this.newSimulation(configuration.loadLastFile());
     }
 
@@ -336,6 +332,7 @@ public final class MainController {
      */
     @FXML
     private void clickOnLoadDefault(final ActionEvent event) {
+        pauseAnimation();
         configuration.restoreToDefaults();
         this.newDefaultSimulation();
     }
@@ -345,20 +342,17 @@ public final class MainController {
      * @param event
      */
     @FXML
-    private void clickOnExit(final ActionEvent event) throws IOException {
-        Alert confirmation = new Alert(
-                Alert.AlertType.CONFIRMATION,
-                "Are you sure you'd like to exit Evosim?",
-                ButtonType.YES,
-                ButtonType.NO
-        );
+    private void clickOnExit(final ActionEvent event) {
+        EvosimApplication.getApplication().requestExit(null);
+    }
 
-        Optional<ButtonType> selection = confirmation.showAndWait();
-        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
-            confirmation.close();
-        } else if (selection.get() == ButtonType.YES) {
-            System.out.println("Shutting down application...");
-            EvosimApplication.getApplication().getStage().close();
+    private void shutdown() {
+        try {
+            pauseAnimation();
+            Configuration
+                    .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -418,14 +412,12 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         this.fileChooser.setInitialDirectory(
                 new File(evosimDir));
-        this.configuration.saveLatestConfiguration(this.mapCanvas.getSimulation());
     }
 
     /**
      * Sets the play and pause buttons.
      */
     private void setEntityInfoTab() {
-
         this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
         this.energyLabel.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format("Energy: %.2f",
@@ -511,7 +503,6 @@ public final class MainController {
             counter.getAndAdd(1);
         }));
         this.timerTimeLine.setCycleCount(Timeline.INDEFINITE);
-        this.timerTimeLine.play();
     }
 
     /**
@@ -529,17 +520,25 @@ public final class MainController {
      */
     private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
-            this.mapCanvas.getSimulation().playUpdate();
-            this.playBtn.setDisable(true);
-            this.pauseBtn.setDisable(false);
-            this.timerTimeLine.play();
+            playAnimation();
         });
         this.pauseBtn.setOnAction(e -> {
-            this.mapCanvas.getSimulation().pauseUpdate();
-            this.playBtn.setDisable(false);
-            this.pauseBtn.setDisable(true);
-            this.timerTimeLine.stop();
+            pauseAnimation();
         });
+    }
+
+    private void playAnimation() {
+        this.mapCanvas.getSimulation().playUpdate();
+        this.playBtn.setDisable(true);
+        this.pauseBtn.setDisable(false);
+        this.timerTimeLine.play();
+    }
+
+    private void pauseAnimation() {
+        this.mapCanvas.getSimulation().pauseUpdate();
+        this.playBtn.setDisable(false);
+        this.pauseBtn.setDisable(true);
+        this.timerTimeLine.stop();
     }
 
     /**
@@ -573,5 +572,4 @@ public final class MainController {
             default -> { }
         }
     }
-
 }

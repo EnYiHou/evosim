@@ -1,13 +1,18 @@
 package org.totallyspies.evosim.ui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import lombok.Getter;
-import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.ResourceManager;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Optional;
 
 public final class EvosimApplication extends Application {
 
@@ -28,8 +33,18 @@ public final class EvosimApplication extends Application {
     @Getter
     private static EvosimApplication application;
 
+    /**
+     * The functions we need to run in order to shutdown the application.
+     */
+    @Getter
+    private LinkedList<Runnable> shutdownHooks;
+
     @Override
     public void start(final Stage primaryStage) {
+        Platform.setImplicitExit(false);
+        primaryStage.setOnCloseRequest(this::requestExit);
+
+        this.shutdownHooks = new LinkedList<>();
         application = this;
         stage = primaryStage;
         WindowUtils.setSceneRoot(primaryStage,
@@ -37,6 +52,8 @@ public final class EvosimApplication extends Application {
                 this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());
         primaryStage.setTitle("Evosim");
         primaryStage.show();
+
+        Thread.setDefaultUncaughtExceptionHandler(this::showError);
     }
 
     /**
@@ -50,9 +67,8 @@ public final class EvosimApplication extends Application {
 
     @Override
     public void stop() throws Exception {
+        this.shutdownHooks.forEach(Runnable::run);
         super.stop();
-
-        Simulation.shutdownAll();
     }
 
     private static void createTempDirectory() throws IOException {
@@ -69,6 +85,43 @@ public final class EvosimApplication extends Application {
 
         if (!temp.mkdir()) {
             throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+        }
+    }
+
+    private void showError(final Thread thread, final Throwable throwable) {
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null) {
+            rootCause = rootCause.getCause();
+        }
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Evosim Error");
+        alert.setHeaderText("Evosim Error");
+        alert.setContentText(rootCause.getMessage());
+
+        alert.showAndWait();
+    }
+
+    /**
+     * Requesting an confirmation for the exit of the application.
+     * @param event
+     */
+    public void requestExit(final WindowEvent event) {
+        Alert confirmation = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Are you sure you'd like to exit Evosim?",
+                ButtonType.YES,
+                ButtonType.NO
+        );
+
+        Optional<ButtonType> selection = confirmation.showAndWait();
+        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
+            confirmation.close();
+            if (event != null) {
+                event.consume();
+            }
+        } else {
+            Platform.exit();
         }
     }
 }
