@@ -1,5 +1,6 @@
 package org.totallyspies.evosim.ui;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.animation.AnimationTimer;
@@ -247,7 +248,7 @@ public final class MapCanvas extends ResizableCanvas {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    return;
                 }
             }
         });

@@ -17,13 +17,13 @@ public class ConfigurationTest {
   private Configuration configuration = Configuration.getConfiguration();
 
   @Test
-  public void saveConfiguration() throws IOException {
+  public void saveConfiguration() throws ConfigurationException {
     configuration.saveLatestConfiguration(null);
     Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
-  public void loadDefaultConfiguration() throws IOException {
+  public void loadDefaultConfiguration() throws ConfigurationException {
     configuration.saveLatestConfiguration(null);
     Configuration.getConfiguration().loadLastFile();
 
@@ -31,7 +31,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void loadLastConfiguration() throws IOException {
+  public void loadLastConfiguration() throws ConfigurationException {
     configuration.setEntityMaxSpeed(67d);
     configuration.setPreySplitEnergyFillingSpeed(45d);
     configuration.saveLatestConfiguration(null);

@@ -205,7 +205,7 @@ public final class Configuration {
      * Saves the default files that the user didn't have time to save.
      * @param simulation The simulati
      */
-    public void saveLatestConfiguration(final Simulation simulation) throws IOException {
+    public void saveLatestConfiguration(final Simulation simulation) throws ConfigurationException{
         saveConfiguration(Defaults.LATEST_CONFIGURATION, simulation);
     }
 
@@ -216,16 +216,21 @@ public final class Configuration {
      * @param simulation simulation used.
      */
     public void saveConfiguration(
-            final File jsonFile, final Simulation simulation) throws IOException {
-        JSONObject jsonText = getJSONObject(simulation);
+            final File jsonFile, final Simulation simulation) throws ConfigurationException {
+        try {
+            JSONObject jsonText = getJSONObject(simulation);
 
-        if (jsonFile.exists()) {
-            jsonFile.createNewFile();
+            if (jsonFile.exists()) {
+                jsonFile.createNewFile();
+            }
+
+            try (FileWriter writer = new FileWriter(jsonFile)) {
+                jsonText.write(writer);
+            }
+        } catch (Exception e) {
+            throw new ConfigurationException("Could not save the JSON Configuration.");
         }
 
-        try (FileWriter writer = new FileWriter(jsonFile)) {
-            jsonText.write(writer);
-        }
     }
 
     /**
@@ -233,7 +238,7 @@ public final class Configuration {
      * application.
      * @return entity list saved.
      */
-    public List<Entity> loadLastFile() throws IOException {
+    public List<Entity> loadLastFile() throws ConfigurationException {
         return loadFile(Defaults.LATEST_CONFIGURATION);
     }
 
@@ -243,7 +248,7 @@ public final class Configuration {
      * @param jsonFile file we want to load.
      * @return entity list
      */
-    public List<Entity> loadFile(final File jsonFile) throws IOException {
+    public List<Entity> loadFile(final File jsonFile) throws ConfigurationException {
         JSONObject jsonGlobal = loadSavedFile(jsonFile);
 
         JSONObject jsonConfiguration = jsonGlobal.getJSONObject("configuration");
@@ -264,11 +269,15 @@ public final class Configuration {
         keys.forEach((key) -> this.variables.replace(key, jsonConfiguration.getNumber(key)));
     }
 
-    private List<Entity> loadEntities(final JSONArray jsonEntities) throws JsonProcessingException {
-        List<Entity> entities = mapper
-                .readValue(jsonEntities.toString(), new TypeReference<>() { });
-        System.out.println(entities);
-        return entities;
+    private List<Entity> loadEntities(final JSONArray jsonEntities) throws ConfigurationException {
+        List<Entity> entities;
+        try {
+            entities = mapper
+                    .readValue(jsonEntities.toString(), new TypeReference<>() { });
+            return entities;
+        } catch (Exception e) {
+            throw new ConfigurationException("Couldn't load the entities of the JSON File.");
+        }
     }
 
     /**
@@ -277,9 +286,14 @@ public final class Configuration {
      * @param jsonFile The file name of the json file we want to load.
      * @return JSONObject from a source JSON Configuration file.
      */
-    private static JSONObject loadSavedFile(final File jsonFile) throws IOException {
-        String jsonText = Files.readString(Path.of(jsonFile.getPath()));
-        return new JSONObject(jsonText);
+    private static JSONObject loadSavedFile(final File jsonFile) throws ConfigurationException {
+        String jsonText = " ";
+        try {
+            jsonText = Files.readString(Path.of(jsonFile.getPath()));
+            return new JSONObject(jsonText);
+        } catch (Exception e) {
+            throw new ConfigurationException("Couldn't load the saved Configuration JSON file.");
+        }
     }
 
     /**
