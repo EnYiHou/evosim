@@ -1,9 +1,14 @@
 package org.totallyspies.evosim.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import javafx.scene.paint.Color;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -23,59 +28,88 @@ import java.util.List;
  *
  * @author EnYi, Matthew
  */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Prey.class, name = "prey"),
+        @JsonSubTypes.Type(value = Predator.class, name = "predator")
+})
+@Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
+@SuppressWarnings({"checkstyle:ParameterNumber"})
 public abstract class Entity {
+
+    /**
+     * Number of nodes on the second layer.
+     */
+    private static final int SECOND_LAYER_NODES_NUMBER = 10;
+
+    /**
+     * Number of nodes on the third layer.
+     */
+    private static final int THIRD_LAYER_NODES_NUMBER = 2;
+
+    /**
+     * In order to convert MILLISECONDS_TO_SECONDS.
+     */
+    private static final double SECONDS_TO_MILLISECONDS = 1000d;
 
     /**
      * An array of sensors represented by custom Line objects.
      */
-    @Getter
     private final Line[] sensors;
 
     /**
      * A list of detected distances from the sensors.
      */
     private final double[] inputs;
+
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
-    @Getter
     private final double speed;
+
     /**
      * The position of the entity.
      */
-    @Getter
     private final Circle body;
+
     /**
      * The angle of the field of view cone of this entity in degrees.
      */
     private final double fovAngleInRadians;
+
     /**
      * The color of the entity.
      */
-    @Getter
+    @JsonIgnore
     private final Color color;
+
     /**
      * The birth time of the entity.
      */
-    @Getter
+    @JsonIgnore
     private final long birthTime;
 
     /**
      * Simulation this entity is in.
      */
     @Getter(AccessLevel.PROTECTED)
-    private final Simulation simulation;
+    @JsonIgnore
+    @Setter
+    private Simulation simulation;
 
     /**
      * If the entity is dead or not.
      */
-    @Getter
     @Setter
     private boolean dead;
+
     /**
      * If the entity split.
      */
-    @Getter
     @Setter
     private boolean split;
 
@@ -86,7 +120,6 @@ public abstract class Entity {
      * used to make it's next decision.
      * </p>
      */
-    @Getter
     @Setter
     private NeuralNetwork brain;
 
@@ -97,9 +130,9 @@ public abstract class Entity {
      * 0 to 1, where at 0 the the entity cannot move.
      * </p>
      */
-    @Getter
     @Setter
     private double energy;
+
     /**
      * The current amount of split energy this Entity has accumulated.
      * <p>
@@ -107,18 +140,17 @@ public abstract class Entity {
      * 0 to 1, where at 1 the entity will multiply.
      * </p>
      */
-    @Getter
     @Setter
     private double splitEnergy;
+
     /**
      * The direction the entity is facing in radians.
      */
-    @Getter
     private double directionAngleInRadians;
+
     /**
      * The number of children born from this entity.
      */
-    @Getter
     @Setter
     private int childCount;
 
@@ -128,16 +160,15 @@ public abstract class Entity {
      * @param newSimulation    Simulation for the entity to be created in.
      * @param entitySpeed      The speed of the entity.
      * @param entityPosition   The position of the entity.
-     * @param newBirthTime     The birth time of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param newCol            The color of the entity
+     * @param newCol            The color of the entity.
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
-        final Point entityPosition, final long newBirthTime, final double newViewAngle,
+        final Point entityPosition, final double newViewAngle,
         final double newRotationAngle, final Color newCol) {
-        this.birthTime = newBirthTime;
         this.simulation = newSimulation;
+        this.birthTime = System.currentTimeMillis();
         this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
@@ -159,8 +190,7 @@ public abstract class Entity {
         // initialize neural network
         //TODO: List of layers
         this.brain = new NeuralNetwork(
-            List.of(inputCount, 12, 6, 2)
-        );
+                List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
 
         // initialize sensors
         this.sensors = new Line[sensorCount];
@@ -169,6 +199,53 @@ public abstract class Entity {
         }
         this.inputs = new double[inputCount];
         Arrays.fill(this.inputs, Configuration.getConfiguration().getEntitySensorsLength());
+    }
+
+    /**
+     * Construct a new entity from a JSON.
+     * @param newSpeed                     The speed of entity.
+     * @param newFovAngleInRadians         The angle in degrees of entity.
+     * @param newDirectionAngleInRadians   The direction angle in radians of entity.
+     * @param newColor                     The color of entity.
+     * @param newSensors                   The sensors of entity.
+     * @param newInputs                    The sensors data of entity.
+     * @param newBody                      The body of entity.
+     * @param newDead                      If dead of the entity.
+     * @param newSplit                     The split energy of entity.
+     * @param newBrain                     The brain of entity.
+     * @param newEnergy                    The energy of entity.
+     * @param newSplitEnergy               The split energy of entity.
+     * @param newChildCount                The child count of entity.
+     */
+    protected Entity(
+            final double newSpeed,
+            final double newFovAngleInRadians,
+            final double newDirectionAngleInRadians,
+            final Color newColor,
+            final Line[] newSensors,
+            final double[] newInputs,
+            final Circle newBody,
+            final boolean newDead,
+            final boolean newSplit,
+            final NeuralNetwork newBrain,
+            final double newEnergy,
+            final double newSplitEnergy,
+            final int newChildCount) {
+        this.birthTime = System.currentTimeMillis();
+        this.simulation = null;
+        this.color = newColor;
+        this.speed = newSpeed;
+        this.directionAngleInRadians = newDirectionAngleInRadians;
+        this.fovAngleInRadians = newFovAngleInRadians;
+        this.sensors = newSensors;
+        this.inputs = newInputs;
+        this.body = newBody;
+        this.dead = newDead;
+        this.split = newSplit;
+        this.brain = newBrain;
+        this.energy = newEnergy;
+        this.splitEnergy = newSplitEnergy;
+        this.childCount = newChildCount;
     }
 
     /**
@@ -245,7 +322,6 @@ public abstract class Entity {
         this.directionAngleInRadians += Configuration.getConfiguration()
                 .getEntityMaxRotationSpeed() * (calculatedDecision[0] - 0.5);
         this.move(this.speed * calculatedDecision[1]);
-
     }
 
     /**
@@ -309,7 +385,7 @@ public abstract class Entity {
         this.onCollideHandler(other);
     }
 
-
+    @JsonIgnore
     public final Point getBodyCenter() {
         return this.body.getCenter();
     }
@@ -321,6 +397,6 @@ public abstract class Entity {
      * @return The living time of this entity.
      */
     public final int getLivingTime(final long currentTime) {
-        return (int) ((currentTime - this.birthTime) / 1000d);
+        return (int) ((currentTime - this.birthTime) / SECONDS_TO_MILLISECONDS);
     }
 }

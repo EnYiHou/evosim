@@ -13,8 +13,6 @@ class NeuralNetworkTest {
   @Test
   public void generateOneNeuralNetwork() {
     NeuralNetwork neuralNetwork = new NeuralNetwork(List.of(2, 4, 1));
-    System.out.println(neuralNetwork.calcNetworkDecision(
-        List.of(4d, 5d)));
   }
 
 

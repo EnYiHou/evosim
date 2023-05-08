@@ -30,10 +30,20 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Save Configuration">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                     </accelerator></MenuItem>
+                  <Menu mnemonicParsing="false" text="Save">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnSave" text="Save Configuration">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                      <MenuItem mnemonicParsing="false" onAction="#clickOnSaveAs" text="Save Configuration As">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                    </items>
+                  </Menu>
                   <Menu mnemonicParsing="false" text="Load">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#clickOnLoadDefault" text="Default Configuration">

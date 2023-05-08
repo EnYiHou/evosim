@@ -12,6 +12,10 @@ on:
 jobs:
   run-lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,8 +24,9 @@ jobs:
           fetch-depth: 0
 
       - name: Lint Code Base
-        uses: github/super-linter@v4
+        uses: github/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: "main"
+          VALIDATE_GOOGLE_JAVA_FORMAT: false # Broken with switch/case
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

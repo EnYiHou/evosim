@@ -28,6 +28,21 @@ public final class MapCanvas extends ResizableCanvas {
     public static final Color MAP_COLOR = Color.LIGHTSKYBLUE;
 
     /**
+     * The zoom level when follow entity.
+     */
+    public static final double ENTITY_FOLLOWING_ZOOM = 1.2;
+
+    /**
+     * The zoom level when unfollow entity.
+     */
+    public static final double ENTITY_UNFOLLOWING_ZOOM = 0.5;
+
+    /**
+     * The delta zoom when comparing zoom.
+     */
+    public static final double DELTA_ZOOM = 0.01;
+
+    /**
      * A list of keycodes being pressed.
      */
     @Getter
@@ -62,6 +77,7 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * The simulation that is being rendered by the map.
      */
+    @Getter
     private Simulation simulation;
 
     /**
@@ -197,7 +213,7 @@ public final class MapCanvas extends ResizableCanvas {
     public void followEntity(final Entity entity) {
         //Set the camera's position to the entity's position.
         this.camera.setPoint(entity.getBodyCenter());
-        autoZoom(1.2d);
+        autoZoom(ENTITY_FOLLOWING_ZOOM);
     }
 
     /**
@@ -208,7 +224,7 @@ public final class MapCanvas extends ResizableCanvas {
     public void unfollowEntity(final Entity entity) {
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY()));
-        autoZoom(0.5);
+        autoZoom(ENTITY_UNFOLLOWING_ZOOM);
 
     }
 
@@ -222,7 +238,7 @@ public final class MapCanvas extends ResizableCanvas {
         Thread thread = new Thread(() -> {
             double minIncrement = Math.signum(
                     value - this.camera.getZoom()) * Camera.DEFAULT_ZOOMING_SPEED;
-            while (!Assert.assertEquals(this.camera.getZoom(), value, 0.01d)) {
+            while (!Assert.assertEquals(this.camera.getZoom(), value, DELTA_ZOOM)) {
 
                 this.camera.zoom(
                         minIncrement);

@@ -1,7 +1,12 @@
 package org.totallyspies.evosim.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.simulation.Simulation;
+import org.totallyspies.evosim.geometry.Circle;
+import org.totallyspies.evosim.geometry.Line;
+import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
 
@@ -13,6 +18,7 @@ import org.totallyspies.evosim.geometry.Point;
  *
  * @author EnYi, Matthew
  */
+@SuppressWarnings({"checkstyle:ParameterNumber"})
 public final class Predator extends Entity {
 
     /**
@@ -22,16 +28,61 @@ public final class Predator extends Entity {
      * @param speed                  the speed of the predator
      * @param position               the position of the predator
      * @param rotationAngleInRadians the rotation angle of the predator
-     * @param birthTime              the time the predator was born
      */
     public Predator(final Simulation newSimulation,
                     final double speed,
                     final Point position,
-                    final double rotationAngleInRadians,
-                    final long birthTime) {
-        super(newSimulation,
-            speed, position, birthTime, Configuration.getConfiguration().getPredatorViewAngle(),
-                rotationAngleInRadians, Color.RED);
+                    final double rotationAngleInRadians) {
+        super(newSimulation, speed, position,
+            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
+            Color.RED);
+    }
+
+    /**
+     * Construct an Predator from a JSON.
+     * @param sensors                   the sensors of the predator.
+     * @param inputs                    the sensors data of the predator.
+     * @param speed                     the speed of the predator.
+     * @param body                      the body of the predator.
+     * @param fovAngleInRadians         the fov angle in radians of the predator.
+     * @param dead                      if dead of the predator.
+     * @param split                     the split of the predator.
+     * @param brain                     the brain of the predator.
+     * @param energy                    the energy of the predator.
+     * @param splitEnergy               the split energy of the predator.
+     * @param directionAngleInRadians   the direction angle in radians of the predator.
+     * @param childCount                the child count of the predator.
+     */
+    @JsonCreator
+    public Predator(
+            @JsonProperty("sensors") final Line[] sensors,
+            @JsonProperty("inputs") final double[] inputs,
+            @JsonProperty("speed") final double speed,
+            @JsonProperty("body") final Circle body,
+            @JsonProperty("fovAngleInRadians") final double fovAngleInRadians,
+            @JsonProperty("dead") final boolean dead,
+            @JsonProperty("split") final boolean split,
+            @JsonProperty("brain") final NeuralNetwork brain,
+            @JsonProperty("energy") final double energy,
+            @JsonProperty("splitEnergy") final double splitEnergy,
+            @JsonProperty("directionAngleInRadians") final double directionAngleInRadians,
+            @JsonProperty("childCount") final int childCount
+    ) {
+        super(
+                speed,
+                fovAngleInRadians,
+                directionAngleInRadians,
+                Color.RED,
+                sensors,
+                inputs,
+                body,
+                dead,
+                split,
+                brain,
+                energy,
+                splitEnergy,
+                childCount
+        );
     }
 
     /**
@@ -67,7 +118,7 @@ public final class Predator extends Entity {
                         : this.getSpeed(),
 
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians(), System.currentTimeMillis());
+                this.getDirectionAngleInRadians());
 
         // mutate the brain of the predator
         predator.setBrain(this.getBrain().mutate());
