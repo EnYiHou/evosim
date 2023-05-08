@@ -7,14 +7,16 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<SplitPane fx:id="splitPane" dividerPositions="0.3333333333333333" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.WelcomeController">
+<SplitPane fx:id="splitPane" dividerPositions="0.3333333333333333" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.WelcomeController">
    <items>
       <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
-            <AnchorPane styleClass="pane">
+            <AnchorPane prefWidth="423.0" styleClass="pane">
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="53.0" layoutY="48.0" text="Welcome to&#10;Evosim" textAlignment="CENTER" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <font>
@@ -26,11 +28,33 @@
                   <Insets />
                </opaqueInsets>
             </AnchorPane>
+            <AnchorPane prefHeight="100.0" prefWidth="435.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="423.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="pane">
+                           <children>
+                              <Button fx:id="importBtn" mnemonicParsing="false" prefHeight="42.0" prefWidth="133.0" text="Import">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdi2f-file-import" iconSize="30" wrappingWidth="35.39993476867676" />
+                                 </graphic>
+                                 <font>
+                                    <Font name="Ebrima" size="21.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
          </children>
       </VBox>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="pane">
          <children>
-            <Button mnemonicParsing="false" onAction="#onNext" text="Start" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="50.0" />
+            <Button mnemonicParsing="false" onAction="#onNext" text="Start" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="50.0">
+
+            </Button>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="60.0">
                <content>
                   <Accordion fx:id="options" />
