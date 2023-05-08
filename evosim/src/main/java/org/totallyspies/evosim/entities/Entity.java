@@ -67,6 +67,27 @@ public abstract class Entity {
     private final double[] inputs;
 
     /**
+     * Distance from left.
+     */
+    private static final int INPUTS_LEFT_OFFSET = -1;
+
+    /**
+     * Distance from top.
+     */
+    private static final int INPUTS_TOP_OFFSET = -2;
+
+    /**
+     * Distance from right.
+     */
+    private static final int INPUTS_RIGHT_OFFSET = -3;
+
+    /**
+     * Distance from bottom.
+     */
+    private static final int INPUTS_BOTTOM_OFFSET = -4;
+
+
+    /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     private final double speed;
@@ -306,12 +327,12 @@ public abstract class Entity {
         final double xPos = this.getBodyCenter().getX();
         final double yPos = this.getBodyCenter().getY();
 
-        this.inputs[this.inputs.length - 4] = xPos;
-        this.inputs[this.inputs.length - 3] = yPos;
-        this.inputs[this.inputs.length - 2] =
+        this.inputs[this.inputs.length + INPUTS_LEFT_OFFSET] = xPos;
+        this.inputs[this.inputs.length + INPUTS_TOP_OFFSET] = yPos;
+        this.inputs[this.inputs.length + INPUTS_RIGHT_OFFSET] =
             this.simulation.getMapSizeX() * this.simulation.getGridSize() - xPos;
 
-        this.inputs[this.inputs.length - 1] =
+        this.inputs[this.inputs.length + INPUTS_BOTTOM_OFFSET] =
             this.simulation.getMapSizeY() * this.simulation.getGridSize() - yPos;
 
         final double[] calculatedDecision =
@@ -320,7 +341,7 @@ public abstract class Entity {
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
         this.directionAngleInRadians += Configuration.getConfiguration()
-                .getEntityMaxRotationSpeed() * (calculatedDecision[0] - 0.5);
+                .getEntityMaxRotationSpeed() * (calculatedDecision[0] * 2 - 1);
         this.move(this.speed * calculatedDecision[1]);
     }
 
