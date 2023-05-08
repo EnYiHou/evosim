@@ -273,7 +273,6 @@ public final class MapCanvas extends ResizableCanvas {
             this.simulation.shutdown();
         }
         this.simulation = newSimulation;
-        this.simulation.playUpdate();
         this.anim.start();
     }
 

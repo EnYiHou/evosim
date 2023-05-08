@@ -238,6 +238,7 @@ public final class MainController {
 
         this.setupSavingDirectory();
 
+        playAnimation();
     }
 
     private void newDefaultSimulation() {
@@ -306,7 +307,6 @@ public final class MainController {
         Simulation simulation = new Simulation(false);
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
-        pauseAnimation();
     }
 
     /**
@@ -325,6 +325,7 @@ public final class MainController {
      */
     @FXML
     private void clickOnLoadDefault(final ActionEvent event) {
+        pauseAnimation();
         configuration.restoreToDefaults();
         this.newDefaultSimulation();
     }
@@ -495,7 +496,6 @@ public final class MainController {
             counter.getAndAdd(1);
         }));
         this.timerTimeLine.setCycleCount(Timeline.INDEFINITE);
-        this.timerTimeLine.play();
     }
 
     /**

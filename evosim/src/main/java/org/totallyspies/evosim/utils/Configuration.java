@@ -273,6 +273,7 @@ public final class Configuration {
         try {
             entities = mapper
                     .readValue(jsonEntities.toString(), new TypeReference<>() { });
+
             return entities;
         } catch (Exception e) {
             throw new ConfigurationException("Couldn't load the entities of the JSON File.");
