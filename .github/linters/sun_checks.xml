@@ -171,6 +171,7 @@
 		<module name="EqualsHashCode"/>
 		<module name="HiddenField"/>
 		<module name="IllegalInstantiation"/>
+		<module name="MagicNumber"/>
 		<module name="InnerAssignment"/>
 		<module name="MissingSwitchDefault"/>
 		<module name="MultipleVariableDeclarations"/>
