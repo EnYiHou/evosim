@@ -2,15 +2,12 @@ package org.totallyspies.evosim.ui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
-import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.ResourceManager;
 import java.io.File;
 import java.io.IOException;
@@ -91,7 +88,7 @@ public final class EvosimApplication extends Application {
         }
     }
 
-    private void showError(Thread thread, Throwable throwable) {
+    private void showError(final Thread thread, final Throwable throwable) {
         Throwable rootCause = throwable;
         while (rootCause.getCause() != null) {
             rootCause = rootCause.getCause();
@@ -105,7 +102,11 @@ public final class EvosimApplication extends Application {
         alert.showAndWait();
     }
 
-    public void requestExit(WindowEvent event) {
+    /**
+     * Requesting an confirmation for the exit of the application.
+     * @param event
+     */
+    public void requestExit(final WindowEvent event) {
         Alert confirmation = new Alert(
                 Alert.AlertType.CONFIRMATION,
                 "Are you sure you'd like to exit Evosim?",

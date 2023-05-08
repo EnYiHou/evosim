@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.ToString;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONPointer;
-import org.json.JSONString;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.simulation.Simulation;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -205,7 +204,7 @@ public final class Configuration {
      * Saves the default files that the user didn't have time to save.
      * @param simulation The simulati
      */
-    public void saveLatestConfiguration(final Simulation simulation) throws ConfigurationException{
+    public void saveLatestConfiguration(final Simulation simulation) throws ConfigurationException {
         saveConfiguration(Defaults.LATEST_CONFIGURATION, simulation);
     }
 

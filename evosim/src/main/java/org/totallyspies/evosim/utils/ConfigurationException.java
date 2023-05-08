@@ -1,15 +1,19 @@
 package org.totallyspies.evosim.utils;
 
-import javafx.scene.control.Alert;
-
 public class ConfigurationException extends Exception {
 
-    private static final String invalid = "JSON File Invalid, Try some other JSON File.";
-    public ConfigurationException(){
-        super(invalid);
+    /**
+     * If an unknown error occurs.
+     */
+    public ConfigurationException() {
+        super("JSON File Invalid, Try some other JSON File.");
     }
 
-    public ConfigurationException(String message) {
+    /**
+     * If an known error occurs.
+     * @param message
+     */
+    public ConfigurationException(final String message) {
         super(message);
     }
 }
