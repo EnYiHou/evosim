@@ -229,7 +229,6 @@ public final class Configuration {
         } catch (Exception e) {
             throw new ConfigurationException("Could not save the JSON Configuration.");
         }
-
     }
 
     /**
@@ -329,6 +328,9 @@ public final class Configuration {
         return new JSONArray(allEntitiesTxt);
     }
 
+    /**
+     * Restore to default configuration values.
+     */
     public void restoreToDefaults() {
         this.variables = this.defaultsValues;
     }

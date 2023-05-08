@@ -267,10 +267,6 @@ public final class MainController {
             configurationFile = fileChooser
                     .showSaveDialog(EvosimApplication.getApplication().getStage());
         }
-        if (configurationFile != null) {
-            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
-        }
-        playAnimation();
     }
 
     /**
@@ -563,5 +559,4 @@ public final class MainController {
             default -> { }
         }
     }
-
 }
