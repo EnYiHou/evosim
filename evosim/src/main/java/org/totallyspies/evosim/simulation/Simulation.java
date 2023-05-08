@@ -146,7 +146,6 @@ public final class Simulation {
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
      *
-     *
      * @param initPrey     the initial number of prey spawned
      * @param initPredator the initial number of predators spawned
      */
@@ -282,7 +281,10 @@ public final class Simulation {
 
                         if (!curCoord.equals(oldCoord)) {
                             final ReadWriteLockedItem<List<Entity>> chkFrom =
-                                    this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
+                                this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
+
+                            final ReadWriteLockedItem<List<Entity>> chkTo =
+                                this.updateToAdd[curCoord.getX()][curCoord.getY()];
 
                             chkFrom.writeLock().lock();
                             try {
@@ -290,9 +292,6 @@ public final class Simulation {
                             } finally {
                                 chkFrom.writeLock().unlock();
                             }
-
-                            final ReadWriteLockedItem<List<Entity>> chkTo =
-                                    this.updateToAdd[curCoord.getX()][curCoord.getY()];
 
                             chkTo.writeLock().lock();
                             try {
@@ -397,8 +396,8 @@ public final class Simulation {
      */
     public Coordinate pointToGridCoord(final Point point) {
         return new Coordinate(
-            (int) (point.getX() / this.gridSize) % this.mapSizeX,
-            (int) (point.getY() / this.gridSize) / this.mapSizeY
+            Math.min((int) (point.getX() / this.gridSize), this.mapSizeX - 1),
+            Math.min((int) (point.getY() / this.gridSize), this.mapSizeY - 1)
         );
     }
 
