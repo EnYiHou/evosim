@@ -185,4 +185,13 @@ public final class Formulas {
             return results;
         }
     }
+
+    /**
+     * Normalizes angle to be within the range -pi to pi.
+     * @param angle The angle in radians to be normalized.
+     * @return The normalized angle.
+     */
+    public static double normAngle(final double angle) {
+        return Math.atan2(Math.sin(angle), Math.cos(angle));
+    }
 }

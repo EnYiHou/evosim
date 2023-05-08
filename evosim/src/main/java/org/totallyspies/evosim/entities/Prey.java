@@ -3,6 +3,7 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -23,16 +24,18 @@ public final class Prey extends Entity {
     /**
      * Constructs a new prey.
      *
+     * @param newSimulation    Simulation for the entity to be created in.
      * @param speed                  the speed of the prey
      * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
      */
-    public Prey(final double speed,
-                final Point position,
-                final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getConfiguration().getPreyViewAngle(),
-                rotationAngleInRadians, Color.GREEN
-        );
+    public Prey(final Simulation newSimulation,
+        final double speed,
+        final Point position,
+        final double rotationAngleInRadians) {
+        super(newSimulation, speed, position,
+            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
+            Color.GREEN);
 
     }
 
@@ -109,6 +112,7 @@ public final class Prey extends Entity {
     public Prey clone() {
         // Mutate the speed of the prey
         Prey prey = new Prey(
+                this.getSimulation(),
                 (Math.random()
                         < Configuration.getConfiguration().getEntitySpeedMutationRate())
                         ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()

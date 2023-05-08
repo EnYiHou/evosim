@@ -3,6 +3,7 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
+import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -23,24 +24,27 @@ public final class Predator extends Entity {
     /**
      * Constructs a new predator.
      *
+     * @param newSimulation    Simulation for the entity to be created in.
      * @param speed                  the speed of the predator
      * @param position               the position of the predator
      * @param rotationAngleInRadians the rotation angle of the predator
      */
-    public Predator(final double speed,
+    public Predator(final Simulation newSimulation,
+                    final double speed,
                     final Point position,
                     final double rotationAngleInRadians) {
-        super(speed, position, Configuration.getConfiguration().getPredatorViewAngle(),
-                rotationAngleInRadians, Color.RED);
+        super(newSimulation, speed, position,
+            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
+            Color.RED);
     }
 
     /**
      * Construct an Predator from a JSON.
      * @param sensors                   the sensors of the predator.
-     * @param sensorsData               the sensors data of the predator.
+     * @param inputs                    the sensors data of the predator.
      * @param speed                     the speed of the predator.
      * @param body                      the body of the predator.
-     * @param fovAngleInDegrees         the fov angle in degrees of the predator.
+     * @param fovAngleInRadians         the fov angle in radians of the predator.
      * @param dead                      if dead of the predator.
      * @param split                     the split of the predator.
      * @param brain                     the brain of the predator.
@@ -52,10 +56,10 @@ public final class Predator extends Entity {
     @JsonCreator
     public Predator(
             @JsonProperty("sensors") final Line[] sensors,
-            @JsonProperty("sensorsData") final double[] sensorsData,
+            @JsonProperty("inputs") final double[] inputs,
             @JsonProperty("speed") final double speed,
             @JsonProperty("body") final Circle body,
-            @JsonProperty("fovAngleInDegrees") final double fovAngleInDegrees,
+            @JsonProperty("fovAngleInRadians") final double fovAngleInRadians,
             @JsonProperty("dead") final boolean dead,
             @JsonProperty("split") final boolean split,
             @JsonProperty("brain") final NeuralNetwork brain,
@@ -66,11 +70,11 @@ public final class Predator extends Entity {
     ) {
         super(
                 speed,
-                fovAngleInDegrees,
+                fovAngleInRadians,
                 directionAngleInRadians,
                 Color.RED,
                 sensors,
-                sensorsData,
+                inputs,
                 body,
                 dead,
                 split,
@@ -107,6 +111,7 @@ public final class Predator extends Entity {
     public Predator clone() {
         // Mutate the speed of the predator
         Predator predator = new Predator(
+                this.getSimulation(),
                 (Math.random()
                         < Configuration.getConfiguration().getEntitySpeedMutationRate())
                         ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
