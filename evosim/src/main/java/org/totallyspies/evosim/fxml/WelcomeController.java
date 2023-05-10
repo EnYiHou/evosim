@@ -70,83 +70,131 @@ public final class WelcomeController {
 
         Configuration config = Configuration.getConfiguration();
 
+        TitledPane generalDropdown = new TitledPane("General", new VBox(
+            this.createSliderDefault("Map size X", config::setMapSizeX, Defaults.MAP_SIZE_X),
+            this.createSliderDefault("Map size Y", config::setMapSizeY, Defaults.MAP_SIZE_Y),
+            this.createSliderDefault("Grid size", config::setGridSize, Defaults.GRID_SIZE)
+        ));
+
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
-                this.createSliderDefault(
-                        "Entity energy drain rate",
-                        config::setEntityEnergyDrainRate,
-                        Defaults.ENTITY_ENERGY_DRAIN_RATE
-                ),
-                this.createSliderDefault(
-                        "Entity max speed",
-                        config::setEntityMaxSpeed,
-                        Configuration.Defaults.ENTITY_MAX_SPEED
-                ),
-                this.createSliderDefault(
-                        "Entity sensor count",
-                        config::setEntitySensorsCount,
-                        Configuration.Defaults.ENTITY_SENSORS_COUNT
-                ),
-                this.createSliderDefault(
-                        "Entity sensor length",
-                        config::setEntitySensorsLength,
-                        Configuration.Defaults.ENTITY_SENSORS_LENGTH
-                ),
-                this.createSliderDefault(
-                        "Entity mutation rate",
-                        config::setEntitySpeedMutationRate,
-                        Configuration.Defaults.ENTITY_SPEED_MUTATION_RATE
-                ),
-                this.createSliderDefault(
-                        "Entity radius",
-                        config::setEntityRadius,
-                        Configuration.Defaults.ENTITY_RADIUS
-                )
+            this.createSliderDefault(
+                "Entity max rotation speed",
+                config::setEntityMaxRotationSpeed,
+                Defaults.ENTITY_MAX_ROTATION_SPEED
+            ),
+            this.createSliderDefault(
+                "Entity sensor count",
+                config::setEntitySensorsCount,
+                Defaults.ENTITY_SENSORS_COUNT
+            ),
+            this.createSliderDefault(
+                "Entity radius",
+                config::setEntityRadius,
+                Defaults.ENTITY_RADIUS
+            ),
+            this.createSliderDefault(
+                "Entity sensors length",
+                config::setEntitySensorsLength,
+                Defaults.ENTITY_SENSORS_LENGTH
+            ),
+            this.createSliderDefault(
+                "Entity max speed",
+                config::setEntityMaxSpeed,
+                Defaults.ENTITY_MAX_SPEED
+            ),
+            this.createSliderDefault(
+                "Entity minimum speed",
+                config::setEntityMinSpeed,
+                Defaults.ENTITY_MIN_SPEED
+            ),
+            this.createSliderDefault(
+                "Entity speed mutation rate",
+                config::setEntitySpeedMutationRate,
+                Defaults.ENTITY_SPEED_MUTATION_RATE
+            ),
+            this.createSliderDefault(
+                "Entity energy drain rate",
+                config::setEntityEnergyDrainRate,
+                Defaults.ENTITY_ENERGY_DRAIN_RATE
+            )
         ));
 
         TitledPane predatorDropdown = new TitledPane("Predators", new VBox(
-                this.<Integer>createSliderDefault(
-                        "Predator max number",
-                        config::setPredatorMaxNumber,
-                        Configuration.Defaults.PREDATOR_MAX_NUMBER
-                ),
-                this.createSliderDefault(
-                        "Predator split energy filling speed",
-                        config::setPredatorSplitEnergyFillingSpeed,
-                        Configuration.Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED
-                ),
-                this.createSliderDefault(
-                        "Predator view angle",
-                        config::setPredatorViewAngle,
-                        Configuration.Defaults.PREDATOR_VIEW_ANGLE
-                )
+            this.createSliderDefault(
+                "Predator energy filling speed",
+                config::setPredatorEnergyFillingSpeed,
+                Defaults.PREDATOR_ENERGY_FILLING_SPEED
+            ),
+            this.createSliderDefault(
+                "Predator energy base draining speed",
+                config::setPredatorEnergyBaseDrainingSpeed,
+                Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED
+            ),
+            this.createSliderDefault(
+                "Predator max number",
+                config::setPredatorMaxNumber,
+                Defaults.PREDATOR_MAX_NUMBER
+            ),
+            this.createSliderDefault(
+                "Predator initial population",
+                config::setPredatorInitialPopulation,
+                Defaults.PREDATOR_INITIAL_POPULATION
+            ),
+            this.createSliderDefault(
+                "Predator view angle",
+                config::setPredatorViewAngle,
+                Defaults.PREDATOR_VIEW_ANGLE
+            ),
+            this.createSliderDefault(
+                "Predator split energy filling speed",
+                config::setPredatorSplitEnergyFillingSpeed,
+                Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED
+            )
         ));
 
 
         TitledPane preyDropdown = new TitledPane("Preys", new VBox(
-                this.<Integer>createSliderDefault(
-                        "Prey max number",
-                        config::setPreyMaxNumber,
-                        Configuration.Defaults.PREY_MAX_NUMBER
-                ),
-                this.createSliderDefault(
-                        "Prey split energy filling speed",
-                        config::setPreySplitEnergyFillingSpeed,
-                        Configuration.Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED
-                ),
-                this.createSliderDefault(
-                        "Prey view angle",
-                        config::setPreyViewAngle,
-                        Configuration.Defaults.PREY_VIEW_ANGLE
-                )
+            this.createSliderDefault(
+                "Prey energy filling speed",
+                config::setPreyEnergyFillingSpeed,
+                Defaults.PREY_ENERGY_FILLING_SPEED
+            ),
+            this.createSliderDefault(
+                "Prey max number",
+                config::setPreyMaxNumber,
+                Defaults.PREY_MAX_NUMBER
+            ),
+            this.createSliderDefault(
+                "Prey initial population",
+                config::setPreyInitialPopulation,
+                Defaults.PREY_INITIAL_POPULATION
+            ),
+            this.createSliderDefault(
+                "Prey view angle",
+                config::setPreyViewAngle,
+                Defaults.PREY_VIEW_ANGLE
+            ),
+            this.createSliderDefault(
+                "Prey split energy filling speed",
+                config::setPreySplitEnergyFillingSpeed,
+                Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED
+            )
         ));
 
-        TitledPane neuralNetworkDropdown = new TitledPane("Neural network", new VBox());
+        TitledPane neuralNetworkDropdown = new TitledPane("Neural network", new VBox(
+            this.createSliderDefault(
+                "Neural network layers",
+                config::setNeuralNetworkLayersNumber,
+                Defaults.NEURAL_NETWORK_LAYERS_NUMBER
+            )
+        ));
 
         this.options.getPanes().addAll(
-                entityDropdown,
-                predatorDropdown,
-                preyDropdown,
-                neuralNetworkDropdown
+            generalDropdown,
+            entityDropdown,
+            predatorDropdown,
+            preyDropdown,
+            neuralNetworkDropdown
         );
 
         this.hideLockDividers();

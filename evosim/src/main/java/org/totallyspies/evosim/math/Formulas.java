@@ -1,7 +1,5 @@
 package org.totallyspies.evosim.math;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 
@@ -13,8 +11,7 @@ import java.util.function.Function;
  *
  * @author EnYi
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+@SuppressWarnings({"checkstyle:HideUtilityClassConstructor", "checkstyle:MagicNumber"})
 public final class Formulas {
 
     /**
@@ -187,5 +184,14 @@ public final class Formulas {
 
             return results;
         }
+    }
+
+    /**
+     * Normalizes angle to be within the range -pi to pi.
+     * @param angle The angle in radians to be normalized.
+     * @return The normalized angle.
+     */
+    public static double normAngle(final double angle) {
+        return Math.atan2(Math.sin(angle), Math.cos(angle));
     }
 }

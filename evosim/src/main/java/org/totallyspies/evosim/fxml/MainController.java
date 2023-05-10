@@ -1,5 +1,10 @@
 package org.totallyspies.evosim.fxml;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -9,7 +14,10 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -18,15 +26,15 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import lombok.Getter;
+import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.ui.*;
+import org.totallyspies.evosim.ui.AboutWindow;
+import org.totallyspies.evosim.ui.EvosimApplication;
+import org.totallyspies.evosim.ui.MapCanvas;
+import org.totallyspies.evosim.ui.NeuralNetworkView;
+import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import org.totallyspies.evosim.utils.ConfigurationException;
 
 /**
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
@@ -42,7 +50,27 @@ public final class MainController {
      * The current controller being used.
      */
     @Getter
-    private static MainController controller;
+    private static MainController controller; //TODO: sus
+
+    /**
+     * One seconds in milliseconds.
+     */
+    private static final long ONE_SECOND_IN_MILLISECONDS = 1000;
+
+    /**
+     * One decisecond in milliseconds.
+     */
+    private static final long ONE_DECISECOND_IN_MILLISECONDS = 100;
+
+    /**
+     * Maximum opacity of WASD keys.
+     */
+    private static final double MAX_OPACITY = 1d;
+
+    /**
+     * Minimum opacity of WASD keys.
+     */
+    private static final double MIN_OPACITY = 0.55;
 
     /**
      * FXML reference to the map where simulation is rendered.
@@ -198,14 +226,14 @@ public final class MainController {
     private Timeline timerTimeLine;
 
     /**
-     * The simulation to be rendered.
-     */
-    private Simulation simulation;
-
-    /**
      * In order to explore the user's files.
      */
     private final FileChooser fileChooser;
+
+    /**
+     * The configuration File running.
+     */
+    private File configurationFile;
 
     /**
      * As if the variable is saved or not on the drive.
@@ -225,14 +253,14 @@ public final class MainController {
         this.fileChooser = new FileChooser();
         MainController.configuration = Configuration.getConfiguration();
         isSaved = false;
+        EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
     /**
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws IOException {
-        this.simulation = new Simulation();
-        this.mapCanvas.attach(simulation);
+        this.newDefaultSimulation();
 
 
         this.setPlayPauseButtons();
@@ -250,6 +278,16 @@ public final class MainController {
         this.setTimer();
         this.setKeyPress();
 
+        playAnimation();
+    }
+
+    private void newDefaultSimulation() {
+        this.mapCanvas.attach(new Simulation(
+            Configuration.getConfiguration().getMapSizeX(),
+            Configuration.getConfiguration().getMapSizeY(),
+            Configuration.getConfiguration().getGridSize(),
+            true
+        ));
     }
 
     /**
@@ -265,39 +303,59 @@ public final class MainController {
      * Saving a configuration with the menu bar.
      *
      * @param event on click
-     * @throws IOException
      */
     @FXML
-    private void clickOnSave(final ActionEvent event) throws IOException {
-        if (!isSaved) {
+    private void clickOnSave(final ActionEvent event) {
+        pauseAnimation();
+        if (configurationFile == null) {
             fileChooser.setTitle("Save Configuration");
-            File file = fileChooser.showSaveDialog(EvosimApplication.getApplication().getStage());
-
-            if (file != null) {
-                configuration.saveConfiguration(file);
-            }
-            isSaved = true;
+            configurationFile = fileChooser
+                    .showSaveDialog(EvosimApplication.getApplication().getStage());
         }
+    }
+
+    /**
+     * Saving as a configuration with the menu bar.
+     * @param event on click
+     */
+    @FXML
+    private void clickOnSaveAs(final ActionEvent event) throws ConfigurationException {
+        pauseAnimation();
+        fileChooser.setTitle("Save Configuration");
+        configurationFile = fileChooser
+                .showSaveDialog(EvosimApplication.getApplication().getStage());
+        if (configurationFile != null) {
+            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
+        }
+        playAnimation();
     }
 
     /**
      * Loading the configuration.
      *
      * @param event on click
-     * @throws IOException
      */
     @FXML
-    private void clickOnLoad(final ActionEvent event) throws IOException {
+    private void clickOnLoad(final ActionEvent event) throws ConfigurationException {
+        pauseAnimation();
         fileChooser.setTitle("Load Configuration");
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
-
         if (file != null) {
-            configuration.loadConfiguration(file);
-            System.out.println(configuration.toString());
-        } else {
-            System.out.println("File doesn't exist or is not JSON.");
+            newSimulation(configuration.loadFile(file));
         }
+        playAnimation();
+    }
 
+    private void newSimulation(final List<Entity> entityList) {
+        Simulation simulation = new Simulation(
+            Configuration.getConfiguration().getMapSizeX(),
+            Configuration.getConfiguration().getMapSizeY(),
+            Configuration.getConfiguration().getGridSize(),
+            false
+        );
+
+        entityList.forEach(simulation::addEntity);
+        mapCanvas.attach(simulation);
     }
 
     /**
@@ -306,9 +364,9 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoadLatest(final ActionEvent event) {
-        configuration.loadLastConfiguration();
-        System.out.println(configuration.toString());
+    private void clickOnLoadLatest(final ActionEvent event) throws ConfigurationException {
+        pauseAnimation();
+        this.newSimulation(configuration.loadLastFile());
     }
 
     /**
@@ -318,8 +376,9 @@ public final class MainController {
      */
     @FXML
     private void clickOnLoadDefault(final ActionEvent event) {
-        configuration.loadDefaultConfiguration();
-        System.out.println(configuration.toString());
+        pauseAnimation();
+        configuration.restoreToDefaults();
+        this.newDefaultSimulation();
     }
 
     /**
@@ -328,20 +387,17 @@ public final class MainController {
      * @param event
      */
     @FXML
-    private void clickOnExit(final ActionEvent event) throws IOException {
-        Alert confirmation = new Alert(
-                Alert.AlertType.CONFIRMATION,
-                "Are you sure you'd like to exit Evosim?",
-                ButtonType.YES,
-                ButtonType.NO
-        );
+    private void clickOnExit(final ActionEvent event) {
+        EvosimApplication.getApplication().requestExit(null);
+    }
 
-        Optional<ButtonType> selection = confirmation.showAndWait();
-        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
-            confirmation.close();
-        } else if (selection.get() == ButtonType.YES) {
-            System.out.println("Shutting down application...");
-            EvosimApplication.getApplication().getStage().close();
+    private void shutdown() {
+        try {
+            pauseAnimation();
+            Configuration
+                    .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -353,12 +409,13 @@ public final class MainController {
         Thread tread = new Thread(() -> {
             MapCanvas.getPRESSED_KEYS().add(KeyCode.B);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             MapCanvas.getPRESSED_KEYS().remove(KeyCode.B);
         });
+        tread.start();
     }
 
     /**
@@ -400,7 +457,6 @@ public final class MainController {
                 new FileChooser.ExtensionFilter("JSON File", "*.json"));
         this.fileChooser.setInitialDirectory(
                 new File(evosimDir));
-        this.configuration.saveLatestConfiguration();
     }
 
     /**
@@ -431,29 +487,32 @@ public final class MainController {
                                 timerProperty.getValue().toMinutesPart(),
                                 timerProperty.getValue().toSecondsPart()),
                         this.timerProperty));
-        this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(Duration.millis(100), e -> {
-            this.timerProperty.set(this.timerProperty.get().plusMillis(100));
+        this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
+                Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
+            this.timerProperty.set(
+                    this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
 
             XYChart.Series<String, Number> totalPopulationChartSeries;
             totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
                     .getData().get(0);
             totalPopulationChartSeries.getData().add(
                     new XYChart.Data<>(counter.toString(),
-                            this.simulation.getPreyCount() + this.simulation.getPredatorCount()));
+                            this.mapCanvas.getSimulation().getPreyCount()
+                                    + this.mapCanvas.getSimulation().getPredatorCount()));
 
             XYChart.Series<String, Number> preyPopulationChartSeries;
             preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
                     .getData().get(0);
             preyPopulationChartSeries.getData().add(
                     new XYChart.Data<>(
-                            counter.toString(), this.simulation.getPreyCount()));
+                            counter.toString(), this.mapCanvas.getSimulation().getPreyCount()));
 
             XYChart.Series<String, Number> predatorPopulationChartSeries;
             predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
                     .getData().get(0);
             predatorPopulationChartSeries.getData().add(
                     new XYChart.Data<>(counter.toString(),
-                            this.simulation.getPredatorCount()));
+                            this.mapCanvas.getSimulation().getPredatorCount()));
 
             checkChartSize(totalPopulationChartSeries);
             checkChartSize(preyPopulationChartSeries);
@@ -462,7 +521,6 @@ public final class MainController {
             counter.getAndAdd(1);
         }));
         this.timerTimeLine.setCycleCount(Timeline.INDEFINITE);
-        this.timerTimeLine.play();
     }
 
     /**
@@ -481,18 +539,25 @@ public final class MainController {
      */
     private void setPlayPauseButtons() {
         this.playBtn.setOnAction(e -> {
-            this.simulation.playUpdate();
-            this.mapCanvas.play();
-            this.playBtn.setDisable(true);
-            this.pauseBtn.setDisable(false);
-            this.timerTimeLine.play();
+            playAnimation();
         });
         this.pauseBtn.setOnAction(e -> {
-            this.simulation.pauseUpdate();
-            this.playBtn.setDisable(false);
-            this.pauseBtn.setDisable(true);
-            this.timerTimeLine.stop();
+            pauseAnimation();
         });
+    }
+
+    private void playAnimation() {
+        this.mapCanvas.getSimulation().playUpdate();
+        this.playBtn.setDisable(true);
+        this.pauseBtn.setDisable(false);
+        this.timerTimeLine.play();
+    }
+
+    private void pauseAnimation() {
+        this.mapCanvas.getSimulation().pauseUpdate();
+        this.playBtn.setDisable(false);
+        this.pauseBtn.setDisable(true);
+        this.timerTimeLine.stop();
     }
 
     /**
@@ -512,20 +577,14 @@ public final class MainController {
      * @param darkerOpacity should the rectangle be darker
      */
     private void changeOpacityWASD(final KeyCode keyCode, final boolean darkerOpacity) {
-        double opacityPercentage = darkerOpacity ? 1d : 0.55d;
+        double opacityPercentage = darkerOpacity ? MAX_OPACITY : MIN_OPACITY;
 
-        if (keyCode == KeyCode.W) {
-            wKey.setOpacity(opacityPercentage);
-        }
-        if (keyCode == KeyCode.A) {
-            aKey.setOpacity(opacityPercentage);
-        }
-        if (keyCode == KeyCode.S) {
-            sKey.setOpacity(opacityPercentage);
-        }
-        if (keyCode == KeyCode.D) {
-            dKey.setOpacity(opacityPercentage);
+        switch (keyCode) {
+            case W -> wKey.setOpacity(opacityPercentage);
+            case A -> aKey.setOpacity(opacityPercentage);
+            case S -> sKey.setOpacity(opacityPercentage);
+            case D -> dKey.setOpacity(opacityPercentage);
+            default -> { }
         }
     }
-
 }

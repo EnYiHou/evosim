@@ -1,6 +1,5 @@
 package org.totallyspies.evosim.utils;
 
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.totallyspies.evosim.utils.Configuration.Defaults;
 
@@ -11,30 +10,32 @@ import org.totallyspies.evosim.utils.Configuration.Defaults;
  */
 @SuppressWarnings({
         "checkstyle:JavadocVariable",
-        "checkstyle:MissingJavadocMethod"})
+        "checkstyle:MissingJavadocMethod",
+        "checkstyle:MagicNumber"
+})
 public class ConfigurationTest {
 
   private Configuration configuration = Configuration.getConfiguration();
 
   @Test
-  public void saveConfiguration() throws IOException {
-    configuration.saveLatestConfiguration();
+  public void saveConfiguration() throws ConfigurationException {
+    configuration.saveLatestConfiguration(null);
     Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
-  public void loadDefaultConfiguration() throws IOException {
-    configuration.saveLatestConfiguration();
-    Configuration.getConfiguration().loadLastConfiguration();
+  public void loadDefaultConfiguration() throws ConfigurationException {
+    configuration.saveLatestConfiguration(null);
+    Configuration.getConfiguration().loadLastFile();
 
     Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
-  public void loadLastConfiguration() throws IOException {
+  public void loadLastConfiguration() throws ConfigurationException {
     configuration.setEntityMaxSpeed(67d);
     configuration.setPreySplitEnergyFillingSpeed(45d);
-    configuration.saveLatestConfiguration();
+    configuration.saveLatestConfiguration(null);
 
     Defaults.LATEST_CONFIGURATION.delete();
   }
