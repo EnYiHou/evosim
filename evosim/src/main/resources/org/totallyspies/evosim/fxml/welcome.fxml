@@ -20,7 +20,7 @@
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="53.0" layoutY="48.0" text="Welcome to&#10;Evosim" textAlignment="CENTER" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <font>
-                        <Font size="25.0" />
+                        <Font name="DengXian Regular" size="25.0" />
                      </font>
                   </Label>
                </children>
@@ -53,8 +53,12 @@
       <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="pane">
          <children>
             <Button mnemonicParsing="false" onAction="#onNext" text="Start" AnchorPane.bottomAnchor="50.0" AnchorPane.rightAnchor="50.0">
-
-            </Button>
+               <graphic>
+                  <FontIcon fill="#0d991b" iconLiteral="mdi2p-play" iconSize="22" />
+               </graphic>
+               <font>
+                  <Font name="DengXian Regular" size="14.0" />
+               </font></Button>
             <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="60.0">
                <content>
                   <Accordion fx:id="options" />

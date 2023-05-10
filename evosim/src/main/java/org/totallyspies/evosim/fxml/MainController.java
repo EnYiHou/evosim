@@ -199,11 +199,6 @@ public final class MainController {
     private File configurationFile;
 
     /**
-     * As if the variable is saved or not on the drive.
-     */
-    private boolean isSaved;
-
-    /**
      * The global configuration of the application.
      */
     private static Configuration configuration;
@@ -214,7 +209,6 @@ public final class MainController {
     public MainController() {
         this.fileChooser = FileSelector.getFileSelector();
         MainController.configuration = Configuration.getConfiguration();
-        isSaved = false;
         EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
@@ -222,9 +216,9 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws ConfigurationException {
+        this.setTimer();
         this.initializeSimulation();
         this.setPlayPauseButtons();
-        this.setTimer();
 
         this.setChart(totalPopulationChart);
         this.setChart(preyPopulationChart);
@@ -238,9 +232,9 @@ public final class MainController {
     }
 
     private void initializeSimulation() throws ConfigurationException {
-        File configFile = (File) EvosimApplication.getApplication().getStage().getUserData();
-        if (configFile != null) {
-            newSimulation(configuration.loadFile(configFile));
+        configurationFile = (File) EvosimApplication.getApplication().getStage().getUserData();
+        if (configurationFile != null) {
+            newSimulation(configuration.loadFile(configurationFile));
         } else {
             this.newDefaultSimulation();
         }
@@ -250,10 +244,12 @@ public final class MainController {
         Simulation simulation = new Simulation(false);
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
+        this.timerProperty.set(java.time.Duration.ZERO);
     }
 
     private void newDefaultSimulation() {
         this.mapCanvas.attach(new Simulation(true));
+        this.timerProperty.set(java.time.Duration.ZERO);
     }
 
     /**
@@ -270,12 +266,13 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnSave(final ActionEvent event) {
-        pauseAnimation();
+    private void clickOnSave(final ActionEvent event) throws ConfigurationException {
         if (configurationFile == null) {
+            pauseAnimation();
             this.fileChooser.setTitle("Save Configuration");
             configurationFile = fileChooser
                     .showSaveDialog(EvosimApplication.getApplication().getStage());
+            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
     }
 
