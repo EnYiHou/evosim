@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,17 +155,32 @@ public final class Configuration {
          */
         public static final File LATEST_CONFIGURATION =
                 new File(System.getProperty("java.io.tmpdir"), "latestConfigurations.json");
+
+        /**
+         * The default timer duration.
+         */
+        public static final Duration DEFAULT_DURATION = Duration.ZERO;
     }
 
     /**
-     * All the variables needed for the configuration.
+     * All the number variables needed for the configuration.
      */
-    private HashMap<String, Number> variables;
+    private HashMap<String, Number> numberVariables;
 
     /**
      * All the defaults values needed for the application.
      */
-    private final HashMap<String, Number> defaultsValues;
+    private HashMap<String, Number> defaultsNumberVariables;
+
+    /**
+     * All the object variables needed for the configuration.
+     */
+    private HashMap<String, Object> objectVariables;
+
+    /**
+     * All the defaults objects needed for the application.
+     */
+    private HashMap<String, Object> defaultObjectVariables;
 
     /**
      * The only configuration that exists using the Singleton Pattern.
@@ -180,41 +196,50 @@ public final class Configuration {
      * Create a new default Configuration object, and the setup.
      */
     private Configuration() {
-        this.defaultsValues = new HashMap<>();
-        this.defaultsValues.put("mapSizeX", Defaults.MAP_SIZE_X);
-        this.defaultsValues.put("mapSizeY", Defaults.MAP_SIZE_Y);
-        this.defaultsValues.put("gridSize", Defaults.GRID_SIZE);
-        this.defaultsValues.put("entityMaxRotationSpeed", Defaults.ENTITY_MAX_ROTATION_SPEED);
-        this.defaultsValues.put("entitySensorsCount", Defaults.ENTITY_SENSORS_COUNT);
-        this.defaultsValues.put("entityRadius", Defaults.ENTITY_RADIUS);
-        this.defaultsValues.put("entitySensorsLength", Defaults.ENTITY_SENSORS_LENGTH);
-        this.defaultsValues.put("entityMaxSpeed", Defaults.ENTITY_MAX_SPEED);
-        this.defaultsValues.put("entityMinSpeed", Defaults.ENTITY_MIN_SPEED);
-        this.defaultsValues.put("entitySpeedMutationRate", Defaults.ENTITY_SPEED_MUTATION_RATE);
-        this.defaultsValues.put("entityEnergyDrainRate", Defaults.ENTITY_ENERGY_DRAIN_RATE);
+        this.defaultsNumberVariables = new HashMap<>();
+        this.defaultObjectVariables = new HashMap<>();
 
-        this.defaultsValues.put("predatorMaxNumber", Defaults.PREDATOR_MAX_NUMBER);
-        this.defaultsValues.put("predatorViewAngle", Defaults.PREDATOR_VIEW_ANGLE);
-        this.defaultsValues.put("predatorSplitEnergyFillingSpeed",
+        this.defaultsNumberVariables.put("entityMaxRotationSpeed",
+                Defaults.ENTITY_MAX_ROTATION_SPEED);
+        this.defaultsNumberVariables.put("entitySensorsCount", Defaults.ENTITY_SENSORS_COUNT);
+        this.defaultsNumberVariables.put("entityRadius", Defaults.ENTITY_RADIUS);
+        this.defaultsNumberVariables.put("entitySensorsLength", Defaults.ENTITY_SENSORS_LENGTH);
+        this.defaultsNumberVariables.put("entityMaxSpeed", Defaults.ENTITY_MAX_SPEED);
+        this.defaultsNumberVariables.put("entityMinSpeed", Defaults.ENTITY_MIN_SPEED);
+        this.defaultsNumberVariables.put("entitySpeedMutationRate",
+                Defaults.ENTITY_SPEED_MUTATION_RATE);
+        this.defaultsNumberVariables.put("entityEnergyDrainRate",
+                Defaults.ENTITY_ENERGY_DRAIN_RATE);
+
+        this.defaultsNumberVariables.put("predatorMaxNumber", Defaults.PREDATOR_MAX_NUMBER);
+        this.defaultsNumberVariables.put("predatorViewAngle", Defaults.PREDATOR_VIEW_ANGLE);
+        this.defaultsNumberVariables.put("predatorSplitEnergyFillingSpeed",
                 Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED);
-        this.defaultsValues.put("predatorEnergyBaseDrainingSpeed",
+        this.defaultsNumberVariables.put("predatorEnergyBaseDrainingSpeed",
                 Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
-        this.defaultsValues.put("predatorEnergyFillingSpeed",
+        this.defaultsNumberVariables.put("predatorEnergyFillingSpeed",
                 Defaults.PREDATOR_ENERGY_FILLING_SPEED);
-        this.defaultsValues.put("predatorInitialPopulation", Defaults.PREDATOR_INITIAL_POPULATION);
+        this.defaultsNumberVariables.put("predatorInitialPopulation",
+                Defaults.PREDATOR_INITIAL_POPULATION);
 
-        this.defaultsValues.put("preyMaxNumber", Defaults.PREY_MAX_NUMBER);
-        this.defaultsValues.put("preyViewAngle", Defaults.PREY_VIEW_ANGLE);
-        this.defaultsValues.put("preySplitEnergyFillingSpeed",
+        this.defaultsNumberVariables.put("preyMaxNumber", Defaults.PREY_MAX_NUMBER);
+        this.defaultsNumberVariables.put("preyViewAngle", Defaults.PREY_VIEW_ANGLE);
+        this.defaultsNumberVariables.put("preySplitEnergyFillingSpeed",
                 Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
-        this.defaultsValues.put("preyEnergyFillingSpeed", Defaults.PREY_ENERGY_FILLING_SPEED);
-        this.defaultsValues.put("preyInitialPopulation", Defaults.PREY_INITIAL_POPULATION);
+        this.defaultsNumberVariables.put("preyEnergyFillingSpeed",
+                Defaults.PREY_ENERGY_FILLING_SPEED);
+        this.defaultsNumberVariables.put("preyInitialPopulation", Defaults.PREY_INITIAL_POPULATION);
 
-        this.defaultsValues.put("neuralNetworkLayersNumber", Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
+        this.defaultsNumberVariables.put("neuralNetworkLayersNumber",
+                Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
 
-        this.variables = this.defaultsValues;
+        this.defaultsNumberVariables.put("mapSizeX", Defaults.MAP_SIZE_X);
+        this.defaultsNumberVariables.put("mapSizeY", Defaults.MAP_SIZE_Y);
+        this.defaultsNumberVariables.put("gridSize", Defaults.GRID_SIZE);
+
+        this.defaultObjectVariables.put("duration", Defaults.DEFAULT_DURATION);
+
         this.mapper = new ObjectMapper();
-
         restoreToDefaults();
     }
 
@@ -281,8 +306,13 @@ public final class Configuration {
      * @param jsonConfiguration
      */
     private void loadConfiguration(final JSONObject jsonConfiguration) {
-        Set<String> keys = this.variables.keySet();
-        keys.forEach((key) -> this.variables.replace(key, jsonConfiguration.getNumber(key)));
+        Set<String> numberKeys = this.numberVariables.keySet();
+        numberKeys.forEach((key) -> this.numberVariables.replace(key,
+                jsonConfiguration.getJSONObject("numbers").getNumber(key)));
+
+        Set<String> objectKeys = this.objectVariables.keySet();
+        objectKeys.forEach((key) -> this.objectVariables.replace(key,
+                jsonConfiguration.getJSONObject("objects").get(key)));
     }
 
     private List<Entity> loadEntities(final JSONArray jsonEntities) throws ConfigurationException {
@@ -328,7 +358,10 @@ public final class Configuration {
     }
 
     private JSONObject getConfigurationJson() {
-        return new JSONObject(this.variables);
+        JSONObject jsonConfiguration = new JSONObject();
+        jsonConfiguration.put("numbers", this.numberVariables);
+        jsonConfiguration.put("objects", this.objectVariables);
+        return jsonConfiguration;
     }
 
     private JSONArray getEntitiesJSON(
@@ -350,7 +383,8 @@ public final class Configuration {
      * Restore to default configuration values.
      */
     public void restoreToDefaults() {
-        this.variables = this.defaultsValues;
+        this.numberVariables = this.defaultsNumberVariables;
+        this.objectVariables = this.defaultObjectVariables;
     }
 
     /**
@@ -363,190 +397,190 @@ public final class Configuration {
     }
 
     public double getEntityMaxRotationSpeed() {
-        return this.variables.get("entityMaxRotationSpeed").doubleValue();
+        return this.numberVariables.get("entityMaxRotationSpeed").doubleValue();
     }
 
     public void setEntityMaxRotationSpeed(final double newEntityMaxRotationSpeed) {
-        this.variables.replace("entityMaxRotationSpeed", newEntityMaxRotationSpeed);
+        this.numberVariables.replace("entityMaxRotationSpeed", newEntityMaxRotationSpeed);
     }
 
     public int getEntitySensorsCount() {
-        return this.variables.get("entitySensorsCount").intValue();
+        return this.numberVariables.get("entitySensorsCount").intValue();
     }
 
     public void setEntitySensorsCount(final int newEntitySensorsCount) {
-        this.variables.replace("entitySensorsCount", newEntitySensorsCount);
+        this.numberVariables.replace("entitySensorsCount", newEntitySensorsCount);
     }
 
     public double getEntityRadius() {
-        return this.variables.get("entityRadius").doubleValue();
+        return this.numberVariables.get("entityRadius").doubleValue();
     }
 
     public void setEntityRadius(final double newEntityRadius) {
-        this.variables.replace("entityEntityRadius", newEntityRadius);
+        this.numberVariables.replace("entityEntityRadius", newEntityRadius);
     }
 
     public double getEntitySensorsLength() {
-        return this.variables.get("entitySensorsLength").doubleValue();
+        return this.numberVariables.get("entitySensorsLength").doubleValue();
     }
 
     public void setEntitySensorsLength(final double newEntitySensorsLength) {
-        this.variables.replace("entitySensorsLength", newEntitySensorsLength);
+        this.numberVariables.replace("entitySensorsLength", newEntitySensorsLength);
     }
 
     public double getEntityMaxSpeed() {
-        return this.variables.get("entityMaxSpeed").doubleValue();
+        return this.numberVariables.get("entityMaxSpeed").doubleValue();
     }
 
     public void setEntityMaxSpeed(final double newEntityMaxSpeed) {
-        this.variables.replace("entityMaxSpeed", newEntityMaxSpeed);
+        this.numberVariables.replace("entityMaxSpeed", newEntityMaxSpeed);
     }
 
     public double getEntityMinSpeed() {
-        return this.variables.get("entityMinSpeed").doubleValue();
+        return this.numberVariables.get("entityMinSpeed").doubleValue();
     }
 
     public void setEntityMinSpeed(final double newEntityMinSpeed) {
-        this.variables.replace("entityMinxSpeed", newEntityMinSpeed);
+        this.numberVariables.replace("entityMinxSpeed", newEntityMinSpeed);
     }
 
     public double getEntitySpeedMutationRate() {
-        return this.variables.get("entitySpeedMutationRate").doubleValue();
+        return this.numberVariables.get("entitySpeedMutationRate").doubleValue();
     }
 
     public void setEntitySpeedMutationRate(final double newEntitySpeedMutationRate) {
-        this.variables.replace("entitySpeedMutationRate", newEntitySpeedMutationRate);
+        this.numberVariables.replace("entitySpeedMutationRate", newEntitySpeedMutationRate);
     }
 
     public double getEntityEnergyDrainRate() {
-        return this.variables.get("entityEnergyDrainRate").doubleValue();
+        return this.numberVariables.get("entityEnergyDrainRate").doubleValue();
     }
 
     public void setEntityEnergyDrainRate(final double newEntityEnergyDrainRate) {
-        this.variables.replace("entityEnergyDrainRat", newEntityEnergyDrainRate);
+        this.numberVariables.replace("entityEnergyDrainRat", newEntityEnergyDrainRate);
     }
 
     public int getPredatorMaxNumber() {
-        return this.variables.get("predatorMaxNumber").intValue();
+        return this.numberVariables.get("predatorMaxNumber").intValue();
     }
 
     public void setPredatorMaxNumber(final int newPredatorMaxNumber) {
-        this.variables.replace("predatorMaxNumber", newPredatorMaxNumber);
+        this.numberVariables.replace("predatorMaxNumber", newPredatorMaxNumber);
     }
 
     public double getPredatorViewAngle() {
-        return this.variables.get("predatorViewAngle").doubleValue();
+        return this.numberVariables.get("predatorViewAngle").doubleValue();
     }
 
     public void setPredatorViewAngle(final double newPredatorViewAngle) {
-        this.variables.replace("predatorViewAngle", newPredatorViewAngle);
+        this.numberVariables.replace("predatorViewAngle", newPredatorViewAngle);
     }
 
     public double getPredatorSplitEnergyFillingSpeed() {
-        return this.variables.get("predatorSplitEnergyFillingSpeed").doubleValue();
+        return this.numberVariables.get("predatorSplitEnergyFillingSpeed").doubleValue();
     }
 
     public void setPredatorSplitEnergyFillingSpeed(
             final double newPredatorSplitEnergyFillingSpeed) {
-        this.variables.replace(
+        this.numberVariables.replace(
                 "predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
     }
 
     public double getPredatorEnergyFillingSpeed() {
-        return this.variables.get("predatorEnergyFillingSpeed").doubleValue();
+        return this.numberVariables.get("predatorEnergyFillingSpeed").doubleValue();
     }
 
     public void setPredatorEnergyFillingSpeed(final double newPredatorEnergyFillingSpeed) {
-        this.variables.replace("predatorEnergyFillingSpeed", newPredatorEnergyFillingSpeed);
+        this.numberVariables.replace("predatorEnergyFillingSpeed", newPredatorEnergyFillingSpeed);
     }
 
     public double getPredatorEnergyBaseDrainingSpeed() {
-        return this.variables.get("predatorEnergyBaseDrainingSpeed").doubleValue();
+        return this.numberVariables.get("predatorEnergyBaseDrainingSpeed").doubleValue();
     }
 
     public void setPredatorEnergyBaseDrainingSpeed(
             final double newPredatorEnergyBaseDrainingSpeed) {
-        this.variables.replace(
+        this.numberVariables.replace(
                 "predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
     }
 
     public int getPredatorInitialPopulation() {
-        return this.variables.get("predatorInitialPopulation").intValue();
+        return this.numberVariables.get("predatorInitialPopulation").intValue();
     }
 
     public void setPredatorInitialPopulation(final int newPredatorInitialPopulation) {
-        this.variables.replace("predatorInitialPopulation", newPredatorInitialPopulation);
+        this.numberVariables.replace("predatorInitialPopulation", newPredatorInitialPopulation);
     }
 
     public int getPreyInitialPopulation() {
-        return this.variables.get("preyInitialPopulation").intValue();
+        return this.numberVariables.get("preyInitialPopulation").intValue();
     }
 
     public void setPreyInitialPopulation(final int newPreyInitialPopulation) {
-        this.variables.replace("preyInitialPopulation", newPreyInitialPopulation);
+        this.numberVariables.replace("preyInitialPopulation", newPreyInitialPopulation);
     }
 
     public int getPreyMaxNumber() {
-        return this.variables.get("preyMaxNumber").intValue();
+        return this.numberVariables.get("preyMaxNumber").intValue();
     }
 
     public void setPreyMaxNumber(final int newPreyMaxNumber) {
-        this.variables.replace("preyMaxNumber", newPreyMaxNumber);
+        this.numberVariables.replace("preyMaxNumber", newPreyMaxNumber);
     }
 
     public double getPreyViewAngle() {
-        return this.variables.get("preyViewAngle").doubleValue();
+        return this.numberVariables.get("preyViewAngle").doubleValue();
     }
 
     public void setPreyViewAngle(final double newPreyViewAngle) {
-        this.variables.replace("preyViewAngle", newPreyViewAngle);
+        this.numberVariables.replace("preyViewAngle", newPreyViewAngle);
     }
 
     public double getPreySplitEnergyFillingSpeed() {
-        return this.variables.get("preySplitEnergyFillingSpeed").doubleValue();
+        return this.numberVariables.get("preySplitEnergyFillingSpeed").doubleValue();
     }
 
     public void setPreySplitEnergyFillingSpeed(final double newPreySplitEnergyFillingSpeed) {
-        this.variables.replace("preySplitEnergyFillingSpeed", newPreySplitEnergyFillingSpeed);
+        this.numberVariables.replace("preySplitEnergyFillingSpeed", newPreySplitEnergyFillingSpeed);
     }
 
     public double getPreyEnergyFillingSpeed() {
-        return this.variables.get("preyEnergyFillingSpeed").doubleValue();
+        return this.numberVariables.get("preyEnergyFillingSpeed").doubleValue();
     }
 
     public void setPreyEnergyFillingSpeed(final double newPreyEnergyFillingSpeed) {
-        this.variables.replace("preyEnergyFillingSpeed", newPreyEnergyFillingSpeed);
+        this.numberVariables.replace("preyEnergyFillingSpeed", newPreyEnergyFillingSpeed);
     }
 
     public int getNeuralNetworkLayersNumber() {
-        return this.variables.get("neuralNetworkLayersNumber").intValue();
+        return this.numberVariables.get("neuralNetworkLayersNumber").intValue();
     }
 
     public void setNeuralNetworkLayersNumber(final int newNeuralNetworkLayersNumber) {
-        this.variables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
+        this.numberVariables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
     }
 
     public int getMapSizeX() {
-        return this.variables.get("mapSizeX").intValue();
+        return this.numberVariables.get("mapSizeX").intValue();
     }
 
     public int getMapSizeY() {
-        return this.variables.get("mapSizeY").intValue();
+        return this.numberVariables.get("mapSizeY").intValue();
     }
 
     public int getGridSize() {
-        return this.variables.get("gridSize").intValue();
+        return this.numberVariables.get("gridSize").intValue();
     }
 
     public void setMapSizeX(final int newMapSizeX) {
-        this.variables.replace("mapSizeX", newMapSizeX);
+        this.numberVariables.replace("mapSizeX", newMapSizeX);
     }
 
     public void setMapSizeY(final int newMapSizeY) {
-        this.variables.replace("mapSizeY", newMapSizeY);
+        this.numberVariables.replace("mapSizeY", newMapSizeY);
     }
 
     public void setGridSize(final int newGridSize) {
-        this.variables.replace("gridSize", newGridSize);
+        this.numberVariables.replace("gridSize", newGridSize);
     }
 }

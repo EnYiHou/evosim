@@ -325,7 +325,6 @@ public final class MapCanvas extends ResizableCanvas {
         );
 
         this.camera.center();
-
         this.anim.start();
     }
 

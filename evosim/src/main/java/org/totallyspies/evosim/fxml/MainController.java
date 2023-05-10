@@ -6,13 +6,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
@@ -29,10 +29,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.ConfigurationException;
+import org.totallyspies.evosim.utils.FileSelector;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 
 /**
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
@@ -200,11 +199,6 @@ public final class MainController {
     private File configurationFile;
 
     /**
-     * As if the variable is saved or not on the drive.
-     */
-    private boolean isSaved;
-
-    /**
      * The global configuration of the application.
      */
     private static Configuration configuration;
@@ -213,20 +207,19 @@ public final class MainController {
      * Constructor to create the MainController object.
      */
     public MainController() {
-        this.fileChooser = new FileChooser();
+        this.fileChooser = FileSelector.getFileSelector();
         MainController.configuration = Configuration.getConfiguration();
-        isSaved = false;
         EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
     /**
      * Initializes {@code main.fxml}.
      */
-    public void initialize() throws IOException {
-        this.newDefaultSimulation();
-
-        this.setPlayPauseButtons();
+    public void initialize() throws ConfigurationException {
         this.setTimer();
+        this.setCharts();
+        this.initializeSimulation();
+        this.setPlayPauseButtons();
 
         this.setChart(totalPopulationChart);
         this.setChart(preyPopulationChart);
@@ -236,9 +229,29 @@ public final class MainController {
         this.setEntityInfoTab();
         this.setKeyPress();
 
-        this.setupSavingDirectory();
-
         playAnimation();
+    }
+
+    private void initializeSimulation() throws ConfigurationException {
+        configurationFile = (File) EvosimApplication.getApplication().getStage().getUserData();
+        if (configurationFile != null) {
+            newSimulation(configuration.loadFile(configurationFile));
+        } else {
+            this.newDefaultSimulation();
+        }
+    }
+
+    private void newSimulation(final List<Entity> entityList) {
+        Simulation simulation = new Simulation(
+                Configuration.getConfiguration().getMapSizeX(),
+                Configuration.getConfiguration().getMapSizeY(),
+                Configuration.getConfiguration().getGridSize(),
+                false
+        );
+
+        entityList.forEach(simulation::addEntity);
+        mapCanvas.attach(simulation);
+        //this.timerProperty.set(java.time.Duration.ZERO);
     }
 
     private void newDefaultSimulation() {
@@ -264,12 +277,13 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnSave(final ActionEvent event) {
-        pauseAnimation();
+    private void clickOnSave(final ActionEvent event) throws ConfigurationException {
         if (configurationFile == null) {
-            fileChooser.setTitle("Save Configuration");
+            pauseAnimation();
+            this.fileChooser.setTitle("Save Configuration");
             configurationFile = fileChooser
                     .showSaveDialog(EvosimApplication.getApplication().getStage());
+            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
     }
 
@@ -300,20 +314,9 @@ public final class MainController {
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
         if (file != null) {
             newSimulation(configuration.loadFile(file));
+            return;
         }
         playAnimation();
-    }
-
-    private void newSimulation(final List<Entity> entityList) {
-        Simulation simulation = new Simulation(
-            Configuration.getConfiguration().getMapSizeX(),
-            Configuration.getConfiguration().getMapSizeY(),
-            Configuration.getConfiguration().getGridSize(),
-            false
-        );
-
-        entityList.forEach(simulation::addEntity);
-        mapCanvas.attach(simulation);
     }
 
     /**
@@ -346,16 +349,6 @@ public final class MainController {
         EvosimApplication.getApplication().requestExit(null);
     }
 
-    private void shutdown() {
-        try {
-            pauseAnimation();
-            Configuration
-                    .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
-        } catch (ConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Unfollow an entity clicking on the menu.
      */
@@ -371,6 +364,16 @@ public final class MainController {
             MapCanvas.getPRESSED_KEYS().remove(KeyCode.B);
         });
         tread.start();
+    }
+
+    private void shutdown() {
+        try {
+            pauseAnimation();
+            Configuration
+                    .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -393,25 +396,6 @@ public final class MainController {
             MapCanvas.getPRESSED_KEYS().remove(event.getCode());
             changeOpacityWASD(event.getCode(), false);
         });
-    }
-
-    /**
-     * Setting the saving directory for the project.
-     * @throws IOException
-     */
-    private void setupSavingDirectory() throws IOException {
-        String evosimDir = Paths.get(
-                System.getProperty("user.home"), "Documents", "Evosim").toString();
-        File evosimFolder = new File(evosimDir);
-
-        if (!evosimFolder.exists()) {
-            evosimFolder.mkdir();
-        }
-
-        this.fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("JSON File", "*.json"));
-        this.fileChooser.setInitialDirectory(
-                new File(evosimDir));
     }
 
     /**
@@ -451,12 +435,7 @@ public final class MainController {
         chart.setCreateSymbols(false); // disable symbols
     }
 
-
-    /**
-     * Sets the timer of the simulation.
-     */
     private void setTimer() {
-        AtomicLong counter = new AtomicLong();
         this.timerProperty = new SimpleObjectProperty<>(java.time.Duration.ZERO);
         this.timerLabel.textProperty().bind(
                 Bindings.createStringBinding(
@@ -465,6 +444,10 @@ public final class MainController {
                                 timerProperty.getValue().toMinutesPart(),
                                 timerProperty.getValue().toSecondsPart()),
                         this.timerProperty));
+    }
+
+    private void setCharts() {
+        AtomicLong counter = new AtomicLong();
         this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
                 Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
             this.timerProperty.set(
