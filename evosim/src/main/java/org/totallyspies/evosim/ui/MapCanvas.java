@@ -4,7 +4,9 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
@@ -90,6 +92,11 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private Entity followedEntity;
 
+    /**
+     * Previous point of the dragging action.
+     */
+    private final Point dragAnchor;
+
     public static LinkedList<KeyCode> getPressedKeys() {
         return PRESSED_KEYS;
     }
@@ -107,8 +114,39 @@ public final class MapCanvas extends ResizableCanvas {
             }
         };
         this.followingEntity = new AtomicBoolean(false);
+        this.dragAnchor = new Point();
 
         this.setOnMouseClicked(this::checkEntityOnClick);
+        this.setOnScroll(this::onScroll);
+        this.setOnMousePressed(this::onDragged);
+        this.setOnMouseDragged(this::onDragged);
+    }
+
+    private void onDragged(final MouseEvent mouseEvent) {
+        if (mouseEvent.getButton() != MouseButton.PRIMARY) {
+            return;
+        }
+
+        if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+            this.camera.translateX(
+            (mouseEvent.getX() - dragAnchor.getX()) * -Camera.CAMERA_TRANSLATE_SPEED / 2
+            );
+
+            this.camera.translateY(
+            (mouseEvent.getY() - dragAnchor.getY()) * Camera.CAMERA_TRANSLATE_SPEED / 2
+            );
+        }
+
+        dragAnchor.setX(mouseEvent.getX());
+        dragAnchor.setY(mouseEvent.getY());
+    }
+
+    private void onScroll(final ScrollEvent scrollEvent) {
+        this.camera.zoom(
+            Camera.CAMERA_ZOOM_INCREMENT
+            * 2
+            * (scrollEvent.getDeltaY() / scrollEvent.getMultiplierY())
+        );
     }
 
     /**
@@ -119,27 +157,29 @@ public final class MapCanvas extends ResizableCanvas {
 
         for (int i = 0; i <= this.simulation.getMapSizeX(); i++) {
             Point verticalStartingPoint = computePointPosition(
-                i * this.simulation.getGridSize(), 0
+                    i * this.simulation.getGridSize(), 0
             );
 
             Point verticalEndingPoint = computePointPosition(
-                i * this.simulation.getGridSize(),
-                this.simulation.getGridSize() * this.simulation.getMapSizeY()
-            );
-
-            Point horizontalStartingPoint = computePointPosition(
-                0, i * this.simulation.getGridSize()
-            );
-
-            Point horizontalEndingPoint = computePointPosition(
-                this.simulation.getGridSize() * this.simulation.getMapSizeX(),
-                i * this.simulation.getGridSize()
+                    i * this.simulation.getGridSize(),
+                    this.simulation.getGridSize() * this.simulation.getMapSizeY()
             );
 
             // draw vertical grids lines
             this.getGraphicsContext2D().strokeLine(
                     verticalStartingPoint.getX(), verticalStartingPoint.getY(),
                     verticalEndingPoint.getX(), verticalEndingPoint.getY());
+        }
+
+        for (int i = 0; i <= this.simulation.getMapSizeY(); i++) {
+            Point horizontalStartingPoint = computePointPosition(
+                    0, i * this.simulation.getGridSize()
+            );
+
+            Point horizontalEndingPoint = computePointPosition(
+                    this.simulation.getGridSize() * this.simulation.getMapSizeX(),
+                    i * this.simulation.getGridSize()
+            );
 
             // draw horizontal grids lines
             this.getGraphicsContext2D().strokeLine(
@@ -280,7 +320,7 @@ public final class MapCanvas extends ResizableCanvas {
             new Point(0, 0),
             new Point(
                 this.simulation.getMapSizeX() * this.simulation.getGridSize(),
-                this.simulation.getMapSizeX() * this.simulation.getGridSize()
+                this.simulation.getMapSizeY() * this.simulation.getGridSize()
             )
         );
 
