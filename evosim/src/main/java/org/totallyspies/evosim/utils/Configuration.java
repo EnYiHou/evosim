@@ -136,6 +136,21 @@ public final class Configuration {
         public static final int NEURAL_NETWORK_LAYERS_NUMBER = 2;
 
         /**
+         * Number of grids in the horizontal axis.
+         */
+        public static final int MAP_SIZE_X = 15;
+
+        /**
+         * Number of grids in the vertical axis.
+         */
+        public static final int MAP_SIZE_Y = 15;
+
+        /**
+         * Width and height of a single grid.
+         */
+        public static final int GRID_SIZE = 150;
+
+        /**
          * The default name of a configuration file.
          */
         public static final File LATEST_CONFIGURATION =
@@ -218,6 +233,10 @@ public final class Configuration {
         this.defaultsNumberVariables.put("neuralNetworkLayersNumber",
                 Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
 
+        this.defaultsNumberVariables.put("mapSizeX", Defaults.MAP_SIZE_X);
+        this.defaultsNumberVariables.put("mapSizeY", Defaults.MAP_SIZE_Y);
+        this.defaultsNumberVariables.put("gridSize", Defaults.GRID_SIZE);
+
         this.defaultObjectVariables.put("duration", Defaults.DEFAULT_DURATION);
 
         this.mapper = new ObjectMapper();
@@ -287,8 +306,13 @@ public final class Configuration {
      * @param jsonConfiguration
      */
     private void loadConfiguration(final JSONObject jsonConfiguration) {
-        Set<String> keys = this.numberVariables.keySet();
-        keys.forEach((key) -> this.numberVariables.replace(key, jsonConfiguration.getNumber(key)));
+        Set<String> numberKeys = this.numberVariables.keySet();
+        numberKeys.forEach((key) -> this.numberVariables.replace(key,
+                jsonConfiguration.getJSONObject("numbers").getNumber(key)));
+
+        Set<String> objectKeys = this.objectVariables.keySet();
+        objectKeys.forEach((key) -> this.objectVariables.replace(key,
+                jsonConfiguration.getJSONObject("objects").getNumber(key)));
     }
 
     private List<Entity> loadEntities(final JSONArray jsonEntities) throws ConfigurationException {
@@ -344,8 +368,8 @@ public final class Configuration {
             final Simulation simulation) throws JsonProcessingException {
         List<Entity> allEntities = new ArrayList<>();
 
-        for (int x = 0; x < Simulation.MAP_SIZE_X; x++) {
-            for (int y = 0; y < Simulation.MAP_SIZE_Y; y++) {
+        for (int x = 0; x < simulation.getMapSizeX(); x++) {
+            for (int y = 0; y < simulation.getMapSizeY(); y++) {
                 simulation.forEachGridEntities(x, y, allEntities::add);
             }
         }
@@ -532,7 +556,31 @@ public final class Configuration {
         return this.numberVariables.get("neuralNetworkLayersNumber").intValue();
     }
 
-    public void setNeuralNetworkLayersNumber(final double newNeuralNetworkLayersNumber) {
+    public void setNeuralNetworkLayersNumber(final int newNeuralNetworkLayersNumber) {
         this.numberVariables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
+    }
+
+    public int getMapSizeX() {
+        return this.numberVariables.get("mapSizeX").intValue();
+    }
+
+    public int getMapSizeY() {
+        return this.numberVariables.get("mapSizeY").intValue();
+    }
+
+    public int getGridSize() {
+        return this.numberVariables.get("gridSize").intValue();
+    }
+
+    public void setMapSizeX(final int newMapSizeX) {
+        this.numberVariables.replace("mapSizeX", newMapSizeX);
+    }
+
+    public void setMapSizeY(final int newMapSizeY) {
+        this.numberVariables.replace("mapSizeY", newMapSizeY);
+    }
+
+    public void setGridSize(final int newGridSize) {
+        this.numberVariables.replace("gridSize", newGridSize);
     }
 }

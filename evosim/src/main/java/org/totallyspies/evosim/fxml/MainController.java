@@ -242,15 +242,25 @@ public final class MainController {
     }
 
     private void newSimulation(final List<Entity> entityList) {
-        Simulation simulation = new Simulation(false);
+        Simulation simulation = new Simulation(
+                Configuration.getConfiguration().getMapSizeX(),
+                Configuration.getConfiguration().getMapSizeY(),
+                Configuration.getConfiguration().getGridSize(),
+                false
+        );
+
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
         //this.timerProperty.set(java.time.Duration.ZERO);
     }
 
     private void newDefaultSimulation() {
-        this.mapCanvas.attach(new Simulation(true));
-        //this.timerProperty.set(java.time.Duration.ZERO);
+        this.mapCanvas.attach(new Simulation(
+            Configuration.getConfiguration().getMapSizeX(),
+            Configuration.getConfiguration().getMapSizeY(),
+            Configuration.getConfiguration().getGridSize(),
+            true
+        ));
     }
 
     /**
@@ -519,7 +529,9 @@ public final class MainController {
      */
     private void setChosenEntityProperty() {
         this.chosenEntityProperty = new SimpleObjectProperty<>();
+        //TODO: Make it null and working
         this.chosenEntityProperty.set(new Predator(
+                null,
                 1,
                 new Point(0, 0),
                 1)
