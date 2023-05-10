@@ -217,6 +217,7 @@ public final class MainController {
      */
     public void initialize() throws ConfigurationException {
         this.setTimer();
+        this.setCharts();
         this.initializeSimulation();
         this.setPlayPauseButtons();
 
@@ -244,12 +245,12 @@ public final class MainController {
         Simulation simulation = new Simulation(false);
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
-        this.timerProperty.set(java.time.Duration.ZERO);
+        //this.timerProperty.set(java.time.Duration.ZERO);
     }
 
     private void newDefaultSimulation() {
         this.mapCanvas.attach(new Simulation(true));
-        this.timerProperty.set(java.time.Duration.ZERO);
+        //this.timerProperty.set(java.time.Duration.ZERO);
     }
 
     /**
@@ -429,7 +430,6 @@ public final class MainController {
      * Sets the timer of the simulation.
      */
     private void setTimer() {
-        AtomicLong counter = new AtomicLong();
         this.timerProperty = new SimpleObjectProperty<>(java.time.Duration.ZERO);
         this.timerLabel.textProperty().bind(
                 Bindings.createStringBinding(
@@ -438,6 +438,10 @@ public final class MainController {
                                 timerProperty.getValue().toMinutesPart(),
                                 timerProperty.getValue().toSecondsPart()),
                         this.timerProperty));
+    }
+
+    public void setCharts() {
+        AtomicLong counter = new AtomicLong();
         this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
                 Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
             this.timerProperty.set(
