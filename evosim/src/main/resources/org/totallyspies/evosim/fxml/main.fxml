@@ -75,6 +75,13 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Settings">
               <items>
+                <CustomMenuItem mnemonicParsing="false" text="Modify Preferences">
+                  <content>
+                    <Label onMouseClicked="#settingsMenuClicked" text="Modify Preferences" />
+                  </content>
+                </CustomMenuItem>
+              </items>
+              <items>
                   <Menu mnemonicParsing="false" text="Preferences">
                             <items>
                                 <MenuItem mnemonicParsing="false" onAction="#clickOnUnfollow" text="Unfollow Entity">
