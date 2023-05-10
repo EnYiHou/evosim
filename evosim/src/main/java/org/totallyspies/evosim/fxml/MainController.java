@@ -425,10 +425,6 @@ public final class MainController {
         chart.setCreateSymbols(false); // disable symbols
     }
 
-
-    /**
-     * Sets the timer of the simulation.
-     */
     private void setTimer() {
         this.timerProperty = new SimpleObjectProperty<>(java.time.Duration.ZERO);
         this.timerLabel.textProperty().bind(
@@ -440,7 +436,7 @@ public final class MainController {
                         this.timerProperty));
     }
 
-    public void setCharts() {
+    private void setCharts() {
         AtomicLong counter = new AtomicLong();
         this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
                 Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {

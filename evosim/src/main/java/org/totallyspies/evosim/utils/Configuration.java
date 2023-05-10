@@ -141,11 +141,14 @@ public final class Configuration {
         public static final File LATEST_CONFIGURATION =
                 new File(System.getProperty("java.io.tmpdir"), "latestConfigurations.json");
 
+        /**
+         * The default timer duration.
+         */
         public static final Duration DEFAULT_DURATION = Duration.ZERO;
     }
 
     /**
-     * All the variables needed for the configuration.
+     * All the number variables needed for the configuration.
      */
     private HashMap<String, Number> numberVariables;
 
@@ -154,8 +157,14 @@ public final class Configuration {
      */
     private HashMap<String, Number> defaultsNumberVariables;
 
+    /**
+     * All the object variables needed for the configuration.
+     */
     private HashMap<String, Object> objectVariables;
 
+    /**
+     * All the defaults objects needed for the application.
+     */
     private HashMap<String, Object> defaultObjectVariables;
 
     /**
@@ -175,14 +184,17 @@ public final class Configuration {
         this.defaultsNumberVariables = new HashMap<>();
         this.defaultObjectVariables = new HashMap<>();
 
-        this.defaultsNumberVariables.put("entityMaxRotationSpeed", Defaults.ENTITY_MAX_ROTATION_SPEED);
+        this.defaultsNumberVariables.put("entityMaxRotationSpeed",
+                Defaults.ENTITY_MAX_ROTATION_SPEED);
         this.defaultsNumberVariables.put("entitySensorsCount", Defaults.ENTITY_SENSORS_COUNT);
         this.defaultsNumberVariables.put("entityRadius", Defaults.ENTITY_RADIUS);
         this.defaultsNumberVariables.put("entitySensorsLength", Defaults.ENTITY_SENSORS_LENGTH);
         this.defaultsNumberVariables.put("entityMaxSpeed", Defaults.ENTITY_MAX_SPEED);
         this.defaultsNumberVariables.put("entityMinSpeed", Defaults.ENTITY_MIN_SPEED);
-        this.defaultsNumberVariables.put("entitySpeedMutationRate", Defaults.ENTITY_SPEED_MUTATION_RATE);
-        this.defaultsNumberVariables.put("entityEnergyDrainRate", Defaults.ENTITY_ENERGY_DRAIN_RATE);
+        this.defaultsNumberVariables.put("entitySpeedMutationRate",
+                Defaults.ENTITY_SPEED_MUTATION_RATE);
+        this.defaultsNumberVariables.put("entityEnergyDrainRate",
+                Defaults.ENTITY_ENERGY_DRAIN_RATE);
 
         this.defaultsNumberVariables.put("predatorMaxNumber", Defaults.PREDATOR_MAX_NUMBER);
         this.defaultsNumberVariables.put("predatorViewAngle", Defaults.PREDATOR_VIEW_ANGLE);
@@ -192,16 +204,19 @@ public final class Configuration {
                 Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
         this.defaultsNumberVariables.put("predatorEnergyFillingSpeed",
                 Defaults.PREDATOR_ENERGY_FILLING_SPEED);
-        this.defaultsNumberVariables.put("predatorInitialPopulation", Defaults.PREDATOR_INITIAL_POPULATION);
+        this.defaultsNumberVariables.put("predatorInitialPopulation",
+                Defaults.PREDATOR_INITIAL_POPULATION);
 
         this.defaultsNumberVariables.put("preyMaxNumber", Defaults.PREY_MAX_NUMBER);
         this.defaultsNumberVariables.put("preyViewAngle", Defaults.PREY_VIEW_ANGLE);
         this.defaultsNumberVariables.put("preySplitEnergyFillingSpeed",
                 Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
-        this.defaultsNumberVariables.put("preyEnergyFillingSpeed", Defaults.PREY_ENERGY_FILLING_SPEED);
+        this.defaultsNumberVariables.put("preyEnergyFillingSpeed",
+                Defaults.PREY_ENERGY_FILLING_SPEED);
         this.defaultsNumberVariables.put("preyInitialPopulation", Defaults.PREY_INITIAL_POPULATION);
 
-        this.defaultsNumberVariables.put("neuralNetworkLayersNumber", Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
+        this.defaultsNumberVariables.put("neuralNetworkLayersNumber",
+                Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
 
         this.defaultObjectVariables.put("duration", Defaults.DEFAULT_DURATION);
 
