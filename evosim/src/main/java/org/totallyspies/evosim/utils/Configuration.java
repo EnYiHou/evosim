@@ -312,7 +312,7 @@ public final class Configuration {
 
         Set<String> objectKeys = this.objectVariables.keySet();
         objectKeys.forEach((key) -> this.objectVariables.replace(key,
-                jsonConfiguration.getJSONObject("objects").getNumber(key)));
+                jsonConfiguration.getJSONObject("objects").get(key)));
     }
 
     private List<Entity> loadEntities(final JSONArray jsonEntities) throws ConfigurationException {
