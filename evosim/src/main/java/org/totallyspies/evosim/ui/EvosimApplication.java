@@ -41,8 +41,6 @@ public final class EvosimApplication extends Application {
         this.shutdownHooks = new LinkedList<>();
         application = this;
         stage = primaryStage;
-        stage.setMinHeight(600);
-        stage.setMinWidth(800);
         WindowUtils.setSceneRoot(primaryStage,
                 this.getClass().getResource(ResourceManager.FXML_WELCOME_VIEW),
                 this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());

@@ -106,8 +106,6 @@ public final class Prey extends Entity {
     /**
      * Clones the prey and mutates its speed and neural network.
      *
-     * @param cloneTime the clone time in seconds
-     *
      * @return the cloned prey
      */
     @Override

@@ -36,7 +36,6 @@ public final class Predator extends Entity {
         super(newSimulation, speed, position,
             Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
             Color.RED);
-        this.setEnergy(1); //TODO: sus
     }
 
     /**
@@ -105,8 +104,6 @@ public final class Predator extends Entity {
 
     /**
      * Clones the predator and mutates its speed and neural network.
-     *
-     * @param cloneTime the time of clone in seconds
      *
      * @return the cloned predator
      */

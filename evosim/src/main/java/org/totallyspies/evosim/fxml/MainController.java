@@ -50,7 +50,7 @@ public final class MainController {
      * The current controller being used.
      */
     @Getter
-    private static MainController controller; //TODO: sus
+    private static MainController controller;
 
     /**
      * One seconds in milliseconds.

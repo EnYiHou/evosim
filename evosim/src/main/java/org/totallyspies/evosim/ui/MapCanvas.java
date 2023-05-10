@@ -58,6 +58,11 @@ public final class MapCanvas extends ResizableCanvas {
     public static final double DELTA_ZOOM = 0.01;
 
     /**
+     * Number of seconds in a minute.
+     */
+    private static final int SECONDS_IN_MINUTE = 60;
+
+    /**
      * A list of keycodes being pressed.
      */
     @Getter
@@ -134,7 +139,12 @@ public final class MapCanvas extends ResizableCanvas {
                     int livingTime = followedEntity.getLivingTime(
                             controller.getTimerProperty().getValue().getSeconds());
                     controller.getLivingTimeLabel().setText(
-                            "Time Alive: " + (livingTime / 60) + "m : " + livingTime % 60 + "s");
+                        String.format(
+                            "Time Alive: %dm : %02ds",
+                            livingTime / SECONDS_IN_MINUTE,
+                            livingTime % SECONDS_IN_MINUTE
+                        )
+                    );
                 }
             }
         };
