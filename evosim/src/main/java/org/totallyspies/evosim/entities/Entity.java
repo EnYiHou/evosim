@@ -53,11 +53,6 @@ public abstract class Entity {
     private static final int THIRD_LAYER_NODES_NUMBER = 2;
 
     /**
-     * In order to convert MILLISECONDS_TO_SECONDS.
-     */
-    private static final double SECONDS_TO_MILLISECONDS = 1000d;
-
-    /**
      * An array of sensors represented by custom Line objects.
      */
     private final Line[] sensors;
@@ -86,7 +81,6 @@ public abstract class Entity {
      * Distance from bottom.
      */
     private static final int INPUTS_BOTTOM_OFFSET = -4;
-
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.

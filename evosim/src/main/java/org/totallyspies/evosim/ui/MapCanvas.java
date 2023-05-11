@@ -156,7 +156,7 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     private void onDragged(final MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() != MouseButton.PRIMARY) {
+        if (mouseEvent.getButton() != MouseButton.PRIMARY || followingEntity.get()) {
             return;
         }
 
