@@ -104,8 +104,8 @@ public class NeuralNetworkView extends Tab {
 
         for (int specificLayer = 0; specificLayer < layer; specificLayer++) {
             List<NeuronView> neuronViews = this.neuronStructure.get(specificLayer);
-            for (int j = 0; j < neuronViews.size(); j++) {
-                NeuronView neuronView = neuronViews.get(j);
+            for (int specificNeuron = 0; specificNeuron < neuronViews.size(); specificNeuron++) {
+                NeuronView neuronView = neuronViews.get(specificNeuron);
 
 
                 neuronView.translateXProperty().bind(
@@ -115,13 +115,14 @@ public class NeuralNetworkView extends Tab {
 
                 neuronView.translateYProperty().bind(
                         this.neuralNetworkView.heightProperty().divide(neuronViews.size() + 1)
-                                .multiply(j + 1)
+                                .multiply(specificNeuron + 1)
                                 .subtract(neuronView.heightProperty().divide(2)));
 
                 this.neuralNetworkView.getChildren().add(neuronView);
 
                 if (specificLayer != 0) {
-                    List<Line> sNeuron = this.weightsStructure.get(specificLayer).get(j);
+                    List<Line> sNeuron = this.weightsStructure
+                            .get(specificLayer).get(specificNeuron);
                     for (int sWeight = 0; sWeight < sNeuron.size(); sWeight++) {
                         Line weight = sNeuron.get(sWeight);
                         weight.setStrokeWidth(Formulas.logistic((neuronView.getNeuron()
