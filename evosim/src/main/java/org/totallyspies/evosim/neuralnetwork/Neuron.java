@@ -136,7 +136,7 @@ public final class Neuron {
     for (int i = 0; i < this.weights.length; ++i) {
       sum += inputs[i] * this.weights[i];
     }
-
+    this.value = sum;
     return Formulas.logistic(sum);
   }
 
