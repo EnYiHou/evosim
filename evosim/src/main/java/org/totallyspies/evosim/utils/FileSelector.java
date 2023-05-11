@@ -25,7 +25,7 @@ public class FileSelector {
 
     /**
      * Getting the fileChooser variable, and initializing it, if it is null.
-     * @return static fileChooser variable
+     * @return static fileChooserJSON variable
      */
     public static FileChooser getFileChooserJson() {
         if (fileChooserJson == null) {
@@ -34,15 +34,20 @@ public class FileSelector {
         return fileChooserJson;
     }
 
+    /**
+     * Getting the fileChooser variable, and initializing it, if it is null.
+     * @return static fileChooserImage variable
+     */
     public static FileChooser getFileChooserImage() {
-        if(fileChooserImage == null) {
+        if (fileChooserImage == null) {
             fileChooserImage = getFileChooser("Image Files", "*.png", "*.jpg", "*.gif");
             fileChooserImage.setTitle("Select an Image");
         }
         return fileChooserImage;
     }
 
-    private static FileChooser getFileChooser(String description, String... extension) {
+    private static FileChooser getFileChooser(
+            final String description, final String... extension) {
         FileChooser fileChooser = new FileChooser();
         String evosimDir = Paths.get(
                 System.getProperty("user.home"), "Documents", "Evosim").toString();

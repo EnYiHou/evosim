@@ -202,7 +202,7 @@ public final class WelcomeController {
     }
 
     @FXML
-    private void pressOnImportBtn(ActionEvent event) throws EvosimException {
+    private void pressOnImportBtn(final ActionEvent event) throws EvosimException {
             FileChooser fileChooser = FileSelector.getFileChooserJson();
             fileChooser.setTitle("Import Configuration");
             File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());

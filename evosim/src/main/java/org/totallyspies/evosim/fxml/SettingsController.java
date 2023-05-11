@@ -27,6 +27,11 @@ import java.io.File;
 public final class SettingsController {
 
     /**
+     * Time wait for an image to load.
+     */
+    private static final int BACKGROUND_LOAD_WAIT_TIME = 500;
+
+    /**
      * Checkbox toggling the visibility of the entity's energy.
      */
     @FXML
@@ -116,7 +121,6 @@ public final class SettingsController {
     @FXML
     private Label feedbackLabel;
 
-
     /**
      * Initializes {@code settings.fxml}. Sets the checkbox states on open.
      */
@@ -195,7 +199,7 @@ public final class SettingsController {
         if (chosenFile != null) {
             Image img = new Image(chosenFile.toURI().toString());
             while (img.isBackgroundLoading()) {
-                Thread.sleep(500);
+                Thread.sleep(BACKGROUND_LOAD_WAIT_TIME);
             }
 
             if (img.isError()) {
