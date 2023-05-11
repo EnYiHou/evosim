@@ -26,7 +26,7 @@
 <?import javafx.scene.text.Text?>
 <?import org.totallyspies.evosim.ui.MapCanvas?>
 
-<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -75,7 +75,7 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Settings">
               <items>
-                <MenuItem mnemonicParsing="false" text="Modify Preferences" onAction="#settingsMenuClicked">
+                <MenuItem mnemonicParsing="false" onAction="#settingsMenuClicked" text="Modify Preferences">
                     <accelerator>
                         <KeyCodeCombination alt="DOWN" code="P" control="ANY" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>
@@ -234,7 +234,7 @@
                   </VBox>
 
 
-                  <VBox fx:id="entityStats" fillWidth="false" style="-fx-padding: 5px; -fx-border-color: rgba(120, 120, 120, 0.5); -fx-border-radius: 0 0 10px 0; -fx-background-radius: 0 0 10px 0; -fx-background-color: rgba(90, 90, 90, 0.2);" visible="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                  <VBox fx:id="entityStats" fillWidth="false" style="-fx-padding: 5px; -fx-border-color: rgba(120, 120, 120, 0.7); -fx-border-radius: 0 0 10px 0; -fx-background-radius: 0 0 10px 0; -fx-background-color: rgba(90, 90, 90, 0.2);" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                       <children>
                           <Label style="-fx-padding: 0 0 5px 0;" text="Focused Entity Stats">
                               <font>
