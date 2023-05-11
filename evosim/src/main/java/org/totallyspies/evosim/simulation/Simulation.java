@@ -29,6 +29,7 @@ import java.util.List;
  */
 public final class Simulation {
 
+
     /**
      * Nanoseconds to wait between each update. Defaults to 60 per second.
      */
@@ -60,6 +61,7 @@ public final class Simulation {
     /**
      * Grids of entities.
      */
+    @Getter
     private final ReadWriteLockedItem<List<Entity>>[][] entityGrids;
 
     /**
@@ -136,7 +138,7 @@ public final class Simulation {
         );
 
         this.updateService = Executors.newSingleThreadScheduledExecutor(
-            new NamedThreadFactory("update")
+                new NamedThreadFactory("update")
         );
 
         if (shouldPopulate) {
@@ -207,6 +209,7 @@ public final class Simulation {
         }
     }
 
+
     private void update() {
         IntStream.range(0, this.mapSizeX * this.mapSizeY).forEach(
             (chunkIndex) -> {
@@ -250,17 +253,17 @@ public final class Simulation {
                             if (
                                 (
                                     entity instanceof Prey
-                                    && this.preyCount
+                                        && this.preyCount
                                         < Configuration.getConfiguration().getPreyMaxNumber()
                                 )
-                                || (
+                                    || (
                                     entity instanceof Predator
                                         && this.predatorCount
                                         < Configuration.getConfiguration().getPredatorMaxNumber()
                                 )
                             ) {
                                 final ReadWriteLockedItem<List<Entity>> chk =
-                                        this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
+                                    this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
 
                                 chk.writeLock().lock();
                                 try {
@@ -364,6 +367,7 @@ public final class Simulation {
 
     /**
      * Tests if a point is within the map.
+     *
      * @param point The point to check
      * @return If the point is in the map
      */
@@ -395,6 +399,7 @@ public final class Simulation {
 
     /**
      * Converts a point to the grid coordinate it is in.
+     *
      * @param point THe point to be converted.
      * @return The coordinate of the grid containing the point.
      */

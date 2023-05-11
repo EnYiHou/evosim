@@ -212,11 +212,7 @@ public final class WelcomeController {
         ));
 
         this.options.getPanes().addAll(
-            generalDropdown,
-            entityDropdown,
-            predatorDropdown,
-            preyDropdown,
-            neuralNetworkDropdown
+            generalDropdown, entityDropdown, predatorDropdown, preyDropdown, neuralNetworkDropdown
         );
 
         this.hideLockDividers();

@@ -2,7 +2,6 @@ package org.totallyspies.evosim.neuralnetwork;
 
 import java.util.Arrays;
 import java.util.function.Function;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +11,6 @@ import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
- * A Neuron is a single node of the greater Neural Network system storing a double valued bias.
  * Each layer of the network is made up of many Neuron objects.
  *
  * @author mattlep11, niakouu
@@ -45,6 +43,12 @@ public final class Neuron {
    * A double value to shift the results neural network's activation.
    */
   private final double bias;
+
+  /**
+   * The value of the Neuron, which is the result of the activation function.
+   */
+  @Getter
+  private double value;
 
   /**
    * The weights the Neuron has, which are necessary for computations.

@@ -120,7 +120,6 @@ public final class Prey extends Entity {
                 new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
                 this.getDirectionAngleInRadians());
 
-
         // mutate the brain of the prey
         prey.setBrain(this.getBrain().mutate());
         this.setChildCount(this.getChildCount() + 1);

@@ -28,6 +28,7 @@ public class NeuralNetwork {
     /**
      * A list containing each list of Neurons, which each represent a layer.
      */
+    @Getter
     private List<List<Neuron>> neuronLayers;
 
 

@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.ui;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.totallyspies.evosim.geometry.Point;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -64,6 +66,13 @@ public final class Camera {
     private AtomicDouble zoom;
 
     /**
+     * Whether the camera is zooming.
+     */
+    @Getter
+    @Setter
+    private boolean isZooming = false;
+
+    /**
      * Top left limit of pan.
      */
     private final Point topLeft;
@@ -97,6 +106,7 @@ public final class Camera {
      */
     public Camera(final Point newTopLeft, final Point newBottomRight) {
         this(DEFAULT_POINT, DEFAULT_ZOOM, newTopLeft, newBottomRight);
+        this.center();
     }
 
     /**
