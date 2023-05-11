@@ -279,6 +279,7 @@ public final class MapCanvas extends ResizableCanvas {
      */
     public void drawEntitySensors(final Entity entity) {
         this.getGraphicsContext2D().setStroke(Color.HOTPINK);
+
         for (Line sensor : entity.getSensors()) {
 
             Point startPoint = absToRelPosition(sensor.getStartPoint().getX(),

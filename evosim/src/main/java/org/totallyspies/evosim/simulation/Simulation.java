@@ -211,7 +211,7 @@ public final class Simulation {
 
 
     private void update() {
-        IntStream.range(0, this.mapSizeX * this.mapSizeY).forEach(
+        IntStream.range(0, this.mapSizeX * this.mapSizeY).parallel().forEach(
             (chunkIndex) -> {
                 final Coordinate chunkCoord = new Coordinate(
                     chunkIndex % this.mapSizeX,

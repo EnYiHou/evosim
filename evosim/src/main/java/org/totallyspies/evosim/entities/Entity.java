@@ -421,4 +421,23 @@ public abstract class Entity {
     public final int getLivingTime(final long currentTime) {
         return (int) ((currentTime - this.birthTime) / SECONDS_TO_MILLISECONDS);
     }
+
+    public Line[] getSensors() {
+        final Line[] sensors = new Line[Configuration.getConfiguration().getEntitySensorsCount()];
+
+        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
+
+        for (int i = 0; i < sensors.length; ++i) {
+            final double angle = baseAngle + i * (this.getFovAngleInRadians() / sensors.length);
+
+            sensors[i] = new Line(
+                this.getBodyCenter().getX(),
+                this.getBodyCenter().getY(),
+                this.getBodyCenter().getX() + this.inputs[i] * Math.cos(angle),
+                this.getBodyCenter().getY() + this.inputs[i] * Math.sin(angle)
+            );
+        }
+
+        return sensors;
+    }
 }
