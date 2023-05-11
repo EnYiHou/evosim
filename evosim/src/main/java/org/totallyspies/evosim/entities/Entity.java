@@ -53,11 +53,6 @@ public abstract class Entity {
     private static final int THIRD_LAYER_NODES_NUMBER = 2;
 
     /**
-     * In order to convert MILLISECONDS_TO_SECONDS.
-     */
-    private static final double SECONDS_TO_MILLISECONDS = 1000d;
-
-    /**
      * An array of sensors represented by custom Line objects.
      */
     private final Line[] sensors;
@@ -86,7 +81,6 @@ public abstract class Entity {
      * Distance from bottom.
      */
     private static final int INPUTS_BOTTOM_OFFSET = -4;
-
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
@@ -190,7 +184,7 @@ public abstract class Entity {
         final Point entityPosition, final double newViewAngle,
         final double newRotationAngle, final Color newCol) throws EvosimException {
         this.simulation = newSimulation;
-        this.birthTime = System.currentTimeMillis();
+        this.birthTime = 0L;
         this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
@@ -253,7 +247,7 @@ public abstract class Entity {
             final double newEnergy,
             final double newSplitEnergy,
             final int newChildCount) {
-        this.birthTime = System.currentTimeMillis();
+        this.birthTime = 0L;
         this.simulation = null;
         this.color = newColor;
         this.speed = newSpeed;
@@ -420,6 +414,6 @@ public abstract class Entity {
      * @return The living time of this entity.
      */
     public final int getLivingTime(final long currentTime) {
-        return (int) ((currentTime - this.birthTime) / SECONDS_TO_MILLISECONDS);
+        return (int) ((currentTime - this.birthTime));
     }
 }
