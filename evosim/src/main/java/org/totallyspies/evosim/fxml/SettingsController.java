@@ -115,6 +115,9 @@ public final class SettingsController {
      */
     private static FileChooser fileChooser;
 
+    /**
+     * The global configuration.
+     */
     private Configuration configuration;
 
     /**

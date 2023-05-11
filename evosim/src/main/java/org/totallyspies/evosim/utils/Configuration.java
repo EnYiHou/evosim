@@ -13,7 +13,6 @@ import org.totallyspies.evosim.simulation.Simulation;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -415,133 +414,130 @@ public final class Configuration {
     }
 
     public Image getBackgroundImage() throws EvosimException {
-        if (this.objectVariables.get("backgroundImageBase64").equals("")) {
-            return null;
-        }
-        byte[] decodedBytes = Base64
-                .getDecoder()
-                .decode((String) this.objectVariables.get("backgroundImageBase64"));
         try {
-            FileUtils.writeByteArrayToFile(TMP_IMG_PATH, decodedBytes);
-        } catch (IOException e) {
+            if (this.objectVariables.get("backgroundImageBase64").equals("")) {
+                return null;
+            }
+            byte[] decodedBytes = Base64
+                    .getDecoder()
+                    .decode((String) this.objectVariables.get("backgroundImageBase64"));
+                FileUtils.writeByteArrayToFile(TMP_IMG_PATH, decodedBytes);
+            return new Image(TMP_IMG_PATH.toURI().toString());
+        } catch (Exception e) {
             throw new EvosimException("Couldn't load the image.");
         }
-        return new Image(TMP_IMG_PATH.toURI().toString());
     }
 
     public void setBackgroundImage(final Image image) throws EvosimException {
-        byte[] fileContent = new byte[0];
-
-        if (image == null) {
-            this.objectVariables.replace("backgroundImageBase64", "");
-            return;
-        }
-
         try {
+            if (image == null) {
+                this.objectVariables.replace("backgroundImageBase64", "");
+                return;
+            }
+
             File imgFile = new File(new URL(image.getUrl()).getFile());
-            fileContent = FileUtils.readFileToByteArray(imgFile);
-        } catch (IOException e) {
+            byte[] fileContent = FileUtils.readFileToByteArray(imgFile);
+
+            String encodedString = Base64.getEncoder().encodeToString(fileContent);
+            this.objectVariables.replace("backgroundImageBase64", encodedString);
+        } catch (Exception e) {
             throw new EvosimException("Couldn't load the image.");
         }
-        String encodedString = Base64.getEncoder().encodeToString(fileContent);
-
-        this.objectVariables.replace("backgroundImageBase64", encodedString);
-
     }
 
-    public Duration getDuration() {
+    public Duration getDuration() throws EvosimException {
         if (this.objectVariables.get("duration") instanceof String) {
             return Duration.parse((String) this.objectVariables.get("duration"));
         }
-        return (Duration) this.objectVariables.get("duration");
+        return getObjectValue("duration");
     }
 
     public void setDuration(final Duration newDuration) {
         this.objectVariables.replace("duration", newDuration);
     }
 
-    public double getEntityMaxRotationSpeed() {
-        return this.numberVariables.get("entityMaxRotationSpeed").doubleValue();
+    public double getEntityMaxRotationSpeed() throws EvosimException {
+        return getDoubleValue("entityMaxRotationSpeed");
     }
 
     public void setEntityMaxRotationSpeed(final double newEntityMaxRotationSpeed) {
         this.numberVariables.replace("entityMaxRotationSpeed", newEntityMaxRotationSpeed);
     }
 
-    public int getEntitySensorsCount() {
-        return this.numberVariables.get("entitySensorsCount").intValue();
+    public int getEntitySensorsCount() throws EvosimException {
+        return getIntegerValue("entitySensorsCount");
     }
 
     public void setEntitySensorsCount(final int newEntitySensorsCount) {
         this.numberVariables.replace("entitySensorsCount", newEntitySensorsCount);
     }
 
-    public double getEntityRadius() {
-        return this.numberVariables.get("entityRadius").doubleValue();
+    public double getEntityRadius() throws EvosimException {
+        return getDoubleValue("entityRadius");
     }
 
     public void setEntityRadius(final double newEntityRadius) {
         this.numberVariables.replace("entityEntityRadius", newEntityRadius);
     }
 
-    public double getEntitySensorsLength() {
-        return this.numberVariables.get("entitySensorsLength").doubleValue();
+    public double getEntitySensorsLength() throws EvosimException {
+        return getDoubleValue("entitySensorsLength");
     }
 
     public void setEntitySensorsLength(final double newEntitySensorsLength) {
         this.numberVariables.replace("entitySensorsLength", newEntitySensorsLength);
     }
 
-    public double getEntityMaxSpeed() {
-        return this.numberVariables.get("entityMaxSpeed").doubleValue();
+    public double getEntityMaxSpeed() throws EvosimException {
+        return getDoubleValue("entityMaxSpeed");
     }
 
     public void setEntityMaxSpeed(final double newEntityMaxSpeed) {
         this.numberVariables.replace("entityMaxSpeed", newEntityMaxSpeed);
     }
 
-    public double getEntityMinSpeed() {
-        return this.numberVariables.get("entityMinSpeed").doubleValue();
+    public double getEntityMinSpeed() throws EvosimException {
+        return getDoubleValue("entityMinSpeed");
     }
 
     public void setEntityMinSpeed(final double newEntityMinSpeed) {
         this.numberVariables.replace("entityMinxSpeed", newEntityMinSpeed);
     }
 
-    public double getEntitySpeedMutationRate() {
-        return this.numberVariables.get("entitySpeedMutationRate").doubleValue();
+    public double getEntitySpeedMutationRate() throws EvosimException {
+        return getDoubleValue("entitySpeedMutationRate");
     }
 
     public void setEntitySpeedMutationRate(final double newEntitySpeedMutationRate) {
         this.numberVariables.replace("entitySpeedMutationRate", newEntitySpeedMutationRate);
     }
 
-    public double getEntityEnergyDrainRate() {
-        return this.numberVariables.get("entityEnergyDrainRate").doubleValue();
+    public double getEntityEnergyDrainRate() throws EvosimException {
+        return getDoubleValue("entityEnergyDrainRate");
     }
 
     public void setEntityEnergyDrainRate(final double newEntityEnergyDrainRate) {
         this.numberVariables.replace("entityEnergyDrainRat", newEntityEnergyDrainRate);
     }
 
-    public int getPredatorMaxNumber() {
-        return this.numberVariables.get("predatorMaxNumber").intValue();
+    public int getPredatorMaxNumber() throws EvosimException {
+        return getIntegerValue("predatorMaxNumber");
     }
 
     public void setPredatorMaxNumber(final int newPredatorMaxNumber) {
         this.numberVariables.replace("predatorMaxNumber", newPredatorMaxNumber);
     }
 
-    public double getPredatorViewAngle() {
-        return this.numberVariables.get("predatorViewAngle").doubleValue();
+    public double getPredatorViewAngle() throws EvosimException {
+        return getDoubleValue("predatorViewAngle");
     }
 
     public void setPredatorViewAngle(final double newPredatorViewAngle) {
         this.numberVariables.replace("predatorViewAngle", newPredatorViewAngle);
     }
 
-    public double getPredatorSplitEnergyFillingSpeed() {
-        return this.numberVariables.get("predatorSplitEnergyFillingSpeed").doubleValue();
+    public double getPredatorSplitEnergyFillingSpeed() throws EvosimException {
+        return getDoubleValue("predatorSplitEnergyFillingSpeed");
     }
 
     public void setPredatorSplitEnergyFillingSpeed(
@@ -550,16 +546,16 @@ public final class Configuration {
                 "predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
     }
 
-    public double getPredatorEnergyFillingSpeed() {
-        return this.numberVariables.get("predatorEnergyFillingSpeed").doubleValue();
+    public double getPredatorEnergyFillingSpeed() throws EvosimException {
+        return getDoubleValue("predatorEnergyFillingSpeed");
     }
 
     public void setPredatorEnergyFillingSpeed(final double newPredatorEnergyFillingSpeed) {
         this.numberVariables.replace("predatorEnergyFillingSpeed", newPredatorEnergyFillingSpeed);
     }
 
-    public double getPredatorEnergyBaseDrainingSpeed() {
-        return this.numberVariables.get("predatorEnergyBaseDrainingSpeed").doubleValue();
+    public double getPredatorEnergyBaseDrainingSpeed() throws EvosimException {
+        return getDoubleValue("predatorEnergyBaseDrainingSpeed");
     }
 
     public void setPredatorEnergyBaseDrainingSpeed(
@@ -568,72 +564,72 @@ public final class Configuration {
                 "predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
     }
 
-    public int getPredatorInitialPopulation() {
-        return this.numberVariables.get("predatorInitialPopulation").intValue();
+    public int getPredatorInitialPopulation() throws EvosimException {
+        return getIntegerValue("predatorInitialPopulation");
     }
 
     public void setPredatorInitialPopulation(final int newPredatorInitialPopulation) {
         this.numberVariables.replace("predatorInitialPopulation", newPredatorInitialPopulation);
     }
 
-    public int getPreyInitialPopulation() {
-        return this.numberVariables.get("preyInitialPopulation").intValue();
+    public int getPreyInitialPopulation() throws EvosimException {
+        return getIntegerValue("preyInitialPopulation");
     }
 
     public void setPreyInitialPopulation(final int newPreyInitialPopulation) {
         this.numberVariables.replace("preyInitialPopulation", newPreyInitialPopulation);
     }
 
-    public int getPreyMaxNumber() {
-        return this.numberVariables.get("preyMaxNumber").intValue();
+    public int getPreyMaxNumber() throws EvosimException {
+        return getIntegerValue("preyMaxNumber");
     }
 
     public void setPreyMaxNumber(final int newPreyMaxNumber) {
         this.numberVariables.replace("preyMaxNumber", newPreyMaxNumber);
     }
 
-    public double getPreyViewAngle() {
-        return this.numberVariables.get("preyViewAngle").doubleValue();
+    public double getPreyViewAngle() throws EvosimException {
+        return getDoubleValue("preyViewAngle");
     }
 
     public void setPreyViewAngle(final double newPreyViewAngle) {
         this.numberVariables.replace("preyViewAngle", newPreyViewAngle);
     }
 
-    public double getPreySplitEnergyFillingSpeed() {
-        return this.numberVariables.get("preySplitEnergyFillingSpeed").doubleValue();
+    public double getPreySplitEnergyFillingSpeed() throws EvosimException {
+        return getDoubleValue("preySplitEnergyFillingSpeed");
     }
 
     public void setPreySplitEnergyFillingSpeed(final double newPreySplitEnergyFillingSpeed) {
         this.numberVariables.replace("preySplitEnergyFillingSpeed", newPreySplitEnergyFillingSpeed);
     }
 
-    public double getPreyEnergyFillingSpeed() {
-        return this.numberVariables.get("preyEnergyFillingSpeed").doubleValue();
+    public double getPreyEnergyFillingSpeed() throws EvosimException {
+        return getDoubleValue("preyEnergyFillingSpeed");
     }
 
     public void setPreyEnergyFillingSpeed(final double newPreyEnergyFillingSpeed) {
         this.numberVariables.replace("preyEnergyFillingSpeed", newPreyEnergyFillingSpeed);
     }
 
-    public int getNeuralNetworkLayersNumber() {
-        return this.numberVariables.get("neuralNetworkLayersNumber").intValue();
+    public int getNeuralNetworkLayersNumber() throws EvosimException {
+        return getIntegerValue("neuralNetworkLayersNumber");
     }
 
     public void setNeuralNetworkLayersNumber(final int newNeuralNetworkLayersNumber) {
         this.numberVariables.replace("neuralNetworkLayersNumber", newNeuralNetworkLayersNumber);
     }
 
-    public int getMapSizeX() {
-        return this.numberVariables.get("mapSizeX").intValue();
+    public int getMapSizeX() throws EvosimException {
+        return getIntegerValue("mapSizeX");
     }
 
-    public int getMapSizeY() {
-        return this.numberVariables.get("mapSizeY").intValue();
+    public int getMapSizeY() throws EvosimException {
+        return getIntegerValue("mapSizeY");
     }
 
-    public int getGridSize() {
-        return this.numberVariables.get("gridSize").intValue();
+    public int getGridSize() throws EvosimException {
+        return getIntegerValue("gridSize");
     }
 
     public void setMapSizeX(final int newMapSizeX) {
@@ -646,5 +642,29 @@ public final class Configuration {
 
     public void setGridSize(final int newGridSize) {
         this.numberVariables.replace("gridSize", newGridSize);
+    }
+
+    private int getIntegerValue(final String variable) throws EvosimException {
+        try {
+            return this.numberVariables.get(variable).intValue();
+        } catch (Exception e) {
+            throw new EvosimException("Couldn't load variable: " + variable + ".");
+        }
+    }
+
+    private double getDoubleValue(final String variable) throws EvosimException {
+        try {
+            return this.numberVariables.get(variable).doubleValue();
+        } catch (Exception e) {
+            throw new EvosimException("Couldn't load variable: " + variable + ".");
+        }
+    }
+
+    private <T> T getObjectValue(final String variable) throws EvosimException {
+        try {
+            return (T) this.objectVariables.get(variable);
+        } catch (Exception e) {
+            throw new EvosimException("Couldn't load variable: " + variable + ".");
+        }
     }
 }

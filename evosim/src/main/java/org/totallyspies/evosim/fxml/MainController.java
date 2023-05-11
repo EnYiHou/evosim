@@ -485,9 +485,13 @@ public final class MainController {
             configuration.setDuration(
                     this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
 
-            this.timerProperty.set(configuration.getDuration());
+            try {
+                this.timerProperty.set(configuration.getDuration());
+            } catch (EvosimException ex) {
+                throw new RuntimeException(ex);
+            }
 
-            XYChart.Series<String, Number> totalPopulationChartSeries;
+                    XYChart.Series<String, Number> totalPopulationChartSeries;
             totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
                     .getData().get(0);
             totalPopulationChartSeries.getData().add(
