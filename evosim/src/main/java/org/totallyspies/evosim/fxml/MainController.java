@@ -4,7 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -16,8 +20,6 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
-import org.totallyspies.evosim.entities.Predator;
-import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.ui.AboutWindow;
 import org.totallyspies.evosim.ui.EvosimApplication;
@@ -27,6 +29,8 @@ import javafx.scene.input.KeyCode;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import org.totallyspies.evosim.ui.NeuralNetworkView;
+import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.ConfigurationException;
 import org.totallyspies.evosim.utils.FileSelector;
@@ -42,6 +46,12 @@ public final class MainController {
      * Max chart points.
      */
     private static final int MAX_CHART_POINTS = 10;
+
+    /**
+     * The current controller being used.
+     */
+    @Getter
+    private static MainController controller;
 
     /**
      * One seconds in milliseconds.
@@ -68,6 +78,12 @@ public final class MainController {
      */
     @FXML
     private MapCanvas mapCanvas;
+
+    /**
+     * The AnchorPane containing all elements on top of the map.
+     */
+    @FXML
+    private AnchorPane mapOverlay;
 
     /**
      * Play button.
@@ -100,53 +116,60 @@ public final class MainController {
     private LineChart predatorPopulationChart;
 
     /**
-     * The timer label of the simulation.
+     * Tab pane containing the charts and the neural network view.
      */
     @FXML
-    private Label timerLabel;
+    @Getter
+    private TabPane tabPane;
 
     /**
-     * Label for the chosen entity's energy.
+     * The neural network view.
      */
-    @FXML
-    private Label energyLabel;
+    @Getter
+    private NeuralNetworkView neuralNetworkTab;
+
 
     /**
-     * Label for the chosen entity's splitEnergy.
+     * A {@code #VBox} containing the nodes displaying entity stats on focus.
      */
     @FXML
-    private Label splitEnergyLabel;
+    @Getter
+    private VBox entityStats;
 
     /**
      * Label for the chosen entity's speed.
      */
     @FXML
+    @Getter
     private Label speedLabel;
 
     /**
      * Label for the chosen entity's child count.
      */
     @FXML
+    @Getter
     private Label childCountLabel;
 
     /**
      * Label for the chosen entity's livingTime.
      */
     @FXML
+    @Getter
     private Label livingTimeLabel;
 
     /**
-     * Entity information tab.
+     * A {@code #ProgressBar} displaying the tracked entity's energy level.
      */
-    @Getter
     @FXML
-    private Tab entityInfoTab;
+    @Getter
+    private ProgressBar pbEnergy;
 
     /**
-     * Entity information label.
+     * A {@code #ProgressBar} displaying the tracked entity's split energy level.
      */
     @FXML
-    private Label entityInfoLabel;
+    @Getter
+    private ProgressBar pbSplit;
 
     /**
      * Rectangle for W key.
@@ -175,12 +198,27 @@ public final class MainController {
     /**
      * The chosen Entity.
      */
-    private ObjectProperty<Entity> chosenEntityProperty;
+    @FXML
+    @Getter
+    private HBox energyBar;
 
+    /**
+     * An {@code #HBox} containing the progress bar and label for the entity energy.
+     */
+    @FXML
+    @Getter
+    private HBox splitEnergyBar;
+
+    /**
+     * The timer label of the simulation.
+     */
+    @FXML
+    private Label timerLabel;
 
     /**
      * The timer of the simulation.
      */
+    @Getter
     private ObjectProperty<java.time.Duration> timerProperty;
 
     /**
@@ -189,9 +227,9 @@ public final class MainController {
     private Timeline timerTimeLine;
 
     /**
-     *  In order to explore the user's files.
+     * In order to explore the user's files.
      */
-    private FileChooser fileChooser;
+    private final FileChooser fileChooser;
 
     /**
      * The configuration File running.
@@ -207,6 +245,7 @@ public final class MainController {
      * Constructor to create the MainController object.
      */
     public MainController() {
+        controller = this;
         this.fileChooser = FileSelector.getFileSelector();
         MainController.configuration = Configuration.getConfiguration();
         EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
@@ -216,6 +255,12 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws ConfigurationException {
+
+        NeuralNetworkView neuronView = new NeuralNetworkView();
+        neuronView.setDisable(true);
+        tabPane.getTabs().add(neuronView);
+        this.neuralNetworkTab = neuronView;
+
         this.setTimer();
         this.setCharts();
         this.initializeSimulation();
@@ -225,8 +270,6 @@ public final class MainController {
         this.setChart(preyPopulationChart);
         this.setChart(predatorPopulationChart);
 
-        this.setChosenEntityProperty();
-        this.setEntityInfoTab();
         this.setKeyPress();
 
         playAnimation();
@@ -274,6 +317,7 @@ public final class MainController {
 
     /**
      * Saving a configuration with the menu bar.
+     *
      * @param event on click
      */
     @FXML
@@ -305,6 +349,7 @@ public final class MainController {
 
     /**
      * Loading the configuration.
+     *
      * @param event on click
      */
     @FXML
@@ -321,6 +366,7 @@ public final class MainController {
 
     /**
      * Loading the latest configuration.
+     *
      * @param event on click
      */
     @FXML
@@ -331,6 +377,7 @@ public final class MainController {
 
     /**
      * Loading the default configuration.
+     *
      * @param event on click
      */
     @FXML
@@ -342,6 +389,7 @@ public final class MainController {
 
     /**
      * Display an alert to the user to confirm if they'd like to close the app.
+     *
      * @param event
      */
     @FXML
@@ -354,7 +402,7 @@ public final class MainController {
      */
     @FXML
     private void clickOnUnfollow() {
-        Thread tread =  new Thread(() -> {
+        Thread tread = new Thread(() -> {
             MapCanvas.getPRESSED_KEYS().add(KeyCode.B);
             try {
                 Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
@@ -385,7 +433,6 @@ public final class MainController {
         scene.setOnKeyPressed(event -> {
             KeyCode code = event.getCode();
             if (!MapCanvas.getPRESSED_KEYS().contains(code)
-                    && MapCanvas.getACCEPTED_KEYS().contains(code)
                     && !event.isControlDown()) {
                 MapCanvas.getPRESSED_KEYS().push(code);
                 changeOpacityWASD(code, true);
@@ -396,29 +443,6 @@ public final class MainController {
             MapCanvas.getPRESSED_KEYS().remove(event.getCode());
             changeOpacityWASD(event.getCode(), false);
         });
-    }
-
-    /**
-     * Sets the play and pause buttons.
-     */
-    private void setEntityInfoTab() {
-        this.entityInfoLabel.setText(this.chosenEntityProperty.getValue().toString());
-        this.energyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Energy: %.2f",
-                        this.chosenEntityProperty.getValue().getEnergy()),
-                this.chosenEntityProperty));
-        this.splitEnergyLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Split Energy: %.2f",
-                        this.chosenEntityProperty.getValue().getSplitEnergy()),
-                this.chosenEntityProperty));
-        this.speedLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Speed: %.2f",
-                        this.chosenEntityProperty.getValue().getSpeed()),
-                this.chosenEntityProperty));
-        this.childCountLabel.textProperty().bind(Bindings.createStringBinding(
-                () -> String.format("Child Count: %d",
-                        this.chosenEntityProperty.getValue().getChildCount()),
-                this.chosenEntityProperty));
     }
 
     /**
@@ -475,10 +499,6 @@ public final class MainController {
                     new XYChart.Data<>(counter.toString(),
                             this.mapCanvas.getSimulation().getPredatorCount()));
 
-            livingTimeLabel.setText(
-                    String.format("Living Time: %d s",
-                            this.chosenEntityProperty.getValue()
-                                    .getLivingTime(System.currentTimeMillis())));
             checkChartSize(totalPopulationChartSeries);
             checkChartSize(preyPopulationChartSeries);
             checkChartSize(predatorPopulationChartSeries);
@@ -490,6 +510,7 @@ public final class MainController {
 
     /**
      * Verify the chart sizes.
+     *
      * @param series chart series
      */
     private void checkChartSize(final XYChart.Series<String, Number> series) {
@@ -525,26 +546,22 @@ public final class MainController {
     }
 
     /**
-     * Set the chosen entity property that will be displayed.
+     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
      */
-    private void setChosenEntityProperty() {
-        this.chosenEntityProperty = new SimpleObjectProperty<>();
-        //TODO: Make it null and working
-        this.chosenEntityProperty.set(new Predator(
-                null,
-                1,
-                new Point(0, 0),
-                1)
-        );
+    @FXML
+    private void settingsMenuClicked() {
+        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
+        sw.getSettingsStage().show();
     }
+
 
     /**
      * Change the opacity of WASD keys rectangles.
-     * @param keyCode key associated with the rectangle
+     *
+     * @param keyCode       key associated with the rectangle
      * @param darkerOpacity should the rectangle be darker
      */
     private void changeOpacityWASD(final KeyCode keyCode, final boolean darkerOpacity) {
-
         double opacityPercentage = darkerOpacity ? MAX_OPACITY : MIN_OPACITY;
 
         switch (keyCode) {

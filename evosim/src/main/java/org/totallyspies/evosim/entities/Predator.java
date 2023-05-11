@@ -124,6 +124,7 @@ public final class Predator extends Entity {
         predator.setBrain(this.getBrain().mutate());
 
         this.setChildCount(this.getChildCount() + 1);
+
         return predator;
     }
 
