@@ -396,6 +396,17 @@ public final class Configuration {
         return Configuration.CONFIGURATION;
     }
 
+    public Duration getDuration() {
+        if (this.objectVariables.get("duration") instanceof String) {
+            return Duration.parse((String) this.objectVariables.get("duration"));
+        }
+        return (Duration) this.objectVariables.get("duration");
+    }
+
+    public void setDuration(final Duration newDuration) {
+        this.objectVariables.replace("duration", newDuration);
+    }
+
     public double getEntityMaxRotationSpeed() {
         return this.numberVariables.get("entityMaxRotationSpeed").doubleValue();
     }
