@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.utils;
 
 import org.junit.jupiter.api.Test;
-import org.totallyspies.evosim.utils.Configuration.Defaults;
 
 /**
  * Tests for Configuration class.
