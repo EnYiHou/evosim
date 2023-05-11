@@ -190,7 +190,7 @@ public abstract class Entity {
         final Point entityPosition, final double newViewAngle,
         final double newRotationAngle, final Color newCol) throws EvosimException {
         this.simulation = newSimulation;
-        this.birthTime = System.currentTimeMillis();
+        this.birthTime = 0L;
         this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
@@ -253,7 +253,7 @@ public abstract class Entity {
             final double newEnergy,
             final double newSplitEnergy,
             final int newChildCount) {
-        this.birthTime = System.currentTimeMillis();
+        this.birthTime = 0L;
         this.simulation = null;
         this.color = newColor;
         this.speed = newSpeed;
@@ -420,6 +420,6 @@ public abstract class Entity {
      * @return The living time of this entity.
      */
     public final int getLivingTime(final long currentTime) {
-        return (int) ((currentTime - this.birthTime) / SECONDS_TO_MILLISECONDS);
+        return (int) ((currentTime - this.birthTime));
     }
 }
