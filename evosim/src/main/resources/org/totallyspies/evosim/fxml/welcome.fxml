@@ -34,7 +34,7 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="pane">
                            <children>
-                              <Button fx:id="importBtn" mnemonicParsing="false" prefHeight="42.0" prefWidth="133.0" text="Import">
+                              <Button mnemonicParsing="false" onAction="#pressOnImportBtn" prefHeight="42.0" prefWidth="133.0" text="Import">
                                  <graphic>
                                     <FontIcon iconLiteral="mdi2f-file-import" iconSize="30" wrappingWidth="35.39993476867676" />
                                  </graphic>

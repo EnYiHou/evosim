@@ -18,13 +18,13 @@ public class ConfigurationTest {
   private Configuration configuration = Configuration.getConfiguration();
 
   @Test
-  public void saveConfiguration() throws ConfigurationException {
+  public void saveConfiguration() throws EvosimException {
     configuration.saveLatestConfiguration(null);
     Defaults.LATEST_CONFIGURATION.delete();
   }
 
   @Test
-  public void loadDefaultConfiguration() throws ConfigurationException {
+  public void loadDefaultConfiguration() throws EvosimException {
     configuration.saveLatestConfiguration(null);
     Configuration.getConfiguration().loadLastFile();
 
@@ -32,7 +32,7 @@ public class ConfigurationTest {
   }
 
   @Test
-  public void loadLastConfiguration() throws ConfigurationException {
+  public void loadLastConfiguration() throws EvosimException {
     configuration.setEntityMaxSpeed(67d);
     configuration.setPreySplitEnergyFillingSpeed(45d);
     configuration.saveLatestConfiguration(null);

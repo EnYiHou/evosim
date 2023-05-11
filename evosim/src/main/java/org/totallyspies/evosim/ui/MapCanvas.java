@@ -105,10 +105,6 @@ public final class MapCanvas extends ResizableCanvas {
      */
     private final Point dragAnchor;
 
-    public static LinkedList<KeyCode> getPressedKeys() {
-        return PRESSED_KEYS;
-    }
-
     /**
      * Construct an instance of MapCanvas.
      */

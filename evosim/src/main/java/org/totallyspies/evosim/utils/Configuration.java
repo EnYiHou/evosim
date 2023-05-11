@@ -247,7 +247,7 @@ public final class Configuration {
      * Saves the default files that the user didn't have time to save.
      * @param simulation The simulati
      */
-    public void saveLatestConfiguration(final Simulation simulation) throws ConfigurationException {
+    public void saveLatestConfiguration(final Simulation simulation) throws EvosimException {
         saveConfiguration(Defaults.LATEST_CONFIGURATION, simulation);
     }
 
@@ -258,7 +258,7 @@ public final class Configuration {
      * @param simulation simulation used.
      */
     public void saveConfiguration(
-            final File jsonFile, final Simulation simulation) throws ConfigurationException {
+            final File jsonFile, final Simulation simulation) throws EvosimException {
         try {
             JSONObject jsonText = getJSONObject(simulation);
 
@@ -270,7 +270,7 @@ public final class Configuration {
                 jsonText.write(writer);
             }
         } catch (Exception e) {
-            throw new ConfigurationException("Could not save the JSON Configuration.");
+            throw new EvosimException("Could not save the JSON Configuration.");
         }
     }
 
@@ -279,7 +279,7 @@ public final class Configuration {
      * application.
      * @return entity list saved.
      */
-    public List<Entity> loadLastFile() throws ConfigurationException {
+    public List<Entity> loadLastFile() throws EvosimException {
         return loadFile(Defaults.LATEST_CONFIGURATION);
     }
 
@@ -289,7 +289,7 @@ public final class Configuration {
      * @param jsonFile file we want to load.
      * @return entity list
      */
-    public List<Entity> loadFile(final File jsonFile) throws ConfigurationException {
+    public List<Entity> loadFile(final File jsonFile) throws EvosimException {
         JSONObject jsonGlobal = loadSavedFile(jsonFile);
 
         JSONObject jsonConfiguration = jsonGlobal.getJSONObject("configuration");
@@ -315,7 +315,7 @@ public final class Configuration {
                 jsonConfiguration.getJSONObject("objects").get(key)));
     }
 
-    private List<Entity> loadEntities(final JSONArray jsonEntities) throws ConfigurationException {
+    private List<Entity> loadEntities(final JSONArray jsonEntities) throws EvosimException {
         List<Entity> entities;
         try {
             entities = mapper
@@ -323,7 +323,7 @@ public final class Configuration {
 
             return entities;
         } catch (Exception e) {
-            throw new ConfigurationException("Couldn't load the entities of the JSON File.");
+            throw new EvosimException("Couldn't load the entities of the JSON File.");
         }
     }
 
@@ -333,13 +333,13 @@ public final class Configuration {
      * @param jsonFile The file name of the json file we want to load.
      * @return JSONObject from a source JSON Configuration file.
      */
-    private static JSONObject loadSavedFile(final File jsonFile) throws ConfigurationException {
+    private static JSONObject loadSavedFile(final File jsonFile) throws EvosimException {
         String jsonText = " ";
         try {
             jsonText = Files.readString(Path.of(jsonFile.getPath()));
             return new JSONObject(jsonText);
         } catch (Exception e) {
-            throw new ConfigurationException("Couldn't load the saved Configuration JSON file.");
+            throw new EvosimException("Couldn't load the saved Configuration JSON file.");
         }
     }
 
