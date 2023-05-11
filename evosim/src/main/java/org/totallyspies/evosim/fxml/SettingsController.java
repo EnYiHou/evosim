@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -13,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
+import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
 
@@ -116,15 +116,16 @@ public final class SettingsController {
     private static FileChooser fileChooser;
 
     /**
-     * A Label to give feedback based on the image file search.
+     * The global configuration.
      */
-    @FXML
-    private Label feedbackLabel;
+    private Configuration configuration;
 
     /**
      * Initializes {@code settings.fxml}. Sets the checkbox states on open.
      */
     public void initialize() {
+        configuration = Configuration.getConfiguration();
+
         // set states on launch
         this.cbEnergy.setSelected(energyVisible);
         this.cbSplitEnergy.setSelected(splitEnergyVisible);
@@ -197,17 +198,19 @@ public final class SettingsController {
     private void selectImgClicked() throws EvosimException, InterruptedException {
         File chosenFile = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
         if (chosenFile != null) {
-            Image img = new Image(chosenFile.toURI().toString());
-            while (img.isBackgroundLoading()) {
+            configuration.setBackgroundImage(
+                    new Image(chosenFile.toURI().toString()));
+            Image config = configuration.getBackgroundImage();
+
+            while (config.isBackgroundLoading()) {
                 Thread.sleep(BACKGROUND_LOAD_WAIT_TIME);
             }
 
-            if (img.isError()) {
+            if (config.isError()) {
                 throw new EvosimException("Couldn't load the image.");
             }
 
-            feedbackLabel.setText("Selected: " + chosenFile.getName());
-            MapCanvas.setMapImage(img);
+            MapCanvas.setMapImage(config);
         }
     }
 
@@ -215,9 +218,9 @@ public final class SettingsController {
      * Clears the MapCanvas' selected image.
      */
     @FXML
-    private void clearImgClicked() {
-        feedbackLabel.setText("[No selected image]");
-        MapCanvas.setMapImage(null);
+    private void clearImgClicked() throws EvosimException {
+        configuration.setBackgroundImage(null);
+        MapCanvas.setMapImage(configuration.getBackgroundImage());
     }
 
 }

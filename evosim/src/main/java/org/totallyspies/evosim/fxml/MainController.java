@@ -248,6 +248,7 @@ public final class MainController {
         controller = this;
         this.fileChooser = FileSelector.getFileChooserJson();
         MainController.configuration = Configuration.getConfiguration();
+        EvosimApplication.getApplication().getPreShutdownHooks().add(this::pauseAnimation);
         EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
@@ -255,15 +256,23 @@ public final class MainController {
      * Initializes {@code main.fxml}.
      */
     public void initialize() throws EvosimException {
+        this.timerProperty = new SimpleObjectProperty<>();
+        this.initializeSimulation();
+
+        this.timerLabel.textProperty().bind(
+                Bindings.createStringBinding(
+                        () -> String.format("%02d:%02d:%02d",
+                                timerProperty.getValue().toHoursPart(),
+                                timerProperty.getValue().toMinutesPart(),
+                                timerProperty.getValue().toSecondsPart()),
+                        this.timerProperty));
 
         NeuralNetworkView neuronView = new NeuralNetworkView();
         neuronView.setDisable(true);
         tabPane.getTabs().add(neuronView);
         this.neuralNetworkTab = neuronView;
 
-        this.setTimer();
-        this.setCharts();
-        this.initializeSimulation();
+        this.setXYCharts();
         this.setPlayPauseButtons();
 
         this.setChart(totalPopulationChart);
@@ -284,7 +293,7 @@ public final class MainController {
         }
     }
 
-    private void newSimulation(final List<Entity> entityList) {
+    private void newSimulation(final List<Entity> entityList) throws EvosimException {
         Simulation simulation = new Simulation(
                 Configuration.getConfiguration().getMapSizeX(),
                 Configuration.getConfiguration().getMapSizeY(),
@@ -294,16 +303,21 @@ public final class MainController {
 
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
-        //this.timerProperty.set(java.time.Duration.ZERO);
+        MapCanvas.setMapImage(configuration.getBackgroundImage());
+        this.timerProperty.set(configuration.getDuration());
     }
 
-    private void newDefaultSimulation() {
+    private void newDefaultSimulation() throws EvosimException {
         this.mapCanvas.attach(new Simulation(
             Configuration.getConfiguration().getMapSizeX(),
             Configuration.getConfiguration().getMapSizeY(),
             Configuration.getConfiguration().getGridSize(),
             true
         ));
+        configuration.setDuration(java.time.Duration.ZERO);
+        configuration.setBackgroundImage(null);
+        MapCanvas.setMapImage(configuration.getBackgroundImage());
+        this.timerProperty.set(configuration.getDuration());
     }
 
     /**
@@ -383,7 +397,7 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoadDefault(final ActionEvent event) {
+    private void clickOnLoadDefault(final ActionEvent event) throws EvosimException {
         pauseAnimation();
         configuration.restoreToDefaults();
         this.newDefaultSimulation();
@@ -396,6 +410,7 @@ public final class MainController {
      */
     @FXML
     private void clickOnExit(final ActionEvent event) {
+        pauseAnimation();
         EvosimApplication.getApplication().requestExit(null);
     }
 
@@ -418,7 +433,7 @@ public final class MainController {
 
     private void shutdown() {
         try {
-            pauseAnimation();
+            playAnimation();
             Configuration
                     .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
         } catch (EvosimException e) {
@@ -461,25 +476,22 @@ public final class MainController {
         chart.setCreateSymbols(false); // disable symbols
     }
 
-    private void setTimer() {
-        this.timerProperty = new SimpleObjectProperty<>(java.time.Duration.ZERO);
-        this.timerLabel.textProperty().bind(
-                Bindings.createStringBinding(
-                        () -> String.format("%02d:%02d:%02d",
-                                timerProperty.getValue().toHoursPart(),
-                                timerProperty.getValue().toMinutesPart(),
-                                timerProperty.getValue().toSecondsPart()),
-                        this.timerProperty));
-    }
-
-    private void setCharts() {
+    private void setXYCharts() {
         AtomicLong counter = new AtomicLong();
-        this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
-                Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
-            this.timerProperty.set(
+        this.timerTimeLine = new Timeline(
+                new javafx.animation.KeyFrame(
+                        Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
+
+            configuration.setDuration(
                     this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
 
-            XYChart.Series<String, Number> totalPopulationChartSeries;
+            try {
+                this.timerProperty.set(configuration.getDuration());
+            } catch (EvosimException ex) {
+                throw new RuntimeException(ex);
+            }
+
+                    XYChart.Series<String, Number> totalPopulationChartSeries;
             totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
                     .getData().get(0);
             totalPopulationChartSeries.getData().add(

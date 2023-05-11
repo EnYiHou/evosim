@@ -9,6 +9,7 @@ import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.utils.EvosimException;
 
 
 /**
@@ -32,7 +33,7 @@ public final class Predator extends Entity {
     public Predator(final Simulation newSimulation,
                     final double speed,
                     final Point position,
-                    final double rotationAngleInRadians) {
+                    final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
             Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
             Color.RED);
@@ -93,7 +94,7 @@ public final class Predator extends Entity {
      * </p>
      */
     @Override
-    public void onUpdate() {
+    public void onUpdate() throws EvosimException {
         this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
                 .getPredatorEnergyBaseDrainingSpeed());
 
@@ -110,15 +111,20 @@ public final class Predator extends Entity {
     @Override
     public Predator clone() {
         // Mutate the speed of the predator
-        Predator predator = new Predator(
-                this.getSimulation(),
-                (Math.random()
-                        < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                        ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
-                        : this.getSpeed(),
+        Predator predator = null;
+        try {
+            predator = new Predator(
+                    this.getSimulation(),
+                    (Math.random()
+                            < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                            ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
+                            : this.getSpeed(),
 
-                new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians());
+                    new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
+                    this.getDirectionAngleInRadians());
+        } catch (EvosimException e) {
+            throw new RuntimeException(e);
+        }
 
         // mutate the brain of the predator
         predator.setBrain(this.getBrain().mutate());
@@ -129,7 +135,7 @@ public final class Predator extends Entity {
     }
 
     @Override
-    protected void onCollideHandler(final Entity other) {
+    protected void onCollideHandler(final Entity other) throws EvosimException {
         this.setSplitEnergy(this.getSplitEnergy()
                 + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
         this.setEnergy(Math.min(1, this.getEnergy()
