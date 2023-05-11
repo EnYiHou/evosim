@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
+import org.totallyspies.evosim.utils.EvosimException;
+import org.totallyspies.evosim.utils.FileSelector;
 
 import java.io.File;
 
@@ -127,9 +129,7 @@ public final class SettingsController {
         this.cbTimer.setSelected(timerVisible);
         this.cpMap.setValue(MapCanvas.getMapColor());
 
-        fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "Image Files", "*" + ".png", "*.jpg", "*.gif"));
+        fileChooser = FileSelector.getFileChooserImage();
 
         cpMap.valueProperty().addListener((o, ov, nv) -> MapCanvas.setMapColor(nv));
     }
@@ -190,14 +190,20 @@ public final class SettingsController {
      * Opens the file explorer to select an image for the map background.
      */
     @FXML
-    private void selectImgClicked() {
+    private void selectImgClicked() throws EvosimException, InterruptedException {
         File chosenFile = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
-        try {
+        if (chosenFile != null) {
             Image img = new Image(chosenFile.toURI().toString());
+            while (img.isBackgroundLoading()) {
+                Thread.sleep(500);
+            }
+
+            if (img.isError()) {
+                throw new EvosimException("Couldn't load the image.");
+            }
+
             feedbackLabel.setText("Selected: " + chosenFile.getName());
             MapCanvas.setMapImage(img);
-        } catch (Exception e) {
-            System.out.println("Image not found.");
         }
     }
 

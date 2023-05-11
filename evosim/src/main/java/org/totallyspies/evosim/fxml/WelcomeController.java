@@ -1,11 +1,11 @@
 package org.totallyspies.evosim.fxml;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
@@ -20,6 +20,7 @@ import org.totallyspies.evosim.ui.WindowUtils;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.Configuration.Defaults;
+import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
 import org.totallyspies.evosim.utils.ResourceManager;
 
@@ -53,12 +54,6 @@ public final class WelcomeController {
     private Accordion options;
 
     /**
-     * The button that imports an configuration.
-     */
-    @FXML
-    private Button importBtn;
-
-    /**
      * Constructs the WelcomeController to have an empty arraylist of submission callbacks.
      */
     public WelcomeController() {
@@ -77,18 +72,6 @@ public final class WelcomeController {
             BackgroundPosition.CENTER,
             new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
         )));
-
-        this.importBtn.setOnAction(event -> {
-            FileChooser fileChooser = FileSelector.getFileSelector();
-            fileChooser.setTitle("Import Configuration");
-            File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
-            if (file != null) {
-                EvosimApplication.getApplication().getStage().setUserData(file);
-                WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
-                        this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
-                        "");
-            }
-        });
 
         Configuration config = Configuration.getConfiguration();
 
@@ -216,6 +199,20 @@ public final class WelcomeController {
         );
 
         this.hideLockDividers();
+    }
+
+    @FXML
+    private void pressOnImportBtn(ActionEvent event) throws EvosimException {
+            FileChooser fileChooser = FileSelector.getFileChooserJson();
+            fileChooser.setTitle("Import Configuration");
+            File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
+            if (file != null) {
+                Configuration.getConfiguration().loadFile(file);
+                EvosimApplication.getApplication().getStage().setUserData(file);
+                WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
+                        this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
+                        "");
+            }
     }
 
     /**

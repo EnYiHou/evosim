@@ -1,11 +1,11 @@
 package org.totallyspies.evosim.utils;
 
-public class ConfigurationException extends Exception {
+public class EvosimException extends Exception {
 
     /**
      * If an unknown error occurs.
      */
-    public ConfigurationException() {
+    public EvosimException() {
         super("JSON File Invalid, Try some other JSON File.");
     }
 
@@ -13,7 +13,7 @@ public class ConfigurationException extends Exception {
      * If an known error occurs.
      * @param message
      */
-    public ConfigurationException(final String message) {
+    public EvosimException(final String message) {
         super(message);
     }
 }

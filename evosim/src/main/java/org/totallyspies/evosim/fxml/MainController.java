@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.ui.NeuralNetworkView;
 import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
-import org.totallyspies.evosim.utils.ConfigurationException;
+import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
 
 import java.io.File;
@@ -246,7 +246,7 @@ public final class MainController {
      */
     public MainController() {
         controller = this;
-        this.fileChooser = FileSelector.getFileSelector();
+        this.fileChooser = FileSelector.getFileChooserJson();
         MainController.configuration = Configuration.getConfiguration();
         EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
@@ -254,7 +254,7 @@ public final class MainController {
     /**
      * Initializes {@code main.fxml}.
      */
-    public void initialize() throws ConfigurationException {
+    public void initialize() throws EvosimException {
 
         NeuralNetworkView neuronView = new NeuralNetworkView();
         neuronView.setDisable(true);
@@ -275,7 +275,7 @@ public final class MainController {
         playAnimation();
     }
 
-    private void initializeSimulation() throws ConfigurationException {
+    private void initializeSimulation() throws EvosimException {
         configurationFile = (File) EvosimApplication.getApplication().getStage().getUserData();
         if (configurationFile != null) {
             newSimulation(configuration.loadFile(configurationFile));
@@ -321,13 +321,15 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnSave(final ActionEvent event) throws ConfigurationException {
+    private void clickOnSave(final ActionEvent event) throws EvosimException {
         if (configurationFile == null) {
             pauseAnimation();
             this.fileChooser.setTitle("Save Configuration");
             configurationFile = fileChooser
                     .showSaveDialog(EvosimApplication.getApplication().getStage());
-            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
+            if (configurationFile != null) {
+                configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
+            }
         }
     }
 
@@ -336,7 +338,7 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnSaveAs(final ActionEvent event) throws ConfigurationException {
+    private void clickOnSaveAs(final ActionEvent event) throws EvosimException {
         pauseAnimation();
         fileChooser.setTitle("Save Configuration");
         configurationFile = fileChooser
@@ -353,7 +355,7 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoad(final ActionEvent event) throws ConfigurationException {
+    private void clickOnLoad(final ActionEvent event) throws EvosimException {
         pauseAnimation();
         fileChooser.setTitle("Load Configuration");
         File file = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
@@ -370,7 +372,7 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoadLatest(final ActionEvent event) throws ConfigurationException {
+    private void clickOnLoadLatest(final ActionEvent event) throws EvosimException {
         pauseAnimation();
         this.newSimulation(configuration.loadLastFile());
     }
@@ -419,7 +421,7 @@ public final class MainController {
             pauseAnimation();
             Configuration
                     .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
-        } catch (ConfigurationException e) {
+        } catch (EvosimException e) {
             throw new RuntimeException(e);
         }
     }

@@ -75,23 +75,21 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Settings">
               <items>
-                <CustomMenuItem mnemonicParsing="false" text="Modify Preferences">
-                  <content>
-                    <Label onMouseClicked="#settingsMenuClicked" text="Modify Preferences" />
-                  </content>
-                </CustomMenuItem>
-              </items>
-              <items>
-                  <Menu mnemonicParsing="false" text="Preferences">
-                            <items>
-                                <MenuItem mnemonicParsing="false" onAction="#clickOnUnfollow" text="Unfollow Entity">
-                                    <accelerator>
-                                        <KeyCodeCombination alt="UP" code="B" control="ANY" meta="UP" shift="UP" shortcut="UP" />
-                                    </accelerator>
-                                </MenuItem>
-                            </items>
-                        </Menu>
+                <MenuItem mnemonicParsing="false" text="Modify Preferences" onAction="#settingsMenuClicked">
+                    <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="P" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                    </accelerator>
+                </MenuItem>
+                <Menu mnemonicParsing="false" text="Preferences">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#clickOnUnfollow" text="Unfollow Entity">
+                          <accelerator>
+                            <KeyCodeCombination alt="UP" code="B" control="ANY" meta="UP" shift="UP" shortcut="UP" />
+                          </accelerator>
+                        </MenuItem>
                     </items>
+                </Menu>
+              </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
