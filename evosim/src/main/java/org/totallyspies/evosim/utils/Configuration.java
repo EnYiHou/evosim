@@ -3,7 +3,9 @@ package org.totallyspies.evosim.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.image.Image;
 import lombok.ToString;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.totallyspies.evosim.entities.Entity;
@@ -11,13 +13,13 @@ import org.totallyspies.evosim.simulation.Simulation;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Configuration class consists of saving the settings the user configurations. If the user close
@@ -151,16 +153,27 @@ public final class Configuration {
         public static final int GRID_SIZE = 150;
 
         /**
-         * The default name of a configuration file.
-         */
-        public static final File LATEST_CONFIGURATION =
-                new File(System.getProperty("java.io.tmpdir"), "latestConfigurations.json");
-
-        /**
          * The default timer duration.
          */
         public static final Duration DEFAULT_DURATION = Duration.ZERO;
+
+        /**
+         * The default encoded image from Base64.
+         */
+        public static final String DEFAULT_IMAGE_BASE_64 = "";
     }
+
+    /**
+     * The name of the latest configuration file.
+     */
+    public static final File LATEST_CONFIGURATION =
+            new File(System.getProperty("java.io.tmpdir"), "latestConfigurations.json");
+
+    /**
+     * The name of the tmp path of an img.
+     */
+    public static final File TMP_IMG_PATH =
+            new File(System.getProperty("java.io.tmpdir"), "imgEvosim.png");
 
     /**
      * All the number variables needed for the configuration.
@@ -238,6 +251,8 @@ public final class Configuration {
         this.defaultsNumberVariables.put("gridSize", Defaults.GRID_SIZE);
 
         this.defaultObjectVariables.put("duration", Defaults.DEFAULT_DURATION);
+        this.defaultObjectVariables.put("backgroundImageBase64", Defaults.DEFAULT_IMAGE_BASE_64);
+
 
         this.mapper = new ObjectMapper();
         restoreToDefaults();
@@ -248,7 +263,7 @@ public final class Configuration {
      * @param simulation The simulati
      */
     public void saveLatestConfiguration(final Simulation simulation) throws EvosimException {
-        saveConfiguration(Defaults.LATEST_CONFIGURATION, simulation);
+        saveConfiguration(LATEST_CONFIGURATION, simulation);
     }
 
     /**
@@ -280,7 +295,7 @@ public final class Configuration {
      * @return entity list saved.
      */
     public List<Entity> loadLastFile() throws EvosimException {
-        return loadFile(Defaults.LATEST_CONFIGURATION);
+        return loadFile(LATEST_CONFIGURATION);
     }
 
     /**
@@ -394,6 +409,41 @@ public final class Configuration {
      */
     public static Configuration getConfiguration() {
         return Configuration.CONFIGURATION;
+    }
+
+    public Image getBackgroundImage() throws EvosimException {
+        if (this.objectVariables.get("backgroundImageBase64").equals("")) {
+            return null;
+        }
+        byte[] decodedBytes = Base64
+                .getDecoder()
+                .decode((String) this.objectVariables.get("backgroundImageBase64"));
+        try {
+            FileUtils.writeByteArrayToFile(TMP_IMG_PATH, decodedBytes);
+        } catch (IOException e) {
+            throw new EvosimException("Couldn't load the image.");
+        }
+        return new Image(TMP_IMG_PATH.toURI().toString());
+    }
+
+    public void setBackgroundImage(Image image) throws EvosimException {
+        byte[] fileContent = new byte[0];
+
+        if (image == null) {
+            this.objectVariables.replace("backgroundImageBase64", "");
+            return;
+        }
+
+        try {
+            File imgFile = new File(new URL(image.getUrl()).getFile());
+            fileContent = FileUtils.readFileToByteArray(imgFile);
+        } catch (IOException e) {
+            throw new EvosimException("Couldn't load the image.");
+        }
+        String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+        this.objectVariables.replace("backgroundImageBase64", encodedString);
+
     }
 
     public Duration getDuration() {

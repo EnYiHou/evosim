@@ -248,6 +248,7 @@ public final class MainController {
         controller = this;
         this.fileChooser = FileSelector.getFileChooserJson();
         MainController.configuration = Configuration.getConfiguration();
+        EvosimApplication.getApplication().getPreShutdownHooks().add(this::pauseAnimation);
         EvosimApplication.getApplication().getShutdownHooks().add(this::shutdown);
     }
 
@@ -292,7 +293,7 @@ public final class MainController {
         }
     }
 
-    private void newSimulation(final List<Entity> entityList) {
+    private void newSimulation(final List<Entity> entityList) throws EvosimException {
         Simulation simulation = new Simulation(
                 Configuration.getConfiguration().getMapSizeX(),
                 Configuration.getConfiguration().getMapSizeY(),
@@ -302,10 +303,11 @@ public final class MainController {
 
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
+        MapCanvas.setMapImage(configuration.getBackgroundImage());
         this.timerProperty.set(configuration.getDuration());
     }
 
-    private void newDefaultSimulation() {
+    private void newDefaultSimulation() throws EvosimException {
         this.mapCanvas.attach(new Simulation(
             Configuration.getConfiguration().getMapSizeX(),
             Configuration.getConfiguration().getMapSizeY(),
@@ -313,6 +315,8 @@ public final class MainController {
             true
         ));
         configuration.setDuration(java.time.Duration.ZERO);
+        configuration.setBackgroundImage(null);
+        MapCanvas.setMapImage(configuration.getBackgroundImage());
         this.timerProperty.set(configuration.getDuration());
     }
 
@@ -393,7 +397,7 @@ public final class MainController {
      * @param event on click
      */
     @FXML
-    private void clickOnLoadDefault(final ActionEvent event) {
+    private void clickOnLoadDefault(final ActionEvent event) throws EvosimException {
         pauseAnimation();
         configuration.restoreToDefaults();
         this.newDefaultSimulation();
@@ -429,7 +433,7 @@ public final class MainController {
 
     private void shutdown() {
         try {
-            pauseAnimation();
+            playAnimation();
             Configuration
                     .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
         } catch (EvosimException e) {
