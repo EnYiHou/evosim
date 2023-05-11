@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.math.Formulas;
+import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.Rng;
 
 /**
@@ -129,8 +130,15 @@ public class NeuralNetwork {
                 .stream()
                 .map(neurons -> neurons
                     .stream()
-                    .map(neuron -> neuron.mutate(
-                        Configuration.getConfiguration().getEntitySpeedMutationRate())
+                    .map(neuron -> {
+                                try {
+                                    return neuron.mutate(
+                                        Configuration
+                                                .getConfiguration().getEntitySpeedMutationRate());
+                                } catch (EvosimException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
 
                     )
                     .toList()

@@ -17,9 +17,11 @@ import org.totallyspies.evosim.geometry.Coordinate;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.utils.Configuration;
+import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.NamedThreadFactory;
 import org.totallyspies.evosim.utils.ReadWriteLockedItem;
 import org.totallyspies.evosim.utils.Rng;
+
 import java.util.List;
 
 /**
@@ -115,7 +117,7 @@ public final class Simulation {
         final int newMapSizeY,
         final int newGridSize,
         final boolean shouldPopulate
-    ) {
+    ) throws EvosimException {
         this.mapSizeX = newMapSizeX;
         this.mapSizeY = newMapSizeY;
         this.gridSize = newGridSize;
@@ -152,7 +154,7 @@ public final class Simulation {
      * Populates the entity list by constructing all initial entities based on user given initial
      * populations.
      */
-    private void defaultPopulateEntityList() {
+    private void defaultPopulateEntityList() throws EvosimException {
         final double maxSpeed = Configuration.getConfiguration().getEntityMaxSpeed();
         final double minSpeed = Configuration.getConfiguration().getEntityMinSpeed();
         final int initPrey = Configuration.getConfiguration().getPreyInitialPopulation();
@@ -202,7 +204,7 @@ public final class Simulation {
         }
     }
 
-    private void checkCollisions(final Entity a, final Entity b) {
+    private void checkCollisions(final Entity a, final Entity b) throws EvosimException {
         if (a.collidesWith(b)) {
             a.onCollide(b);
             b.onCollide(a);
@@ -229,7 +231,11 @@ public final class Simulation {
 
                         final Coordinate oldCoord = pointToGridCoord(entity.getBodyCenter());
 
-                        entity.update();
+                        try {
+                            entity.update();
+                        } catch (EvosimException e) {
+                            throw new RuntimeException(e);
+                        }
 
                         if (entity.isDead()) {
                             if (entity instanceof Prey) {
@@ -250,37 +256,42 @@ public final class Simulation {
 
                             return;
                         } else if (entity.isSplit()) {
-                            if (
-                                (
-                                    entity instanceof Prey
-                                        && this.preyCount
-                                        < Configuration.getConfiguration().getPreyMaxNumber()
-                                )
-                                    || (
-                                    entity instanceof Predator
-                                        && this.predatorCount
-                                        < Configuration.getConfiguration().getPredatorMaxNumber()
-                                )
-                            ) {
-                                final ReadWriteLockedItem<List<Entity>> chk =
-                                    this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
+                            try {
+                                if (
+                                    (
+                                        entity instanceof Prey
+                                            && this.preyCount
+                                            < Configuration.getConfiguration().getPreyMaxNumber()
+                                    )
+                                        || (
+                                        entity instanceof Predator
+                                            && this.predatorCount
+                                            < Configuration.getConfiguration()
+                                                .getPredatorMaxNumber()
+                                    )
+                                ) {
+                                    final ReadWriteLockedItem<List<Entity>> chk =
+                                        this.updateToAdd[oldCoord.getX()][oldCoord.getY()];
 
-                                chk.writeLock().lock();
-                                try {
-                                    chk.get().add(entity.clone());
-                                } finally {
-                                    chk.writeLock().unlock();
+                                    chk.writeLock().lock();
+                                    try {
+                                        chk.get().add(entity.clone());
+                                    } finally {
+                                        chk.writeLock().unlock();
+                                    }
+
+                                    entity.setSplitEnergy(0);
+                                    entity.setChildCount(entity.getChildCount() + 1);
+                                    entity.setSplit(false);
+
+                                    if (entity instanceof Prey) {
+                                        ++this.preyCount;
+                                    } else {
+                                        ++this.predatorCount;
+                                    }
                                 }
-
-                                entity.setSplitEnergy(0);
-                                entity.setChildCount(entity.getChildCount() + 1);
-                                entity.setSplit(false);
-
-                                if (entity instanceof Prey) {
-                                    ++this.preyCount;
-                                } else {
-                                    ++this.predatorCount;
-                                }
+                            } catch (EvosimException e) {
+                                throw new RuntimeException(e);
                             }
                         }
 
@@ -460,7 +471,13 @@ public final class Simulation {
                         continue;
                     }
 
-                    this.forEachGridEntities(x, y, other -> this.checkCollisions(entity, other));
+                    this.forEachGridEntities(x, y, other -> {
+                        try {
+                            this.checkCollisions(entity, other);
+                        } catch (EvosimException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }
             }
         };

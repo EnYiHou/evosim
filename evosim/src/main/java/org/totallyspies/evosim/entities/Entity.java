@@ -16,6 +16,7 @@ import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
+import org.totallyspies.evosim.utils.EvosimException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -187,7 +188,7 @@ public abstract class Entity {
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
         final Point entityPosition, final double newViewAngle,
-        final double newRotationAngle, final Color newCol) {
+        final double newRotationAngle, final Color newCol) throws EvosimException {
         this.simulation = newSimulation;
         this.birthTime = System.currentTimeMillis();
         this.color = newCol;
@@ -279,7 +280,7 @@ public abstract class Entity {
     /**
      * Handles what happens on update every frame to an entity.
      */
-    public abstract void onUpdate();
+    public abstract void onUpdate() throws EvosimException;
 
     /**
      * Moves the entity according to the given movement speed and its current rotation angle.
@@ -290,7 +291,7 @@ public abstract class Entity {
      *
      * @param movementSpeed the speed of the movement.
      */
-    public void move(final double movementSpeed) {
+    public void move(final double movementSpeed) throws EvosimException {
         Point position = this.body.getCenter();
 
         double positionX = Math.max(0,
@@ -312,7 +313,7 @@ public abstract class Entity {
     /**
      * Processes data from this entity's sensors and moves according to its decision.
      */
-    public final void update() {
+    public final void update() throws EvosimException {
         if (this.isDead()) {
             return;
         }
@@ -352,7 +353,7 @@ public abstract class Entity {
      * @param other Entity to be checked.
      * @return If both entities collide.
      */
-    public boolean collidesWith(final Entity other) {
+    public boolean collidesWith(final Entity other) throws EvosimException {
         if (other.getClass().equals(this.getClass()) || this.dead || other.dead) {
             return false;
         }
@@ -374,7 +375,7 @@ public abstract class Entity {
         return distance < Configuration.getConfiguration().getEntityRadius() * 2;
     }
 
-    private void updateSensors(final double distance, final double angle) {
+    private void updateSensors(final double distance, final double angle) throws EvosimException {
         final double start = Formulas.normAngle(
             this.directionAngleInRadians - this.fovAngleInRadians / 2
         );
@@ -396,14 +397,14 @@ public abstract class Entity {
         );
     }
 
-    protected abstract void onCollideHandler(Entity other);
+    protected abstract void onCollideHandler(Entity other) throws EvosimException;
 
     /**
      * Event when this entity collides with another.
      *
      * @param other The entity that has been collided into.
      */
-    public void onCollide(final Entity other) {
+    public void onCollide(final Entity other) throws EvosimException {
         this.onCollideHandler(other);
     }
 

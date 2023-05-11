@@ -9,6 +9,7 @@ import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
+import org.totallyspies.evosim.utils.EvosimException;
 
 
 /**
@@ -32,7 +33,7 @@ public final class Prey extends Entity {
     public Prey(final Simulation newSimulation,
         final double speed,
         final Point position,
-        final double rotationAngleInRadians) {
+        final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
             Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
             Color.GREEN);
@@ -94,7 +95,7 @@ public final class Prey extends Entity {
      * </p>
      */
     @Override
-    public void onUpdate() {
+    public void onUpdate() throws EvosimException {
         // passively gain energy
         this.setSplitEnergy(this.getSplitEnergy()
                 + Configuration.getConfiguration().getPreySplitEnergyFillingSpeed());
@@ -111,14 +112,19 @@ public final class Prey extends Entity {
     @Override
     public Prey clone() {
         // Mutate the speed of the prey
-        Prey prey = new Prey(
-                this.getSimulation(),
-                (Math.random()
-                        < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                        ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
-                        : this.getSpeed(),
-                new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                this.getDirectionAngleInRadians());
+        Prey prey = null;
+        try {
+            prey = new Prey(
+                    this.getSimulation(),
+                    (Math.random()
+                            < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                            ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
+                            : this.getSpeed(),
+                    new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
+                    this.getDirectionAngleInRadians());
+        } catch (EvosimException e) {
+            throw new RuntimeException(e);
+        }
 
         // mutate the brain of the prey
         prey.setBrain(this.getBrain().mutate());
