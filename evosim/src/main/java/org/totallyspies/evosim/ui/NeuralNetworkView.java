@@ -6,11 +6,12 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
+import org.totallyspies.evosim.neuralnetwork.Neuron;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NeuralNetworkView extends Tab {
 
@@ -33,8 +34,12 @@ public class NeuralNetworkView extends Tab {
     /**
      * The structure of the neurons in the neural network.
      */
-    private final ArrayList<ArrayList<NeuronView>> neuralNetworkStructure;
+    private final ArrayList<ArrayList<NeuronView>> neuronStructure;
 
+    /**
+     * The structure of the weights in the neural network.
+     */
+    private final ArrayList<ArrayList<ArrayList<Line>>> weightsStructure;
 
     /**
      * Constructs a new Tab for displaying a NeuralNetwork.
@@ -44,52 +49,83 @@ public class NeuralNetworkView extends Tab {
         this.neuralNetworkView = new Pane();
         this.setContent(this.neuralNetworkView);
         this.neuralNetworkView.setBackground(Background.fill(Color.ALICEBLUE));
-        this.neuralNetworkStructure = new ArrayList<>();
+        this.neuronStructure = new ArrayList<>();
+        this.weightsStructure = new ArrayList<>();
         this.neuralNetwork = null;
         this.setRenderer();
         this.renderer.start();
     }
 
     private void generateNeuralNetworkStructure() {
-        this.neuralNetworkStructure.clear();
-        this.neuralNetwork.getNeuronLayers().forEach(layer -> {
-            ArrayList<NeuronView> neuronViews = layer.stream()
-                    .map(NeuronView::new)
-                    .collect(Collectors.toCollection(ArrayList::new));
-            this.neuralNetworkStructure.add(neuronViews);
-        });
+        this.neuronStructure.clear();
+        for (int layer = 0; layer < this.neuralNetwork.getNeuronLayers().size(); layer++) {
+            ArrayList<NeuronView> neuronLayer = new ArrayList<>();
+            ArrayList<ArrayList<Line>> weightLayer = new ArrayList<>();
+            for (int neuron = 0; neuron < this.neuralNetwork.getNeuronLayers()
+                    .get(layer).size(); neuron++) {
+                Neuron sNeuron = this.neuralNetwork.getNeuronLayers().get(layer).get(neuron);
+                ArrayList<Line> specificNeuron = new ArrayList<>();
+                NeuronView neuronView = new NeuronView(sNeuron);
+                neuronLayer.add(neuronView);
+                if (layer != 0) {
+                    for (int weight = 0; weight < sNeuron.getWeights().length; weight++) {
+                        Line specificWeight = new Line();
+                        NeuronView previousNeuron = this.neuronStructure.get(layer - 1)
+                                .get(weight);
+                        NeuronView currentNeuron = neuronView;
+                        specificWeight.setStroke(Color.BLACK);
+                        specificWeight.startXProperty().bind(previousNeuron.translateXProperty()
+                                .add(previousNeuron.widthProperty().divide(2)));
+                        specificWeight.startYProperty().bind(previousNeuron.translateYProperty()
+                                .add(previousNeuron.heightProperty().divide(2)));
+                        specificWeight.endXProperty().bind(currentNeuron.translateXProperty()
+                                .add(currentNeuron.widthProperty().divide(2)));
+                        specificWeight.endYProperty().bind(currentNeuron.translateYProperty()
+                                .add(currentNeuron.heightProperty().divide(2)));
+                        specificNeuron.add(specificWeight);
+                        specificWeight.toBack();
+                        neuralNetworkView.getChildren().add(specificWeight);
+                    }
+                }
+
+                weightLayer.add(specificNeuron);
+            }
+            this.neuronStructure.add(neuronLayer);
+            this.weightsStructure.add(weightLayer);
+        }
     }
 
     private void adjustToView() {
-        int layer = this.neuralNetworkStructure.size();
+        int layer = this.neuronStructure.size();
 
         double width = this.neuralNetworkView.getWidth();
         double height = this.neuralNetworkView.getHeight();
 
-        double widthPerLayer = width / (layer + 1);
 
-        for (int i = 0; i < layer; i++) {
-            List<NeuronView> neuronViews = this.neuralNetworkStructure.get(i);
-            double heightPerNeuron = height / (neuronViews.size() + 1);
+        for (int specificLayer = 0; specificLayer < layer; specificLayer++) {
+            List<NeuronView> neuronViews = this.neuronStructure.get(specificLayer);
             for (int j = 0; j < neuronViews.size(); j++) {
                 NeuronView neuronView = neuronViews.get(j);
-                neuronView.setCenterX(widthPerLayer * (i + 1));
-                neuronView.setCenterY(heightPerNeuron * (j + 1));
+
+
+                neuronView.translateXProperty().bind(
+                        this.neuralNetworkView.widthProperty().divide(layer + 1)
+                                .multiply(specificLayer + 1)
+                                .subtract(neuronView.widthProperty().divide(2)));
+
+                neuronView.translateYProperty().bind(
+                        this.neuralNetworkView.heightProperty().divide(neuronViews.size() + 1)
+                                .multiply(j + 1)
+                                .subtract(neuronView.heightProperty().divide(2)));
+
                 this.neuralNetworkView.getChildren().add(neuronView);
 
-                if (i != 0) {
-                    List<NeuronView> previousNeuronViews = this.neuralNetworkStructure.get(i - 1);
-                    for (NeuronView previousNeuronView : previousNeuronViews) {
-                        Line weight = new Line();
-                        weight.setStroke(Color.BLACK);
-                        weight.setStartX(previousNeuronView.getCenterX());
-                        weight.setStartY(previousNeuronView.getCenterY());
-
-                        weight.setEndX(neuronView.getCenterX());
-                        weight.setEndY(neuronView.getCenterY());
-
-                        this.neuralNetworkView.getChildren().add(weight);
-                        weight.toBack();
+                if (specificLayer != 0) {
+                    List<Line> sNeuron = this.weightsStructure.get(specificLayer).get(j);
+                    for (int sWeight = 0; sWeight < sNeuron.size(); sWeight++) {
+                        Line weight = sNeuron.get(sWeight);
+                        weight.setStrokeWidth(Formulas.logistic((neuronView.getNeuron()
+                                .getWeights()[sWeight])));
                     }
                 }
             }
@@ -101,9 +137,21 @@ public class NeuralNetworkView extends Tab {
         renderer = new AnimationTimer() {
             @Override
             public void handle(final long now) {
-                for (List<NeuronView> layer : neuralNetworkStructure) {
+                for (List<NeuronView> layer : neuronStructure) {
                     for (NeuronView neuronView : layer) {
                         neuronView.update();
+                    }
+                    if (layer != neuronStructure.get(0)) {
+                        for (NeuronView neuronView : layer) {
+                            for (int i = 0; i < neuronView.getNeuron().getWeights().length; i++) {
+                                Line weight = weightsStructure.get(neuronStructure.indexOf(layer))
+                                        .get(layer.indexOf(neuronView)).get(i);
+                                weight.setStrokeWidth(
+                                        Formulas.logistic(neuronView.getNeuron().getWeights()[i]));
+                                weight.setOpacity(
+                                        Formulas.logistic(neuronView.getNeuron().getWeights()[i]));
+                            }
+                        }
                     }
                 }
             }
@@ -117,6 +165,9 @@ public class NeuralNetworkView extends Tab {
      * @param newNeuralNetwork The NeuralNetwork to display.
      */
     public void setNeuralNetwork(final NeuralNetwork newNeuralNetwork) {
+        this.neuralNetworkView.getChildren().clear();
+        this.neuronStructure.clear();
+        this.weightsStructure.clear();
         this.neuralNetwork = newNeuralNetwork;
         if (newNeuralNetwork == null) {
             this.renderer.stop();
@@ -128,5 +179,7 @@ public class NeuralNetworkView extends Tab {
             this.setDisable(false);
 
         }
+
+        System.out.println(this.neuralNetworkView.getChildren().size());
     }
 }
