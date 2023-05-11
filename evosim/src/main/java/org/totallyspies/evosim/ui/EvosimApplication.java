@@ -25,10 +25,10 @@ public final class EvosimApplication extends Application {
     @Getter
     private static EvosimApplication application;
 
-    @Getter
     /**
      * The functions we need to run in order to pre-shutdown the application.
      */
+    @Getter
     private LinkedList<Runnable> preShutdownHooks;
 
     /**

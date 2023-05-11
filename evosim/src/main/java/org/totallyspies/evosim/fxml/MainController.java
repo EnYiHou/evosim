@@ -478,41 +478,42 @@ public final class MainController {
 
     private void setXYCharts() {
         AtomicLong counter = new AtomicLong();
-        this.timerTimeLine = new Timeline(new javafx.animation.KeyFrame(
-                Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
+        this.timerTimeLine = new Timeline(
+                new javafx.animation.KeyFrame(
+                        Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
 
-                    configuration.setDuration(
-                            this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
+            configuration.setDuration(
+                    this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
 
-                    this.timerProperty.set(configuration.getDuration());
+            this.timerProperty.set(configuration.getDuration());
 
-                    XYChart.Series<String, Number> totalPopulationChartSeries;
-                    totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
-                            .getData().get(0);
-                    totalPopulationChartSeries.getData().add(
-                            new XYChart.Data<>(counter.toString(),
-                                    this.mapCanvas.getSimulation().getPreyCount()
-                                            + this.mapCanvas.getSimulation().getPredatorCount()));
+            XYChart.Series<String, Number> totalPopulationChartSeries;
+            totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
+                    .getData().get(0);
+            totalPopulationChartSeries.getData().add(
+                    new XYChart.Data<>(counter.toString(),
+                            this.mapCanvas.getSimulation().getPreyCount()
+                                    + this.mapCanvas.getSimulation().getPredatorCount()));
 
-                    XYChart.Series<String, Number> preyPopulationChartSeries;
-                    preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
-                            .getData().get(0);
-                    preyPopulationChartSeries.getData().add(
-                            new XYChart.Data<>(
-                                    counter.toString(), this.mapCanvas.getSimulation().getPreyCount()));
+            XYChart.Series<String, Number> preyPopulationChartSeries;
+            preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
+                    .getData().get(0);
+            preyPopulationChartSeries.getData().add(
+                    new XYChart.Data<>(
+                            counter.toString(), this.mapCanvas.getSimulation().getPreyCount()));
 
-                    XYChart.Series<String, Number> predatorPopulationChartSeries;
-                    predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
-                            .getData().get(0);
-                    predatorPopulationChartSeries.getData().add(
-                            new XYChart.Data<>(counter.toString(),
-                                    this.mapCanvas.getSimulation().getPredatorCount()));
+            XYChart.Series<String, Number> predatorPopulationChartSeries;
+            predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
+                    .getData().get(0);
+            predatorPopulationChartSeries.getData().add(
+                    new XYChart.Data<>(counter.toString(),
+                            this.mapCanvas.getSimulation().getPredatorCount()));
 
-                    checkChartSize(totalPopulationChartSeries);
-                    checkChartSize(preyPopulationChartSeries);
-                    checkChartSize(predatorPopulationChartSeries);
+            checkChartSize(totalPopulationChartSeries);
+            checkChartSize(preyPopulationChartSeries);
+            checkChartSize(predatorPopulationChartSeries);
 
-                    counter.getAndAdd(1);
+            counter.getAndAdd(1);
         }));
         this.timerTimeLine.setCycleCount(Timeline.INDEFINITE);
     }

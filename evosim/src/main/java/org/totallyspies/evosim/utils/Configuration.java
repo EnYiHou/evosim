@@ -14,12 +14,15 @@ import org.totallyspies.evosim.simulation.Simulation;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Configuration class consists of saving the settings the user configurations. If the user close
@@ -426,7 +429,7 @@ public final class Configuration {
         return new Image(TMP_IMG_PATH.toURI().toString());
     }
 
-    public void setBackgroundImage(Image image) throws EvosimException {
+    public void setBackgroundImage(final Image image) throws EvosimException {
         byte[] fileContent = new byte[0];
 
         if (image == null) {

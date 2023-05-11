@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -18,9 +17,6 @@ import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Controller for the {@code settings.fxml} file. Dynamically adds all input fields.
@@ -119,10 +115,14 @@ public final class SettingsController {
      */
     private static FileChooser fileChooser;
 
+    private Configuration configuration;
+
     /**
      * Initializes {@code settings.fxml}. Sets the checkbox states on open.
      */
     public void initialize() {
+        configuration = Configuration.getConfiguration();
+
         // set states on launch
         this.cbEnergy.setSelected(energyVisible);
         this.cbSplitEnergy.setSelected(splitEnergyVisible);
@@ -195,8 +195,9 @@ public final class SettingsController {
     private void selectImgClicked() throws EvosimException, InterruptedException {
         File chosenFile = fileChooser.showOpenDialog(EvosimApplication.getApplication().getStage());
         if (chosenFile != null) {
-            Configuration.getConfiguration().setBackgroundImage(new Image(chosenFile.toURI().toString()));
-            Image config = Configuration.getConfiguration().getBackgroundImage();
+            configuration.setBackgroundImage(
+                    new Image(chosenFile.toURI().toString()));
+            Image config = configuration.getBackgroundImage();
 
             while (config.isBackgroundLoading()) {
                 Thread.sleep(BACKGROUND_LOAD_WAIT_TIME);
@@ -215,8 +216,8 @@ public final class SettingsController {
      */
     @FXML
     private void clearImgClicked() throws EvosimException {
-        Configuration.getConfiguration().setBackgroundImage(null);
-        MapCanvas.setMapImage(Configuration.getConfiguration().getBackgroundImage());
+        configuration.setBackgroundImage(null);
+        MapCanvas.setMapImage(configuration.getBackgroundImage());
     }
 
 }
