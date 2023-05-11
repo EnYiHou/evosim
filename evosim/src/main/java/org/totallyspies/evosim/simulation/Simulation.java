@@ -56,7 +56,7 @@ public final class Simulation {
     /**
      * Number of collision threads to create.
      */
-    private static final int COLLISION_THREAD_COUNT = 12;
+    private static final int COLLISION_THREAD_COUNT = 24;
 
     /**
      * Grids of entities.

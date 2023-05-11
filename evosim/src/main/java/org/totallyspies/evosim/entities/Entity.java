@@ -57,11 +57,6 @@ public abstract class Entity {
     private static final double SECONDS_TO_MILLISECONDS = 1000d;
 
     /**
-     * An array of sensors represented by custom Line objects.
-     */
-    private final Line[] sensors;
-
-    /**
      * A list of detected distances from the sensors.
      */
     private final double[] inputs;
@@ -213,11 +208,6 @@ public abstract class Entity {
         this.brain = new NeuralNetwork(
                 List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
 
-        // initialize sensors
-        this.sensors = new Line[sensorCount];
-        for (int i = 0; i < sensorCount; i++) {
-            this.sensors[i] = new Line(0, 0, 0, 0);
-        }
         this.inputs = new double[inputCount];
         Arrays.fill(this.inputs, Configuration.getConfiguration().getEntitySensorsLength());
     }
@@ -228,7 +218,6 @@ public abstract class Entity {
      * @param newFovAngleInRadians         The angle in degrees of entity.
      * @param newDirectionAngleInRadians   The direction angle in radians of entity.
      * @param newColor                     The color of entity.
-     * @param newSensors                   The sensors of entity.
      * @param newInputs                    The sensors data of entity.
      * @param newBody                      The body of entity.
      * @param newDead                      If dead of the entity.
@@ -243,7 +232,6 @@ public abstract class Entity {
             final double newFovAngleInRadians,
             final double newDirectionAngleInRadians,
             final Color newColor,
-            final Line[] newSensors,
             final double[] newInputs,
             final Circle newBody,
             final boolean newDead,
@@ -258,7 +246,6 @@ public abstract class Entity {
         this.speed = newSpeed;
         this.directionAngleInRadians = newDirectionAngleInRadians;
         this.fovAngleInRadians = newFovAngleInRadians;
-        this.sensors = newSensors;
         this.inputs = newInputs;
         this.body = newBody;
         this.dead = newDead;
@@ -357,43 +344,37 @@ public abstract class Entity {
             return false;
         }
 
-        double distance = Formulas.distance(
+        final double distance = Formulas.distance(
             this.getBodyCenter().getX(),
             this.getBodyCenter().getY(),
             other.getBodyCenter().getX(),
             other.getBodyCenter().getY()
         );
 
-        final double angle = Math.atan2(
-            other.getBodyCenter().getY() - this.getBodyCenter().getY(),
-            other.getBodyCenter().getX() - this.getBodyCenter().getX()
-        );
-
-        this.updateSensors(distance, angle);
+        if (distance < Configuration.getConfiguration().getEntitySensorsLength()) {
+            this.updateSensors(other);
+        }
 
         return distance < Configuration.getConfiguration().getEntityRadius() * 2;
     }
 
-    private void updateSensors(final double distance, final double angle) {
-        final double start = Formulas.normAngle(
-            this.directionAngleInRadians - this.fovAngleInRadians / 2
-        );
+    private void updateSensors(final Entity other) {
+        final double sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
 
-        final double end = Formulas.normAngle(
-            this.directionAngleInRadians + this.fovAngleInRadians / 2
-        );
+        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
 
-        if (!(start < angle && angle < end)) {
-            return;
+        for (int i = 0; i < sensorCount; ++i) {
+            final double angle = baseAngle + i * (this.getFovAngleInRadians() / sensorCount);
+
+            final double distance = Formulas.distanceCircleAngled(
+                this.getBodyCenter(), angle, other.getBody()
+            );
+
+            this.inputs[i] = Math.min(
+                this.inputs[i],
+                distance
+            );
         }
-
-        final double delta = angle - start;
-
-        final int sensorIndex = (int) ((delta * this.sensors.length) / (2 * Math.PI));
-
-        this.inputs[sensorIndex] = Math.min(
-            distance, Configuration.getConfiguration().getEntitySensorsLength()
-        );
     }
 
     protected abstract void onCollideHandler(Entity other);
@@ -422,6 +403,10 @@ public abstract class Entity {
         return (int) ((currentTime - this.birthTime) / SECONDS_TO_MILLISECONDS);
     }
 
+    /**
+     * Returns an array of lines of the sensors coming out of the entity.
+     * @return The lines of length of the sensors.
+     */
     public Line[] getSensors() {
         final Line[] sensors = new Line[Configuration.getConfiguration().getEntitySensorsCount()];
 

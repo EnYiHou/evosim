@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
-import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
@@ -41,7 +40,6 @@ public final class Prey extends Entity {
 
     /**
      * Construct a Prey from a JSON.
-     * @param sensors                   the sensors of the prey.
      * @param sensorsData               the sensors data of the prey.
      * @param speed                     the speed of the prey.
      * @param body                      the body of the prey.
@@ -56,7 +54,6 @@ public final class Prey extends Entity {
      */
     @JsonCreator
     public Prey(
-            @JsonProperty("sensors") final Line[] sensors,
             @JsonProperty("sensorsData") final double[] sensorsData,
             @JsonProperty("speed") final double speed,
             @JsonProperty("body") final Circle body,
@@ -74,7 +71,6 @@ public final class Prey extends Entity {
                 fovAngleInDegrees,
                 directionAngleInRadians,
                 Color.GREEN,
-                sensors,
                 sensorsData,
                 body,
                 dead,
