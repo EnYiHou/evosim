@@ -180,7 +180,5 @@ public class NeuralNetworkView extends Tab {
             this.setDisable(false);
 
         }
-
-        System.out.println(this.neuralNetworkView.getChildren().size());
     }
 }
