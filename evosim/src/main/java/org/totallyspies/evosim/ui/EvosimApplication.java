@@ -73,6 +73,8 @@ public final class EvosimApplication extends Application {
 
     private void showError(final Thread thread, final Throwable throwable) {
         Throwable rootCause = throwable;
+        rootCause.printStackTrace();
+
         while (rootCause.getCause() != null) {
             rootCause = rootCause.getCause();
         }

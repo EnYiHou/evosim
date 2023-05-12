@@ -48,6 +48,26 @@
                   </HBox>
                </children>
             </AnchorPane>
+            <AnchorPane prefHeight="100.0" prefWidth="435.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="423.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="pane">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#pressOnLatestBtn" prefHeight="42.0" prefWidth="133.0" text="Latest">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdi2r-reload" iconSize="30" wrappingWidth="35.39993476867676" />
+                                 </graphic>
+                                 <font>
+                                    <Font name="Ebrima" size="21.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
          </children>
       </VBox>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="pane">
