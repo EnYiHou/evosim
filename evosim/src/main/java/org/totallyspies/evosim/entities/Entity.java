@@ -415,6 +415,7 @@ public abstract class Entity {
      * Returns an array of lines of the sensors coming out of the entity.
      * @return The lines of length of the sensors.
      */
+    @JsonIgnore
     public Line[] getSensors() {
         final Line[] sensors = new Line[this.sensorCount];
 
