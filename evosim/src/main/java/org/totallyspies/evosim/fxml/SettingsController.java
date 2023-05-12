@@ -132,11 +132,19 @@ public final class SettingsController {
         this.cbSpeed.setSelected(speedVisible);
         this.cbChild.setSelected(childCountVisible);
         this.cbTimer.setSelected(timerVisible);
+
         this.cpMap.setValue(MapCanvas.getMapColor());
 
         fileChooser = FileSelector.getFileChooserImage();
 
-        cpMap.valueProperty().addListener((o, ov, nv) -> MapCanvas.setMapColor(nv));
+        cpMap.valueProperty().addListener((o, ov, nv) -> {
+                MapCanvas.setMapColor(nv);
+            try {
+                configuration.setBackgroundImage(null);
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import lombok.ToString;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -163,6 +164,11 @@ public final class Configuration {
          * The default encoded image from Base64.
          */
         public static final String DEFAULT_IMAGE_BASE_64 = "";
+
+        /**
+         * The default Color of the map.
+         */
+        public static final String DEFAULT_COLOR_MAP = Color.LIGHTSKYBLUE.toString();
     }
 
     /**
@@ -254,6 +260,7 @@ public final class Configuration {
 
         this.defaultObjectVariables.put("duration", Defaults.DEFAULT_DURATION);
         this.defaultObjectVariables.put("backgroundImageBase64", Defaults.DEFAULT_IMAGE_BASE_64);
+        this.defaultObjectVariables.put("colorMap", Defaults.DEFAULT_COLOR_MAP);
 
 
         this.mapper = new ObjectMapper();
@@ -443,6 +450,14 @@ public final class Configuration {
         } catch (Exception e) {
             throw new EvosimException("Couldn't load the image.");
         }
+    }
+
+    public Color getColorMap() throws EvosimException {
+        return Color.web(getObjectValue("colorMap"));
+    }
+
+    public void setColorMap(final Color newColorMap) {
+        this.objectVariables.replace("colorMap", newColorMap.toString());
     }
 
     public Duration getDuration() throws EvosimException {
