@@ -294,7 +294,7 @@ public final class Configuration {
                 jsonText.write(writer);
             }
         } catch (Exception e) {
-            throw new EvosimException("Could not save the JSON Configuration.");
+            throw new EvosimException("Could not save the JSON Configuration.", e);
         }
     }
 
@@ -347,7 +347,7 @@ public final class Configuration {
 
             return entities;
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load the entities of the JSON File.");
+            throw new EvosimException("Couldn't load the entities of the JSON File.", e);
         }
     }
 
@@ -363,7 +363,7 @@ public final class Configuration {
             jsonText = Files.readString(Path.of(jsonFile.getPath()));
             return new JSONObject(jsonText);
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load the saved Configuration JSON file.");
+            throw new EvosimException("Couldn't load the saved Configuration JSON file.", e);
         }
     }
 
@@ -431,7 +431,7 @@ public final class Configuration {
                 FileUtils.writeByteArrayToFile(TMP_IMG_PATH, decodedBytes);
             return new Image(TMP_IMG_PATH.toURI().toString());
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load the image.");
+            throw new EvosimException("Couldn't load the image.", e);
         }
     }
 
@@ -448,7 +448,7 @@ public final class Configuration {
             String encodedString = Base64.getEncoder().encodeToString(fileContent);
             this.objectVariables.replace("backgroundImageBase64", encodedString);
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load the image.");
+            throw new EvosimException("Couldn't load the image.", e);
         }
     }
 
@@ -663,7 +663,7 @@ public final class Configuration {
         try {
             return this.numberVariables.get(variable).intValue();
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load variable: " + variable + ".");
+            throw new EvosimException("Couldn't load variable: " + variable + ".", e);
         }
     }
 
@@ -671,7 +671,7 @@ public final class Configuration {
         try {
             return this.numberVariables.get(variable).doubleValue();
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load variable: " + variable + ".");
+            throw new EvosimException("Couldn't load variable: " + variable + ".", e);
         }
     }
 
@@ -679,7 +679,7 @@ public final class Configuration {
         try {
             return (T) this.objectVariables.get(variable);
         } catch (Exception e) {
-            throw new EvosimException("Couldn't load variable: " + variable + ".");
+            throw new EvosimException("Couldn't load variable: " + variable + ".", e);
         }
     }
 }
