@@ -68,11 +68,6 @@
                      </accelerator></MenuItem>
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
             <Menu mnemonicParsing="false" text="Settings">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#settingsMenuClicked" text="Modify Preferences">
@@ -93,6 +88,11 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
+                  <CustomMenuItem mnemonicParsing="false" text="Controls">
+                     <content>
+                        <Label onMouseClicked="#showControlsClicked" text="Controls" />
+                     </content>
+                  </CustomMenuItem>
                         <CustomMenuItem mnemonicParsing="false" text="About">
                             <content>
                                 <Label onMouseClicked="#aboutMenuClicked" text="About" />
@@ -311,19 +311,22 @@
                   </HBox>
                </children>
             </VBox>
-                <VBox alignment="CENTER" prefHeight="222.0" prefWidth="200.0" style="-fx-border-width: 3px 0 0 0; -fx-border-color: black; -fx-spacing: 5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
-                    <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Camera Controls" underline="true" VBox.vgrow="NEVER">
-                            <font>
-                                <Font name="System Bold" size="18.0" />
-                            </font>
-                        </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[WASD]&#13;Translate Camera&#13;[+/-]&#13;Zoom Camera&#13;[C]&#13;Center Camera&#13;[SPACE]&#13;Unfollow Entity&#13;[ESC]&#13;Exit Application" textAlignment="CENTER" wrappingWidth="178.55859375">
-                            <font>
-                                <Font size="14.0" />
-                            </font></Text>
-                    </children>
-                </VBox>
+            <VBox fx:id="popup" alignment="TOP_CENTER" fillWidth="false" focusTraversable="true" layoutX="10.0" layoutY="10.0" opacity="0.0" prefHeight="51.0" prefWidth="143.0" style="-fx-padding: 5px; -fx-spacing: 5px; -fx-border-color: rgba(120, 120, 120, 0.7); -fx-border-radius: 5 5 5 5; -fx-background-radius: 5 5 5 5; -fx-background-color: rgba(90, 90, 90, 0.2);" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+               <padding>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </padding>
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Controls" underline="true">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Text>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[WASD]: Translate Camera&#13;[DRAG]: Pan Camera&#13;[+/-]: Zoom Camera&#13;[C]: Center Camera&#13;[CLICK]: Track Entity&#13;[SPACE]: Unfollow Entity&#13;[ESC]: Exit Application" wrappingWidth="174.0">
+                     <font>
+                        <Font size="13.0" />
+                     </font></Text>
+               </children>
+            </VBox>
               </children>
           </AnchorPane>
     </center>

@@ -1,5 +1,8 @@
 package org.totallyspies.evosim.fxml;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -128,7 +131,6 @@ public final class MainController {
     @Getter
     private NeuralNetworkView neuralNetworkTab;
 
-
     /**
      * A {@code #VBox} containing the nodes displaying entity stats on focus.
      */
@@ -240,6 +242,12 @@ public final class MainController {
      * The global configuration of the application.
      */
     private static Configuration configuration;
+
+    /**
+     * VBox storing reminders for the controls.
+     */
+    @FXML
+    private VBox popup;
 
     /**
      * Constructor to create the MainController object.
@@ -586,4 +594,23 @@ public final class MainController {
             default -> { }
         }
     }
+
+    /**
+     * Shows a pop-up on screen that displays the controls.
+     */
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @FXML
+    private void showControlsClicked() {
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), this.popup);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(500), this.popup);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        PauseTransition p = new PauseTransition(Duration.seconds(8));
+        SequentialTransition s = new SequentialTransition(fadeIn, p, fadeOut);
+
+        s.play();
+    }
+
 }
