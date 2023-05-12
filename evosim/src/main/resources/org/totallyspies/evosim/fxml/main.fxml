@@ -62,6 +62,11 @@
                            </accelerator></MenuItem>
                      </items>
                   </Menu>
+                <MenuItem mnemonicParsing="false" onAction="#clickOnNewWindow" text="New Window">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
               <MenuItem mnemonicParsing="false" onAction="#clickOnExit" text="Exit">
                      <accelerator>
                         <KeyCodeCombination alt="DOWN" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />
@@ -75,15 +80,7 @@
                         <KeyCodeCombination alt="DOWN" code="P" control="ANY" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>
                 </MenuItem>
-                <Menu mnemonicParsing="false" text="Preferences">
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#clickOnUnfollow" text="Unfollow Entity">
-                          <accelerator>
-                            <KeyCodeCombination alt="UP" code="B" control="ANY" meta="UP" shift="UP" shortcut="UP" />
-                          </accelerator>
-                        </MenuItem>
-                    </items>
-                </Menu>
+                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
               </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

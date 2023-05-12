@@ -5,13 +5,16 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -24,19 +27,23 @@ import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.ui.AboutWindow;
-import org.totallyspies.evosim.ui.EvosimApplication;
-import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.totallyspies.evosim.ui.AboutWindow;
+import org.totallyspies.evosim.ui.EvosimApplication;
+import org.totallyspies.evosim.ui.MapCanvas;
 import org.totallyspies.evosim.ui.NeuralNetworkView;
 import org.totallyspies.evosim.ui.SettingsWindow;
+import org.totallyspies.evosim.ui.WindowUtils;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
+import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.io.File;
 
@@ -44,11 +51,6 @@ import java.io.File;
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
  */
 public final class MainController {
-
-    /**
-     * Max chart points.
-     */
-    private static final int MAX_CHART_POINTS = 10;
 
     /**
      * The current controller being used.
@@ -65,6 +67,12 @@ public final class MainController {
      * One decisecond in milliseconds.
      */
     private static final long ONE_DECISECOND_IN_MILLISECONDS = 100;
+
+    /**
+     * Max chart points.
+     */
+    private static final int MAX_CHART_POINTS
+            = (int) (30 * ONE_SECOND_IN_MILLISECONDS / ONE_DECISECOND_IN_MILLISECONDS);
 
     /**
      * Maximum opacity of WASD keys.
@@ -311,6 +319,8 @@ public final class MainController {
 
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
+
+        MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
         this.timerProperty.set(configuration.getDuration());
     }
@@ -324,6 +334,9 @@ public final class MainController {
         ));
         configuration.setDuration(java.time.Duration.ZERO);
         configuration.setBackgroundImage(null);
+        configuration.setColorMap(Color.web(Configuration.Defaults.DEFAULT_COLOR_MAP));
+
+        MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
         this.timerProperty.set(configuration.getDuration());
     }
@@ -335,6 +348,16 @@ public final class MainController {
     private void aboutMenuClicked() {
         AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
         aw.getAbtStage().show();
+    }
+
+    /**
+     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
+     */
+    @FXML
+    private void settingsMenuClicked() {
+        pauseAnimation();
+        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
+        sw.getSettingsStage().show();
     }
 
     /**
@@ -422,26 +445,13 @@ public final class MainController {
         EvosimApplication.getApplication().requestExit(null);
     }
 
-    /**
-     * Unfollow an entity clicking on the menu.
-     */
     @FXML
-    private void clickOnUnfollow() {
-        Thread tread = new Thread(() -> {
-            MapCanvas.getPRESSED_KEYS().add(KeyCode.B);
-            try {
-                Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            MapCanvas.getPRESSED_KEYS().remove(KeyCode.B);
-        });
-        tread.start();
+    private void clickOnNewWindow(final ActionEvent event) {
+        requestSwitchWindow();
     }
 
     private void shutdown() {
         try {
-            playAnimation();
             Configuration
                     .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
         } catch (EvosimException e) {
@@ -568,16 +578,6 @@ public final class MainController {
     }
 
     /**
-     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
-     */
-    @FXML
-    private void settingsMenuClicked() {
-        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
-        sw.getSettingsStage().show();
-    }
-
-
-    /**
      * Change the opacity of WASD keys rectangles.
      *
      * @param keyCode       key associated with the rectangle
@@ -613,4 +613,22 @@ public final class MainController {
         s.play();
     }
 
+    private void requestSwitchWindow() {
+        Alert confirmation = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Are you sure you'd like to switch to a new window?",
+                ButtonType.YES,
+                ButtonType.NO
+        );
+
+        Optional<ButtonType> selection = confirmation.showAndWait();
+        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
+            confirmation.close();
+        } else {
+            mapCanvas.getSimulation().shutdown();
+            WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
+                    this.getClass().getResource(ResourceManager.FXML_WELCOME_VIEW),
+                    this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());
+        }
+    }
 }

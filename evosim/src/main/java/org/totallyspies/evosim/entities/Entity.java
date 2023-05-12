@@ -52,9 +52,9 @@ public abstract class Entity {
     private static final int THIRD_LAYER_NODES_NUMBER = 2;
 
     /**
-     * An array of sensors represented by custom Line objects.
+     * In order to convert MILLISECONDS_TO_SECONDS.
      */
-    private final Line[] sensors;
+    private static final double SECONDS_TO_MILLISECONDS = 1000d;
 
     /**
      * A list of detected distances from the sensors.
@@ -64,22 +64,22 @@ public abstract class Entity {
     /**
      * Distance from left.
      */
-    private static final int INPUTS_LEFT_OFFSET = -1;
+    private static final int INPUTS_LEFT_OFFSET = 0;
 
     /**
      * Distance from top.
      */
-    private static final int INPUTS_TOP_OFFSET = -2;
+    private static final int INPUTS_TOP_OFFSET = 1;
 
     /**
      * Distance from right.
      */
-    private static final int INPUTS_RIGHT_OFFSET = -3;
+    private static final int INPUTS_RIGHT_OFFSET = 2;
 
     /**
      * Distance from bottom.
      */
-    private static final int INPUTS_BOTTOM_OFFSET = -4;
+    private static final int INPUTS_BOTTOM_OFFSET = 3;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
@@ -164,6 +164,12 @@ public abstract class Entity {
     private int childCount;
 
     /**
+     * The number of sensors of this entity.
+     */
+    @JsonIgnore
+    private final int sensorCount;
+
+    /**
      * Constructs a new Entity.
      *
      * @param newSimulation    Simulation for the entity to be created in.
@@ -189,23 +195,17 @@ public abstract class Entity {
 
         this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
 
-        final int sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
+        this.sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
 
         // Inputs with distances from each side
-        final int inputCount = sensorCount + 4;
+        final int inputCount = this.sensorCount + 4;
 
         // initialize neural network
         //TODO: List of layers
         this.brain = new NeuralNetwork(
                 List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
 
-        // initialize sensors
-        this.sensors = new Line[sensorCount];
-        for (int i = 0; i < sensorCount; i++) {
-            this.sensors[i] = new Line(0, 0, 0, 0);
-        }
         this.inputs = new double[inputCount];
-        Arrays.fill(this.inputs, Configuration.getConfiguration().getEntitySensorsLength());
     }
 
     /**
@@ -235,13 +235,12 @@ public abstract class Entity {
             final NeuralNetwork newBrain,
             final double newEnergy,
             final double newSplitEnergy,
-            final int newChildCount) {
+            final int newChildCount) throws EvosimException {
         this.birthTime = 0L;
         this.simulation = null;
         this.speed = newSpeed;
         this.directionAngleInRadians = newDirectionAngleInRadians;
         this.fovAngleInRadians = newFovAngleInRadians;
-        this.sensors = newSensors;
         this.inputs = newInputs;
         this.body = newBody;
         this.dead = newDead;
@@ -250,6 +249,7 @@ public abstract class Entity {
         this.energy = newEnergy;
         this.splitEnergy = newSplitEnergy;
         this.childCount = newChildCount;
+        this.sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
     }
 
     /**
@@ -311,12 +311,12 @@ public abstract class Entity {
         final double xPos = this.getBodyCenter().getX();
         final double yPos = this.getBodyCenter().getY();
 
-        this.inputs[this.inputs.length + INPUTS_LEFT_OFFSET] = xPos;
-        this.inputs[this.inputs.length + INPUTS_TOP_OFFSET] = yPos;
-        this.inputs[this.inputs.length + INPUTS_RIGHT_OFFSET] =
+        this.inputs[this.sensorCount + INPUTS_LEFT_OFFSET] = xPos;
+        this.inputs[this.sensorCount + INPUTS_TOP_OFFSET] = yPos;
+        this.inputs[this.sensorCount + INPUTS_RIGHT_OFFSET] =
             this.simulation.getMapSizeX() * this.simulation.getGridSize() - xPos;
 
-        this.inputs[this.inputs.length + INPUTS_BOTTOM_OFFSET] =
+        this.inputs[this.sensorCount + INPUTS_BOTTOM_OFFSET] =
             this.simulation.getMapSizeY() * this.simulation.getGridSize() - yPos;
 
         final double[] calculatedDecision =
@@ -326,57 +326,53 @@ public abstract class Entity {
         // of the direction of the entity, and the second output is the speed.
         this.directionAngleInRadians += Configuration.getConfiguration()
                 .getEntityMaxRotationSpeed() * (calculatedDecision[0] * 2 - 1);
+
         this.move(this.speed * calculatedDecision[1]);
     }
 
     /**
-     * Determines if this entity collides with another entity.
-     *
-     * @param other Entity to be checked.
-     * @return If both entities collide.
+     * Updates the relation (collision and sensors) between two entities.
+     * @param a First entity to update.
+     * @param b Second entity to update.
      */
-    public boolean collidesWith(final Entity other) throws EvosimException {
-        if (other.getClass().equals(this.getClass()) || this.dead || other.dead) {
-            return false;
-        }
-
-        double distance = Formulas.distance(
-            this.getBodyCenter().getX(),
-            this.getBodyCenter().getY(),
-            other.getBodyCenter().getX(),
-            other.getBodyCenter().getY()
-        );
-
-        final double angle = Math.atan2(
-            other.getBodyCenter().getY() - this.getBodyCenter().getY(),
-            other.getBodyCenter().getX() - this.getBodyCenter().getX()
-        );
-
-        this.updateSensors(distance, angle);
-
-        return distance < Configuration.getConfiguration().getEntityRadius() * 2;
-    }
-
-    private void updateSensors(final double distance, final double angle) throws EvosimException {
-        final double start = Formulas.normAngle(
-            this.directionAngleInRadians - this.fovAngleInRadians / 2
-        );
-
-        final double end = Formulas.normAngle(
-            this.directionAngleInRadians + this.fovAngleInRadians / 2
-        );
-
-        if (!(start < angle && angle < end)) {
+    public static void updateRelation(final Entity a, final Entity b) throws EvosimException {
+        if (a instanceof Prey || b instanceof Predator || a.dead || b.dead) {
             return;
         }
 
-        final double delta = angle - start;
-
-        final int sensorIndex = (int) ((delta * this.sensors.length) / (2 * Math.PI));
-
-        this.inputs[sensorIndex] = Math.min(
-            distance, Configuration.getConfiguration().getEntitySensorsLength()
+        final double distance = Formulas.distance(
+            a.getBodyCenter().getX(),
+            a.getBodyCenter().getY(),
+            b.getBodyCenter().getX(),
+            b.getBodyCenter().getY()
         );
+
+        if (distance < Configuration.getConfiguration().getEntitySensorsLength()) {
+            a.updateSensors(b);
+            b.updateSensors(a);
+        }
+
+        if (distance < a.getBody().getRadius() + b.getBody().getRadius()) {
+            a.onCollide(b);
+            b.onCollide(a);
+        }
+    }
+
+    private void updateSensors(final Entity other) {
+        final double baseAngle = this.directionAngleInRadians - (this.fovAngleInRadians / 2);
+
+        for (int i = 0; i < this.sensorCount; ++i) {
+            final double angle = baseAngle + i * (this.getFovAngleInRadians() / this.sensorCount);
+
+            final double distance = Formulas.distanceCircleAngled(
+                this.getBodyCenter(), angle, other.getBody()
+            );
+
+            this.inputs[i] = Math.min(
+                this.inputs[i],
+                distance
+            );
+        }
     }
 
     protected abstract void onCollideHandler(Entity other) throws EvosimException;
@@ -403,5 +399,40 @@ public abstract class Entity {
      */
     public final int getLivingTime(final long currentTime) {
         return (int) ((currentTime - this.birthTime));
+    }
+
+    /**
+     * Returns an array of lines of the sensors coming out of the entity.
+     * @return The lines of length of the sensors.
+     */
+    public Line[] getSensors() {
+        final Line[] sensors = new Line[this.sensorCount];
+
+        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
+
+        for (int i = 0; i < sensors.length; ++i) {
+            final double angle = baseAngle + i * (this.getFovAngleInRadians() / sensors.length);
+
+            sensors[i] = new Line(
+                this.getBodyCenter().getX(),
+                this.getBodyCenter().getY(),
+                this.getBodyCenter().getX() + this.inputs[i] * Math.cos(angle),
+                this.getBodyCenter().getY() + this.inputs[i] * Math.sin(angle)
+            );
+        }
+
+        return sensors;
+    }
+
+    /**
+     * Resets sensors to their default length.
+     */
+    public void resetSensors() throws EvosimException {
+        Arrays.fill(
+            this.inputs,
+            0,
+            this.sensorCount,
+            Configuration.getConfiguration().getEntitySensorsLength()
+        );
     }
 }

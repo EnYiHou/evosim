@@ -99,11 +99,12 @@ public class NeuralNetwork {
 
         System.arraycopy(inputs, 0, this.calculationArrays[flipFlop], 0, inputs.length);
 
-        for (List<Neuron> layer : this.neuronLayers) {
+        for (int layerIndex = 0; layerIndex < this.neuronLayers.size(); ++layerIndex) {
             final int newFlipFlop = ~flipFlop & 1;
+            final List<Neuron> layer = this.neuronLayers.get(layerIndex);
             for (int i = 0; i < layer.size(); ++i) {
                 this.calculationArrays[newFlipFlop][i] = layer.get(i).feedUnchecked(
-                    this.calculationArrays[flipFlop]
+                    this.calculationArrays[flipFlop], layerIndex == 0 ? i : 0
                 );
             }
 

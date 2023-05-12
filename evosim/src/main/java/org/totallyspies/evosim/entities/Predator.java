@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
-import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.geometry.Point;
@@ -49,7 +48,6 @@ public final class Predator extends Entity {
 
     /**
      * Construct an Predator from a JSON.
-     * @param sensors                   the sensors of the predator.
      * @param inputs                    the sensors data of the predator.
      * @param speed                     the speed of the predator.
      * @param body                      the body of the predator.
@@ -64,7 +62,6 @@ public final class Predator extends Entity {
      */
     @JsonCreator
     public Predator(
-            @JsonProperty("sensors") final Line[] sensors,
             @JsonProperty("inputs") final double[] inputs,
             @JsonProperty("speed") final double speed,
             @JsonProperty("body") final Circle body,
@@ -76,7 +73,7 @@ public final class Predator extends Entity {
             @JsonProperty("splitEnergy") final double splitEnergy,
             @JsonProperty("directionAngleInRadians") final double directionAngleInRadians,
             @JsonProperty("childCount") final int childCount
-    ) {
+    ) throws EvosimException {
         super(
                 speed,
                 fovAngleInRadians,

@@ -34,9 +34,8 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * The color of the map.
      */
-    @Setter
     @Getter
-    private static Color mapColor = Color.LIGHTSKYBLUE;
+    private static Color mapColor;
 
     /**
      * The background image of the map.
@@ -111,8 +110,10 @@ public final class MapCanvas extends ResizableCanvas {
     /**
      * Construct an instance of MapCanvas.
      */
-    public MapCanvas() {
+    public MapCanvas() throws EvosimException {
         super();
+
+        MapCanvas.mapColor = Configuration.getConfiguration().getColorMap();
 
         this.anim = new AnimationTimer() {
             @Override
@@ -287,6 +288,7 @@ public final class MapCanvas extends ResizableCanvas {
      */
     public void drawEntitySensors(final Entity entity) {
         this.getGraphicsContext2D().setStroke(Color.HOTPINK);
+
         for (Line sensor : entity.getSensors()) {
 
             Point startPoint = absToRelPosition(sensor.getStartPoint().getX(),
@@ -310,6 +312,8 @@ public final class MapCanvas extends ResizableCanvas {
         //Set the camera's position to the entity's position.
         this.camera.setPoint(entity.getBodyCenter());
         autoZoom(ENTITY_FOLLOWING_ZOOM);
+        MainController.getController().getTabPane()
+                .getSelectionModel().selectLast();
     }
 
     /**
@@ -321,6 +325,9 @@ public final class MapCanvas extends ResizableCanvas {
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY()));
         autoZoom(ENTITY_UNFOLLOWING_ZOOM);
+        MainController.getController().getTabPane()
+                .getSelectionModel().selectFirst();
+        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
     }
 
     /**
@@ -441,9 +448,6 @@ public final class MapCanvas extends ResizableCanvas {
                         followingEntity.set(false);
                         followedEntity = null;
                         untrackEntityStats();
-                        MainController.getController().getTabPane()
-                                .getSelectionModel().selectFirst();
-                        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
                     }
                 }
             }
@@ -537,6 +541,15 @@ public final class MapCanvas extends ResizableCanvas {
     private void untrackEntityStats() {
         MainController.getController().getEntityStats().setVisible(false);
         updSensorsStats.stop();
+    }
+
+    /**
+     * Setting the map color.
+     * @param newColor
+     */
+    public static void setMapColor(final Color newColor) {
+        MapCanvas.mapColor = newColor;
+        Configuration.getConfiguration().setColorMap(newColor);
     }
 
 }

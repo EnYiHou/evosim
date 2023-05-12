@@ -5,6 +5,7 @@ import org.totallyspies.evosim.geometry.Line;
 
 import java.util.List;
 import java.util.function.Function;
+import org.totallyspies.evosim.geometry.Point;
 
 /**
  * This class contains all the activation functions used during the neural-network computation.
@@ -193,5 +194,58 @@ public final class Formulas {
      */
     public static double normAngle(final double angle) {
         return Math.atan2(Math.sin(angle), Math.cos(angle));
+    }
+
+    /**
+     * Given a point and an angle, computes the distance between a circle and that point at the
+     * given angle.
+     * @param point The point to calculate distance from.
+     * @param angle The angle at which to calculate the distance.
+     * @param circle The circle to calculate.
+     * @return The distance, or {@link Double#POSITIVE_INFINITY} if impossible.
+     */
+    public static double distanceCircleAngled(
+        final Point point,
+        final double angle,
+        final Circle circle
+    ) {
+        final double circlePointCenterAngle = Math.atan2(
+            circle.getCenter().getY() - point.getY(),
+            circle.getCenter().getX() - point.getX()
+        );
+
+        final double deltaAngle = circlePointCenterAngle - angle;
+
+        final double circlePointDistance = distance(
+            point.getX(),
+            point.getY(),
+            circle.getCenter().getX(),
+            circle.getCenter().getY()
+        );
+
+        final double midpointDistance = circlePointDistance * Math.cos(deltaAngle);
+        if (midpointDistance < 0) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        final double midpointX = point.getX() + midpointDistance * Math.cos(angle);
+        final double midpointY = point.getY() + midpointDistance * Math.sin(angle);
+
+        final double midpointCircleCenterDistance = distance(
+            midpointX,
+            midpointY,
+            circle.getCenter().getX(),
+            circle.getCenter().getY()
+        );
+
+        if (circle.getRadius() < midpointCircleCenterDistance) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        final double distanceDelta = Math.sqrt(
+            Math.pow(circle.getRadius(), 2) - Math.pow(midpointCircleCenterDistance, 2)
+        );
+
+        return distance(point.getX(), point.getY(), midpointX, midpointY) - distanceDelta;
     }
 }

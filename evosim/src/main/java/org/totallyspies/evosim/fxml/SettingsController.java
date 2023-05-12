@@ -148,6 +148,7 @@ public final class SettingsController {
         this.cbSpeed.setSelected(speedVisible);
         this.cbChild.setSelected(childCountVisible);
         this.cbTimer.setSelected(timerVisible);
+
         this.cpMap.setValue(MapCanvas.getMapColor());
         this.cpPred.setValue(Predator.getBodyColour());
         this.cpPrey.setValue(Prey.getBodyColour());
@@ -163,6 +164,15 @@ public final class SettingsController {
         themeSelector.valueProperty().addListener((o, ov, nv) -> {
             this.changeTheme(nv);
             theme = nv;
+        });
+      
+        cpMap.valueProperty().addListener((o, ov, nv) -> {
+                MapCanvas.setMapColor(nv);
+            try {
+                configuration.setBackgroundImage(null);
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

@@ -58,7 +58,7 @@ public final class Simulation {
     /**
      * Number of collision threads to create.
      */
-    private static final int COLLISION_THREAD_COUNT = 12;
+    private static final int COLLISION_THREAD_COUNT = 20;
 
     /**
      * Grids of entities.
@@ -106,6 +106,11 @@ public final class Simulation {
     private final ExecutorService collisionCheckerService;
 
     /**
+     *
+     */
+    private boolean isShutDown;
+
+    /**
      * Constructs a new simulation with given size.
      * @param newMapSizeX X map size to use for the simulation.
      * @param newMapSizeY Y map size to use for the simulation.
@@ -121,6 +126,7 @@ public final class Simulation {
         this.mapSizeX = newMapSizeX;
         this.mapSizeY = newMapSizeY;
         this.gridSize = newGridSize;
+        this.isShutDown = false;
 
         this.entityGrids = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
         this.updateToAdd = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
@@ -194,7 +200,7 @@ public final class Simulation {
         final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
 
         final ReadWriteLockedItem<List<Entity>> chunk =
-            this.updateToAdd[coord.getX()][coord.getY()];
+            this.entityGrids[coord.getX()][coord.getY()];
 
         chunk.writeLock().lock();
         try {
@@ -204,16 +210,8 @@ public final class Simulation {
         }
     }
 
-    private void checkCollisions(final Entity a, final Entity b) throws EvosimException {
-        if (a.collidesWith(b)) {
-            a.onCollide(b);
-            b.onCollide(a);
-        }
-    }
-
-
     private void update() {
-        IntStream.range(0, this.mapSizeX * this.mapSizeY).forEach(
+        IntStream.range(0, this.mapSizeX * this.mapSizeY).parallel().forEach(
             (chunkIndex) -> {
                 final Coordinate chunkCoord = new Coordinate(
                     chunkIndex % this.mapSizeX,
@@ -448,6 +446,10 @@ public final class Simulation {
      * Kills the simulation. Cannot be restarted after.
      */
     public void shutdown() {
+        if (isShutDown) {
+            return;
+        }
+
         this.pauseUpdate();
         this.updateService.shutdown();
         this.collisionCheckerService.shutdown();
@@ -459,21 +461,37 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
+
+        this.isShutDown = true;
     }
 
     private Runnable submitCollisionWork(final Entity entity) {
         return () -> {
+            try {
+                entity.resetSensors();
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
             final Coordinate center = this.pointToGridCoord(entity.getBodyCenter());
 
-            for (int x = center.getX() - 1; x <= center.getX() + 1; ++x) {
-                for (int y = center.getY() - 1; y <= center.getY() + 1; ++y) {
+            final int delta;
+            try {
+                delta = (int) (
+                        Configuration.getConfiguration().getEntitySensorsLength() / this.gridSize
+                );
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (int x = center.getX() - delta; x <= center.getX() + delta; ++x) {
+                for (int y = center.getY() - delta; y <= center.getY() + delta; ++y) {
                     if (!isCoordValid(x, y)) {
                         continue;
                     }
 
                     this.forEachGridEntities(x, y, other -> {
                         try {
-                            this.checkCollisions(entity, other);
+                            Entity.updateRelation(entity, other);
                         } catch (EvosimException e) {
                             throw new RuntimeException(e);
                         }
