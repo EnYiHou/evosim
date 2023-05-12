@@ -244,7 +244,7 @@ public final class SettingsController {
             }
 
             if (config.isError()) {
-                throw new EvosimException("Couldn't load the image.");
+                throw new EvosimException("The image is too big, or is corrupted.");
             }
 
             MapCanvas.setMapImage(config);

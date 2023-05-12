@@ -62,7 +62,7 @@
                            </accelerator></MenuItem>
                      </items>
                   </Menu>
-                <MenuItem mnemonicParsing="false" onAction="#clickOnNewWindow" text="New Window">
+                <MenuItem mnemonicParsing="false" onAction="#clickOnNewSimulation" text="New Simulation">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
@@ -80,7 +80,6 @@
                         <KeyCodeCombination alt="DOWN" code="P" control="ANY" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>
                 </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
               </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

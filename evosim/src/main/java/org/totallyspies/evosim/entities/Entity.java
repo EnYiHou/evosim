@@ -287,7 +287,7 @@ public abstract class Entity {
 
         // drain energy
         this.energy = Math.max(0,
-                Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
+                this.energy - Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
     }
 
     /**
@@ -403,6 +403,7 @@ public abstract class Entity {
      * Returns an array of lines of the sensors coming out of the entity.
      * @return The lines of length of the sensors.
      */
+    @JsonIgnore
     public Line[] getSensors() {
         final Line[] sensors = new Line[this.sensorCount];
 
