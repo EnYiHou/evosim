@@ -535,6 +535,10 @@ public final class MapCanvas extends ResizableCanvas {
         updSensorsStats.stop();
     }
 
+    /**
+     * Setting the map color.
+     * @param newColor
+     */
     public static void setMapColor(final Color newColor) {
         MapCanvas.mapColor = newColor;
         Configuration.getConfiguration().setColorMap(newColor);

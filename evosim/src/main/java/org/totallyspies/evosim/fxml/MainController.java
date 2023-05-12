@@ -29,7 +29,6 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.ui.NeuralNetworkView;
 import org.totallyspies.evosim.ui.SettingsWindow;

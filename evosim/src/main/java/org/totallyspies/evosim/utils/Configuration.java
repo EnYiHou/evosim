@@ -165,6 +165,9 @@ public final class Configuration {
          */
         public static final String DEFAULT_IMAGE_BASE_64 = "";
 
+        /**
+         * The default Color of the map.
+         */
         public static final String DEFAULT_COLOR_MAP = Color.LIGHTSKYBLUE.toString();
     }
 
@@ -453,7 +456,7 @@ public final class Configuration {
         return Color.web(getObjectValue("colorMap"));
     }
 
-    public void setColorMap(Color newColorMap) {
+    public void setColorMap(final Color newColorMap) {
         this.objectVariables.replace("colorMap", newColorMap.toString());
     }
 
