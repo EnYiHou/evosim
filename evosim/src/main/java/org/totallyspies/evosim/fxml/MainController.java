@@ -438,7 +438,7 @@ public final class MainController {
     }
 
     @FXML
-    private void clickOnNewWindow(final ActionEvent event) {
+    private void clickOnNewSimulation(final ActionEvent event) {
         requestSwitchWindow();
     }
 
@@ -463,6 +463,14 @@ public final class MainController {
                     && !event.isControlDown()) {
                 MapCanvas.getPRESSED_KEYS().push(code);
                 changeOpacityWASD(code, true);
+            }
+
+            if (code == KeyCode.ENTER) {
+                if (playBtn.isDisabled()) {
+                    pauseAnimation();
+                } else {
+                    playAnimation();
+                }
             }
         });
 

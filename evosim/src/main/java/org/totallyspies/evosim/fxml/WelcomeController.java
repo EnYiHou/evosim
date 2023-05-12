@@ -215,6 +215,14 @@ public final class WelcomeController {
             }
     }
 
+    @FXML
+    private void pressOnLatestBtn(final ActionEvent event) throws EvosimException {
+        Configuration.getConfiguration().loadLastFile();
+        WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
+                this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
+                "");
+    }
+
     /**
      * Hides and lock dividers inside the {@link SplitPane}.
      */
