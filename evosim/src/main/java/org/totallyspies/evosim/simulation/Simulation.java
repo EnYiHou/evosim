@@ -106,6 +106,11 @@ public final class Simulation {
     private final ExecutorService collisionCheckerService;
 
     /**
+     *
+     */
+    private boolean isShutDown;
+
+    /**
      * Constructs a new simulation with given size.
      * @param newMapSizeX X map size to use for the simulation.
      * @param newMapSizeY Y map size to use for the simulation.
@@ -121,6 +126,7 @@ public final class Simulation {
         this.mapSizeX = newMapSizeX;
         this.mapSizeY = newMapSizeY;
         this.gridSize = newGridSize;
+        this.isShutDown = false;
 
         this.entityGrids = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
         this.updateToAdd = new ReadWriteLockedItem[this.mapSizeX][this.mapSizeY];
@@ -194,7 +200,7 @@ public final class Simulation {
         final Coordinate coord = pointToGridCoord(entity.getBodyCenter());
 
         final ReadWriteLockedItem<List<Entity>> chunk =
-            this.updateToAdd[coord.getX()][coord.getY()];
+            this.entityGrids[coord.getX()][coord.getY()];
 
         chunk.writeLock().lock();
         try {
@@ -448,6 +454,10 @@ public final class Simulation {
      * Kills the simulation. Cannot be restarted after.
      */
     public void shutdown() {
+        if (isShutDown) {
+            return;
+        }
+
         this.pauseUpdate();
         this.updateService.shutdown();
         this.collisionCheckerService.shutdown();
@@ -459,6 +469,8 @@ public final class Simulation {
             this.updateService.shutdownNow();
             this.collisionCheckerService.shutdownNow();
         }
+
+        this.isShutDown = true;
     }
 
     private Runnable submitCollisionWork(final Entity entity) {
