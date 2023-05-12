@@ -30,3 +30,8 @@ jobs:
       with:
         arguments: assemble
         build-root-directory: evosim
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: dist ${{ matrix.os }}
+        path: evosim/build/distributions/*.zip
