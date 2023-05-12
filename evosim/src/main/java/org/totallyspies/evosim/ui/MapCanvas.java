@@ -303,6 +303,8 @@ public final class MapCanvas extends ResizableCanvas {
         //Set the camera's position to the entity's position.
         this.camera.setPoint(entity.getBodyCenter());
         autoZoom(ENTITY_FOLLOWING_ZOOM);
+        MainController.getController().getTabPane()
+                .getSelectionModel().selectLast();
     }
 
     /**
@@ -314,6 +316,9 @@ public final class MapCanvas extends ResizableCanvas {
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY()));
         autoZoom(ENTITY_UNFOLLOWING_ZOOM);
+        MainController.getController().getTabPane()
+                .getSelectionModel().selectFirst();
+        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
     }
 
     /**
@@ -434,9 +439,6 @@ public final class MapCanvas extends ResizableCanvas {
                         followingEntity.set(false);
                         followedEntity = null;
                         untrackEntityStats();
-                        MainController.getController().getTabPane()
-                                .getSelectionModel().selectFirst();
-                        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
                     }
                 }
             }
