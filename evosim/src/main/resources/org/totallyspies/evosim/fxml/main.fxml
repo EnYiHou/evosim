@@ -128,7 +128,7 @@
                                                 </VBox>
                                                 <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
                                                     <children>
-                                                        <Label text="PreyPopulation" />
+                                                        <Label text="Prey Population" />
                                                         <LineChart fx:id="preyPopulationChart">
                                                             <xAxis>
                                                                 <CategoryAxis animated="false" side="BOTTOM" />
@@ -144,7 +144,7 @@
                                                 </VBox>
                                                 <VBox alignment="TOP_CENTER" prefHeight="169.0" prefWidth="234.0">
                                                     <children>
-                                                        <Label text="PredatorPopulation" />
+                                                        <Label text="Predator Population" />
                                                         <LineChart fx:id="predatorPopulationChart">
                                                             <xAxis>
                                                                 <CategoryAxis animated="false" side="BOTTOM" />
@@ -317,7 +317,8 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Text>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="[WASD]: Translate Camera&#13;[DRAG]: Pan Camera&#13;[+/-]: Zoom Camera&#13;[C]: Center Camera&#13;[CLICK]: Track Entity&#13;[SPACE]: Unfollow Entity&#13;[ESC]: Exit Application" wrappingWidth="174.0">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                        text="[WASD]: Translate Camera&#13;[DRAG]: Pan Camera&#13;[+/-/SCROLL]: Zoom Camera&#13;[C]: Center Camera&#13;[CLICK]: Track Entity&#13;[SPACE]: Unfollow Entity&#13;[ENTER]: Pause&#13;[ESC]: Exit Application" wrappingWidth="174.0">
                      <font>
                         <Font size="13.0" />
                      </font></Text>
