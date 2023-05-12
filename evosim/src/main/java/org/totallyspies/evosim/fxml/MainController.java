@@ -29,6 +29,7 @@ import javafx.scene.input.KeyCode;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.totallyspies.evosim.ui.NeuralNetworkView;
 import org.totallyspies.evosim.ui.SettingsWindow;
 import org.totallyspies.evosim.utils.Configuration;
@@ -41,11 +42,6 @@ import java.io.File;
  * Controller for the {@code welcome.fxml} file. Dynamically adds all input fields.
  */
 public final class MainController {
-
-    /**
-     * Max chart points.
-     */
-    private static final int MAX_CHART_POINTS = 10;
 
     /**
      * The current controller being used.
@@ -62,6 +58,13 @@ public final class MainController {
      * One decisecond in milliseconds.
      */
     private static final long ONE_DECISECOND_IN_MILLISECONDS = 100;
+
+
+    /**
+     * Max chart points.
+     */
+    private static final int MAX_CHART_POINTS
+            = (int) (30 * ONE_SECOND_IN_MILLISECONDS / ONE_DECISECOND_IN_MILLISECONDS);
 
     /**
      * Maximum opacity of WASD keys.
@@ -309,10 +312,10 @@ public final class MainController {
 
     private void newDefaultSimulation() throws EvosimException {
         this.mapCanvas.attach(new Simulation(
-            Configuration.getConfiguration().getMapSizeX(),
-            Configuration.getConfiguration().getMapSizeY(),
-            Configuration.getConfiguration().getGridSize(),
-            true
+                Configuration.getConfiguration().getMapSizeX(),
+                Configuration.getConfiguration().getMapSizeY(),
+                Configuration.getConfiguration().getGridSize(),
+                true
         ));
         configuration.setDuration(java.time.Duration.ZERO);
         configuration.setBackgroundImage(null);
@@ -349,6 +352,7 @@ public final class MainController {
 
     /**
      * Saving as a configuration with the menu bar.
+     *
      * @param event on click
      */
     @FXML
@@ -482,43 +486,43 @@ public final class MainController {
                 new javafx.animation.KeyFrame(
                         Duration.millis(ONE_DECISECOND_IN_MILLISECONDS), e -> {
 
-            configuration.setDuration(
-                    this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
+                    configuration.setDuration(
+                            this.timerProperty.get().plusMillis(ONE_DECISECOND_IN_MILLISECONDS));
 
-            try {
-                this.timerProperty.set(configuration.getDuration());
-            } catch (EvosimException ex) {
-                throw new RuntimeException(ex);
-            }
+                    try {
+                        this.timerProperty.set(configuration.getDuration());
+                    } catch (EvosimException ex) {
+                        throw new RuntimeException(ex);
+                    }
 
                     XYChart.Series<String, Number> totalPopulationChartSeries;
-            totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
-                    .getData().get(0);
-            totalPopulationChartSeries.getData().add(
-                    new XYChart.Data<>(counter.toString(),
-                            this.mapCanvas.getSimulation().getPreyCount()
-                                    + this.mapCanvas.getSimulation().getPredatorCount()));
+                    totalPopulationChartSeries = (XYChart.Series<String, Number>) totalPopulationChart
+                            .getData().get(0);
+                    totalPopulationChartSeries.getData().add(
+                            new XYChart.Data<>(counter.toString(),
+                                    this.mapCanvas.getSimulation().getPreyCount()
+                                            + this.mapCanvas.getSimulation().getPredatorCount()));
 
-            XYChart.Series<String, Number> preyPopulationChartSeries;
-            preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
-                    .getData().get(0);
-            preyPopulationChartSeries.getData().add(
-                    new XYChart.Data<>(
-                            counter.toString(), this.mapCanvas.getSimulation().getPreyCount()));
+                    XYChart.Series<String, Number> preyPopulationChartSeries;
+                    preyPopulationChartSeries = (XYChart.Series<String, Number>) preyPopulationChart
+                            .getData().get(0);
+                    preyPopulationChartSeries.getData().add(
+                            new XYChart.Data<>(
+                                    counter.toString(), this.mapCanvas.getSimulation().getPreyCount()));
 
-            XYChart.Series<String, Number> predatorPopulationChartSeries;
-            predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
-                    .getData().get(0);
-            predatorPopulationChartSeries.getData().add(
-                    new XYChart.Data<>(counter.toString(),
-                            this.mapCanvas.getSimulation().getPredatorCount()));
+                    XYChart.Series<String, Number> predatorPopulationChartSeries;
+                    predatorPopulationChartSeries = (XYChart.Series<String, Number>) predatorPopulationChart
+                            .getData().get(0);
+                    predatorPopulationChartSeries.getData().add(
+                            new XYChart.Data<>(counter.toString(),
+                                    this.mapCanvas.getSimulation().getPredatorCount()));
 
-            checkChartSize(totalPopulationChartSeries);
-            checkChartSize(preyPopulationChartSeries);
-            checkChartSize(predatorPopulationChartSeries);
+                    checkChartSize(totalPopulationChartSeries);
+                    checkChartSize(preyPopulationChartSeries);
+                    checkChartSize(predatorPopulationChartSeries);
 
-            counter.getAndAdd(1);
-        }));
+                    counter.getAndAdd(1);
+                }));
         this.timerTimeLine.setCycleCount(Timeline.INDEFINITE);
     }
 
@@ -583,7 +587,8 @@ public final class MainController {
             case A -> aKey.setOpacity(opacityPercentage);
             case S -> sKey.setOpacity(opacityPercentage);
             case D -> dKey.setOpacity(opacityPercentage);
-            default -> { }
+            default -> {
+            }
         }
     }
 }
