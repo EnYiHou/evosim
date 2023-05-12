@@ -26,11 +26,6 @@ public final class NeuronView extends StackPane {
      */
     private final Label valueLabel;
 
-    private NeuronView() {
-        this.neuron = null;
-        this.valueLabel = null;
-    }
-
     /**
      * Constructs a new NeuronView.
      *
@@ -40,7 +35,7 @@ public final class NeuronView extends StackPane {
         this.neuron = newNeuron;
         this.valueLabel = new Label();
         this.valueLabel.setText(String.valueOf(this.neuron.getValue()));
-        this.getChildren().add(new Circle(NEURON_RADIUS, Color.LIGHTGRAY));
+        this.getChildren().add(new Circle(NEURON_RADIUS, Color.LIGHTBLUE));
         this.getChildren().add(this.valueLabel);
     }
 
