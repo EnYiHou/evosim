@@ -22,10 +22,12 @@ Each one can be saved as a .json and loaded at any time.
 
 #### Controlling the Map
 - W/A/S/D: Pans the camera in the specified direction.
-- +/-: Zooms the camera in and out to a certain limit.
+- DRAG: Pans the camera with the mouse.
+- +/-/SCROLL: Zooms the camera in and out to a certain limit.
 - C: Unzooms the camera to default and centers its position.
 - CLICK: Tracks an entity if they were clicked.
 - SPACE: Unfollows a currently tracked entity.
+- ENTER: Pauses/Unpauses the simulation.
 - ESC: Prompts the user to exit the application, does so on confirmation.
 
 #### Settings
