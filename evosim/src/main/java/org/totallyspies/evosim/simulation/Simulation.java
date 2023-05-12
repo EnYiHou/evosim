@@ -56,7 +56,7 @@ public final class Simulation {
     /**
      * Number of collision threads to create.
      */
-    private static final int COLLISION_THREAD_COUNT = 24;
+    private static final int COLLISION_THREAD_COUNT = 20;
 
     /**
      * Grids of entities.
@@ -201,14 +201,6 @@ public final class Simulation {
             chunk.writeLock().unlock();
         }
     }
-
-    private void checkCollisions(final Entity a, final Entity b) {
-        if (a.collidesWith(b)) {
-            a.onCollide(b);
-            b.onCollide(a);
-        }
-    }
-
 
     private void update() {
         IntStream.range(0, this.mapSizeX * this.mapSizeY).parallel().forEach(
@@ -452,6 +444,7 @@ public final class Simulation {
 
     private Runnable submitCollisionWork(final Entity entity) {
         return () -> {
+            entity.resetSensors();
             final Coordinate center = this.pointToGridCoord(entity.getBodyCenter());
 
             for (int x = center.getX() - 1; x <= center.getX() + 1; ++x) {
@@ -460,7 +453,7 @@ public final class Simulation {
                         continue;
                     }
 
-                    this.forEachGridEntities(x, y, other -> this.checkCollisions(entity, other));
+                    this.forEachGridEntities(x, y, other -> Entity.updateRelation(entity, other));
                 }
             }
         };

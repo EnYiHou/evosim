@@ -224,6 +224,9 @@ public final class Formulas {
         );
 
         final double midpointDistance = circlePointDistance * Math.cos(deltaAngle);
+        if (midpointDistance < 0) {
+            return Double.POSITIVE_INFINITY;
+        }
 
         final double midpointX = point.getX() + midpointDistance * Math.cos(angle);
         final double midpointY = point.getY() + midpointDistance * Math.sin(angle);
@@ -235,7 +238,7 @@ public final class Formulas {
             circle.getCenter().getY()
         );
 
-        if (circle.getRadius() < midpointCircleCenterDistance || midpointCircleCenterDistance < 0) {
+        if (circle.getRadius() < midpointCircleCenterDistance) {
             return Double.POSITIVE_INFINITY;
         }
 
