@@ -2,7 +2,9 @@ package org.totallyspies.evosim.fxml;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TabPane;
@@ -22,19 +24,23 @@ import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
 import org.totallyspies.evosim.simulation.Simulation;
-import org.totallyspies.evosim.ui.AboutWindow;
-import org.totallyspies.evosim.ui.EvosimApplication;
-import org.totallyspies.evosim.ui.MapCanvas;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.totallyspies.evosim.ui.AboutWindow;
+import org.totallyspies.evosim.ui.EvosimApplication;
+import org.totallyspies.evosim.ui.MapCanvas;
 import org.totallyspies.evosim.ui.NeuralNetworkView;
 import org.totallyspies.evosim.ui.SettingsWindow;
+import org.totallyspies.evosim.ui.WindowUtils;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
+import org.totallyspies.evosim.utils.ResourceManager;
 
 import java.io.File;
 
@@ -431,26 +437,13 @@ public final class MainController {
         EvosimApplication.getApplication().requestExit(null);
     }
 
-    /**
-     * Unfollow an entity clicking on the menu.
-     */
     @FXML
-    private void clickOnUnfollow() {
-        Thread tread = new Thread(() -> {
-            MapCanvas.getPRESSED_KEYS().add(KeyCode.B);
-            try {
-                Thread.sleep(ONE_SECOND_IN_MILLISECONDS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            MapCanvas.getPRESSED_KEYS().remove(KeyCode.B);
-        });
-        tread.start();
+    private void clickOnNewWindow(final ActionEvent event) {
+        requestSwitchWindow();
     }
 
     private void shutdown() {
         try {
-            playAnimation();
             Configuration
                     .getConfiguration().saveLatestConfiguration(this.mapCanvas.getSimulation());
         } catch (EvosimException e) {
@@ -591,6 +584,25 @@ public final class MainController {
             case S -> sKey.setOpacity(opacityPercentage);
             case D -> dKey.setOpacity(opacityPercentage);
             default -> { }
+        }
+    }
+
+    private void requestSwitchWindow() {
+        Alert confirmation = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Are you sure you'd like to switch to a new window?",
+                ButtonType.YES,
+                ButtonType.NO
+        );
+
+        Optional<ButtonType> selection = confirmation.showAndWait();
+        if (selection.isEmpty() || selection.get() == ButtonType.NO) {
+            confirmation.close();
+        } else {
+            mapCanvas.getSimulation().shutdown();
+            WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
+                    this.getClass().getResource(ResourceManager.FXML_WELCOME_VIEW),
+                    this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());
         }
     }
 }

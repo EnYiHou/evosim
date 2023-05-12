@@ -26,7 +26,7 @@
 <?import javafx.scene.text.Text?>
 <?import org.totallyspies.evosim.ui.MapCanvas?>
 
-<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
+<BorderPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -62,6 +62,11 @@
                            </accelerator></MenuItem>
                      </items>
                   </Menu>
+                <MenuItem mnemonicParsing="false" onAction="#clickOnNewWindow" text="New Window">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
               <MenuItem mnemonicParsing="false" onAction="#clickOnExit" text="Exit">
                      <accelerator>
                         <KeyCodeCombination alt="DOWN" code="E" control="UP" meta="UP" shift="UP" shortcut="UP" />
@@ -75,20 +80,12 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Settings">
               <items>
-                <MenuItem mnemonicParsing="false" text="Modify Preferences" onAction="#settingsMenuClicked">
+                <MenuItem mnemonicParsing="false" onAction="#settingsMenuClicked" text="Modify Preferences">
                     <accelerator>
                         <KeyCodeCombination alt="DOWN" code="P" control="ANY" meta="UP" shift="UP" shortcut="UP" />
                     </accelerator>
                 </MenuItem>
-                <Menu mnemonicParsing="false" text="Preferences">
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#clickOnUnfollow" text="Unfollow Entity">
-                          <accelerator>
-                            <KeyCodeCombination alt="UP" code="B" control="ANY" meta="UP" shift="UP" shortcut="UP" />
-                          </accelerator>
-                        </MenuItem>
-                    </items>
-                </Menu>
+                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
               </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
