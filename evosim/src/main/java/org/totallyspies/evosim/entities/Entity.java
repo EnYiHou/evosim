@@ -322,7 +322,7 @@ public abstract class Entity {
 
         // drain energy
         this.energy = Math.max(0,
-                Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
+                this.energy - Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
     }
 
     /**
@@ -357,10 +357,12 @@ public abstract class Entity {
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
+//        this.directionAngleInRadians += Configuration.getConfiguration()
+//            .getEntityMaxRotationSpeed() * (calculatedDecision[0] * 2 - 1);
         this.directionAngleInRadians += Configuration.getConfiguration()
-                .getEntityMaxRotationSpeed() * (calculatedDecision[0] * 2 - 1);
+            .getEntityMaxRotationSpeed() * (calculatedDecision[0]);
 
-        this.move(this.speed * calculatedDecision[1]);
+        this.move(this.speed * Math.abs(calculatedDecision[1]));
     }
 
     /**

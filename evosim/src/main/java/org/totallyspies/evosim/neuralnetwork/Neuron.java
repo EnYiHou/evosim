@@ -170,7 +170,7 @@ public final class Neuron {
 
     this.value = sum;
 
-    return Formulas.logistic(sum);
+    return Formulas.hyperbolicTangent(sum);
   }
 
   /**
@@ -181,12 +181,8 @@ public final class Neuron {
    * @return New neuron based on parent
    */
   public Neuron mutate(final double mutationRate) {
-    final double newBias = Rng.RNG.nextDouble() < mutationRate
-        ? Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX)
-        : this.bias;
-
     return new Neuron(
-        newBias,
+        this.bias,
         Arrays.stream(this.weights).map(
             w -> Rng.RNG.nextDouble() < mutationRate
                 ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
