@@ -17,7 +17,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="667.0" prefWidth="532.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.SettingsController">
    <top>
-      <Label alignment="CENTER" prefHeight="58.0" prefWidth="310.0" text="Evosim SETTINGS" textAlignment="CENTER" BorderPane.alignment="CENTER">
+      <Label alignment="CENTER" prefHeight="58.0" prefWidth="310.0" text="EVOSIM Settings" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
             <Font name="System Bold" size="36.0" />
          </font>
