@@ -293,9 +293,18 @@ public final class MainController {
     }
 
     private void initializeSimulation() throws EvosimException {
-        configurationFile = (File) EvosimApplication.getApplication().getStage().getUserData();
-        if (configurationFile != null) {
-            newSimulation(configuration.loadFile(configurationFile));
+        Object userData = EvosimApplication.getApplication().getStage().getUserData();
+        if (userData instanceof File) {
+            configurationFile = (File) userData;
+            if (configurationFile != null) {
+                newSimulation(configuration.loadFile(configurationFile));
+            }
+        }
+        if (userData instanceof Boolean) {
+            boolean isLatest = (boolean) userData;
+            if (isLatest) {
+                this.newSimulation(configuration.loadLastFile());
+            }
         } else {
             this.newDefaultSimulation();
         }
@@ -439,6 +448,7 @@ public final class MainController {
 
     @FXML
     private void clickOnNewSimulation(final ActionEvent event) {
+        pauseAnimation();
         requestSwitchWindow();
     }
 
