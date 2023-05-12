@@ -302,10 +302,10 @@ public final class MainController {
         }
         if (userData instanceof Boolean) {
             boolean isLatest = (boolean) userData;
-            if (isLatest)
+            if (isLatest) {
                 this.newSimulation(configuration.loadLastFile());
-        }
-        else {
+            }
+        } else {
             this.newDefaultSimulation();
         }
     }
