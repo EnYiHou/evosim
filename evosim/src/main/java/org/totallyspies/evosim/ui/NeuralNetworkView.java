@@ -146,13 +146,6 @@ public class NeuralNetworkView extends Tab {
                         }
                     }
                 }
-                // print the first neural network layer;
-                for (List<Neuron> layer : neuralNetwork.getNeuronLayers()) {
-                    for (Neuron neuron : layer) {
-                        System.out.print(neuron.getValue() + " ");
-                    }
-                    System.out.println();
-                }
             }
         };
     }
