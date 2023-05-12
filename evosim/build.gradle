@@ -3,7 +3,7 @@ plugins {
     id 'application'
     id 'org.javamodularity.moduleplugin' version '1.8.12'
     id 'org.openjfx.javafxplugin' version '0.0.13'
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'org.beryx.jlink' version '2.22.0'
 }
 
 group 'org.totallyspies'
@@ -30,6 +30,10 @@ application {
     mainClass = 'org.totallyspies.evosim.ui.EvosimApplication'
 }
 
+java {
+    modularity.inferModulePath.set(false)
+}
+
 javafx {
     version = '19.0.2'
     modules = ['javafx.controls', 'javafx.fxml']
@@ -49,7 +53,6 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.0'
 
     implementation 'org.kordamp.ikonli:ikonli-swing:12.3.1'
@@ -63,6 +66,14 @@ test {
     useJUnitPlatform()
 }
 
-shadowJar {
-    mergeServiceFiles()
+jar {
+    manifest {
+        attributes 'Main-Class': application.mainClass
+    }
+}
+
+jlink {
+    launcher {
+        name = 'exe_name'
+    }
 }
