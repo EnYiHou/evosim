@@ -43,11 +43,6 @@ import java.io.File;
 public final class MainController {
 
     /**
-     * Max chart points.
-     */
-    private static final int MAX_CHART_POINTS = 10;
-
-    /**
      * The current controller being used.
      */
     @Getter
@@ -62,6 +57,12 @@ public final class MainController {
      * One decisecond in milliseconds.
      */
     private static final long ONE_DECISECOND_IN_MILLISECONDS = 100;
+
+    /**
+     * Max chart points.
+     */
+    private static final int MAX_CHART_POINTS
+            = (int) (30 * ONE_SECOND_IN_MILLISECONDS / ONE_DECISECOND_IN_MILLISECONDS);
 
     /**
      * Maximum opacity of WASD keys.
