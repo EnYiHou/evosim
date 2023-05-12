@@ -90,7 +90,6 @@
                   <Button mnemonicParsing="false" onMouseClicked="#clearImgClicked" text="Clear Image" />
                </children>
             </HBox>
-            <Label fx:id="feedbackLabel" text="[No selected image]" />
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="GREY" height="5.0" layoutX="176.0" layoutY="197.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.5" width="200.0">
                <VBox.margin>
                   <Insets bottom="15.0" top="15.0" />

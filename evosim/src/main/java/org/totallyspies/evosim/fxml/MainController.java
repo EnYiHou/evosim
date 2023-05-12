@@ -9,6 +9,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -28,6 +29,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.totallyspies.evosim.ui.NeuralNetworkView;
 import org.totallyspies.evosim.ui.SettingsWindow;
@@ -303,6 +305,8 @@ public final class MainController {
 
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
+
+        MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
         this.timerProperty.set(configuration.getDuration());
     }
@@ -316,6 +320,9 @@ public final class MainController {
         ));
         configuration.setDuration(java.time.Duration.ZERO);
         configuration.setBackgroundImage(null);
+        configuration.setColorMap(Color.web(Configuration.Defaults.DEFAULT_COLOR_MAP));
+
+        MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
         this.timerProperty.set(configuration.getDuration());
     }
@@ -327,6 +334,16 @@ public final class MainController {
     private void aboutMenuClicked() {
         AboutWindow aw = new AboutWindow(EvosimApplication.getApplication().getStage());
         aw.getAbtStage().show();
+    }
+
+    /**
+     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
+     */
+    @FXML
+    private void settingsMenuClicked() {
+        pauseAnimation();
+        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
+        sw.getSettingsStage().show();
     }
 
     /**
@@ -558,16 +575,6 @@ public final class MainController {
         this.pauseBtn.setDisable(true);
         this.timerTimeLine.stop();
     }
-
-    /**
-     * Opens a modal SettingsWindow when the "Modify Preferences" option is clicked under Settings.
-     */
-    @FXML
-    private void settingsMenuClicked() {
-        SettingsWindow sw = new SettingsWindow(EvosimApplication.getApplication().getStage());
-        sw.getSettingsStage().show();
-    }
-
 
     /**
      * Change the opacity of WASD keys rectangles.
