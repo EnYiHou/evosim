@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.utils.Rng;
@@ -42,12 +43,12 @@ public final class Neuron {
   /**
    * A double value to shift the results neural network's activation.
    */
-  private final double bias;
+  @Setter
+  private double bias;
 
   /**
    * The value of the Neuron, which is the result of the activation function.
    */
-  @Getter
   private double value;
 
   /**
@@ -67,6 +68,12 @@ public final class Neuron {
   private final int activationFunctionIndex;
 
   /**
+   * Value to clamp to.
+   */
+  @Setter
+  private double clamp;
+
+  /**
    * Creates a Neuron with a randomly generated bias.
    *
    * @param inputs                the inputs that feed the neuron
@@ -78,7 +85,24 @@ public final class Neuron {
       final int newActivationFunctionIndex,
       final boolean randomizeWeights
   ) {
-    this.bias = Rng.RNG.nextDouble(Neuron.BIAS_MIN, Neuron.BIAS_MAX);
+    this(inputs, newActivationFunctionIndex, randomizeWeights, 1);
+  }
+
+  /**
+   * Creates a Neuron with a randomly generated bias and a clamp.
+   *
+   * @param inputs                the inputs that feed the neuron
+   * @param newActivationFunctionIndex the function index to initialize the value
+   * @param randomizeWeights      if weight should be randomized
+   * @param newClamp              value to clamp to
+   */
+  public Neuron(
+      final int inputs,
+      final int newActivationFunctionIndex,
+      final boolean randomizeWeights,
+      final double newClamp
+  ) {
+    this.bias = 0;
 
     this.weights = new double[inputs];
     for (int i = 0; i < this.weights.length; i++) {
@@ -90,6 +114,8 @@ public final class Neuron {
     this.activationFunctionIndex = newActivationFunctionIndex;
 
     this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(newActivationFunctionIndex);
+
+    this.clamp = newClamp;
   }
 
   /**
@@ -98,17 +124,20 @@ public final class Neuron {
    * @param neuronBias            the bias used to shift the activation function
    * @param neuronWeights         the weights used to do the computations
    * @param newActivationFunctionIndex new activation function to be used
+   * @param newClamp              the value to clamp the inputs to
    */
   @JsonCreator
   public Neuron(
           @JsonProperty("bias") final double neuronBias,
           @JsonProperty("weights") final double[] neuronWeights,
-          @JsonProperty("activationFunctionIndex") final int newActivationFunctionIndex
+          @JsonProperty("activationFunctionIndex") final int newActivationFunctionIndex,
+          @JsonProperty("clamp") final Double newClamp
   ) {
     this.bias = neuronBias;
     this.weights = neuronWeights;
     this.activationFunctionIndex = newActivationFunctionIndex;
     this.activationFunction = Formulas.ACTIVATION_FUNCTIONS.get(newActivationFunctionIndex);
+    this.clamp = newClamp;
   }
 
   /**
@@ -136,7 +165,7 @@ public final class Neuron {
     double sum = this.bias;
 
     for (int i = 0; i < this.weights.length; ++i) {
-      sum += inputs[fromIndex + i] * this.weights[i];
+      sum += (inputs[fromIndex + i] / clamp) * this.weights[i];
     }
 
     this.value = sum;
@@ -163,7 +192,8 @@ public final class Neuron {
                 ? Rng.RNG.nextDouble(Neuron.WEIGHT_MIN, Neuron.WEIGHT_MAX)
                 : w
         ).toArray(),
-        this.activationFunctionIndex
+        this.activationFunctionIndex,
+        this.clamp
     );
   }
 

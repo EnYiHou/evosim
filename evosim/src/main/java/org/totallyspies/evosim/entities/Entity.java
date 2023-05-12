@@ -14,6 +14,7 @@ import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
+import org.totallyspies.evosim.neuralnetwork.Neuron;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
@@ -213,6 +214,28 @@ public abstract class Entity {
         //TODO: List of layers
         this.brain = new NeuralNetwork(
                 List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
+
+        final double sensorLength = Configuration.getConfiguration().getEntitySensorsLength();
+        final List<Neuron> firstLayer = this.brain.getNeuronLayers().get(0);
+        firstLayer.subList(0, this.sensorCount).forEach(neuron -> {
+            neuron.setClamp(sensorLength);
+            neuron.setBias(-1);
+        });
+
+        firstLayer.get(this.sensorCount + INPUTS_LEFT_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeX()
+        );
+        firstLayer.get(this.sensorCount + INPUTS_RIGHT_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeX()
+        );
+        firstLayer.get(this.sensorCount + INPUTS_TOP_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeY()
+        );
+        firstLayer.get(this.sensorCount + INPUTS_BOTTOM_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeY()
+        );
+
+        firstLayer.subList(this.sensorCount, inputCount).forEach(neuron -> neuron.setBias(-0.5));
 
         this.inputs = new double[inputCount];
     }

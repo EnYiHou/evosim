@@ -44,6 +44,6 @@ public final class NeuronView extends StackPane {
      */
     public void update() {
         //Integer value
-        this.valueLabel.setText(String.valueOf((int) this.neuron.getValue()));
+        this.valueLabel.setText(String.format("%.02f", this.neuron.getValue()));
     }
 }
