@@ -287,7 +287,8 @@ public abstract class Entity {
 
         // drain energy
         this.energy = Math.max(0,
-                this.energy - Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
+                this.energy - Configuration.getConfiguration()
+                        .getEntityEnergyDrainRate() * movementSpeed);
     }
 
     /**
