@@ -213,7 +213,6 @@ public abstract class Entity {
      * @param newSpeed                     The speed of entity.
      * @param newFovAngleInRadians         The angle in degrees of entity.
      * @param newDirectionAngleInRadians   The direction angle in radians of entity.
-     * @param newSensors                   The sensors of entity.
      * @param newInputs                    The sensors data of entity.
      * @param newBody                      The body of entity.
      * @param newDead                      If dead of the entity.
@@ -227,7 +226,6 @@ public abstract class Entity {
             final double newSpeed,
             final double newFovAngleInRadians,
             final double newDirectionAngleInRadians,
-            final Line[] newSensors,
             final double[] newInputs,
             final Circle newBody,
             final boolean newDead,

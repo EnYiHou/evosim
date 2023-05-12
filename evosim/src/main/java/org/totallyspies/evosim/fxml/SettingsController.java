@@ -165,7 +165,7 @@ public final class SettingsController {
             this.changeTheme(nv);
             theme = nv;
         });
-      
+
         cpMap.valueProperty().addListener((o, ov, nv) -> {
                 MapCanvas.setMapColor(nv);
             try {

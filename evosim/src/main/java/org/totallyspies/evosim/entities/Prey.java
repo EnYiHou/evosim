@@ -79,7 +79,6 @@ public final class Prey extends Entity {
                 speed,
                 fovAngleInDegrees,
                 directionAngleInRadians,
-                sensors,
                 sensorsData,
                 body,
                 dead,

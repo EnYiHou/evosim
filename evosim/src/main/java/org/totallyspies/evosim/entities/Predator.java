@@ -78,7 +78,6 @@ public final class Predator extends Entity {
                 speed,
                 fovAngleInRadians,
                 directionAngleInRadians,
-                sensors,
                 inputs,
                 body,
                 dead,
