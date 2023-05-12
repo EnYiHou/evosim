@@ -8,8 +8,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
 import org.totallyspies.evosim.utils.ResourceManager;
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -28,6 +26,12 @@ public final class EvosimApplication extends Application {
     private static EvosimApplication application;
 
     /**
+     * The functions we need to run in order to pre-shutdown the application.
+     */
+    @Getter
+    private LinkedList<Runnable> preShutdownHooks;
+
+    /**
      * The functions we need to run in order to shutdown the application.
      */
     @Getter
@@ -39,6 +43,8 @@ public final class EvosimApplication extends Application {
         primaryStage.setOnCloseRequest(this::requestExit);
 
         this.shutdownHooks = new LinkedList<>();
+        this.preShutdownHooks = new LinkedList<>();
+
         application = this;
         stage = primaryStage;
         WindowUtils.setSceneRoot(primaryStage,
@@ -65,23 +71,6 @@ public final class EvosimApplication extends Application {
         super.stop();
     }
 
-    private static void createTempDirectory() throws IOException {
-        final File temp;
-        temp = File.createTempFile("temp", "evosim/");
-
-        if (!temp.exists()) {
-            throw new IOException("Folder already exists: " + temp.getAbsolutePath());
-        }
-
-        if (!temp.delete()) {
-            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
-        }
-
-        if (!temp.mkdir()) {
-            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
-        }
-    }
-
     private void showError(final Thread thread, final Throwable throwable) {
         Throwable rootCause = throwable;
         while (rootCause.getCause() != null) {
@@ -101,6 +90,7 @@ public final class EvosimApplication extends Application {
      * @param event
      */
     public void requestExit(final WindowEvent event) {
+        this.preShutdownHooks.forEach(Runnable::run);
         Alert confirmation = new Alert(
                 Alert.AlertType.CONFIRMATION,
                 "Are you sure you'd like to exit Evosim?",

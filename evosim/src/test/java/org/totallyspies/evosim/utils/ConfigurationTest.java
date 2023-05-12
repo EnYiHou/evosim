@@ -1,7 +1,6 @@
 package org.totallyspies.evosim.utils;
 
 import org.junit.jupiter.api.Test;
-import org.totallyspies.evosim.utils.Configuration.Defaults;
 
 /**
  * Tests for Configuration class.
@@ -20,7 +19,7 @@ public class ConfigurationTest {
   @Test
   public void saveConfiguration() throws EvosimException {
     configuration.saveLatestConfiguration(null);
-    Defaults.LATEST_CONFIGURATION.delete();
+    configuration.LATEST_CONFIGURATION.delete();
   }
 
   @Test
@@ -28,7 +27,7 @@ public class ConfigurationTest {
     configuration.saveLatestConfiguration(null);
     Configuration.getConfiguration().loadLastFile();
 
-    Defaults.LATEST_CONFIGURATION.delete();
+    configuration.LATEST_CONFIGURATION.delete();
   }
 
   @Test
@@ -37,7 +36,7 @@ public class ConfigurationTest {
     configuration.setPreySplitEnergyFillingSpeed(45d);
     configuration.saveLatestConfiguration(null);
 
-    Defaults.LATEST_CONFIGURATION.delete();
+    configuration.LATEST_CONFIGURATION.delete();
   }
 
 }

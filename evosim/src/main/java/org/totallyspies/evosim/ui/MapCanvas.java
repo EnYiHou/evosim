@@ -19,6 +19,7 @@ import org.totallyspies.evosim.math.Assert;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
+import org.totallyspies.evosim.utils.EvosimException;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -155,7 +156,7 @@ public final class MapCanvas extends ResizableCanvas {
     }
 
     private void onDragged(final MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() != MouseButton.PRIMARY) {
+        if (mouseEvent.getButton() != MouseButton.PRIMARY || followingEntity.get()) {
             return;
         }
 
@@ -257,7 +258,7 @@ public final class MapCanvas extends ResizableCanvas {
      *
      * @param entity The entity to be drawn on the map
      */
-    public void drawEntity(final Entity entity) {
+    public void drawEntity(final Entity entity) throws EvosimException {
         final double radius = Configuration.getConfiguration().getEntityRadius();
         final double zoom = camera.getZoom();
         this.getGraphicsContext2D().setFill(entity.getColor());
@@ -303,6 +304,8 @@ public final class MapCanvas extends ResizableCanvas {
         //Set the camera's position to the entity's position.
         this.camera.setPoint(entity.getBodyCenter());
         autoZoom(ENTITY_FOLLOWING_ZOOM);
+        MainController.getController().getTabPane()
+                .getSelectionModel().selectLast();
     }
 
     /**
@@ -314,6 +317,9 @@ public final class MapCanvas extends ResizableCanvas {
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY()));
         autoZoom(ENTITY_UNFOLLOWING_ZOOM);
+        MainController.getController().getTabPane()
+                .getSelectionModel().selectFirst();
+        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
     }
 
     /**
@@ -434,9 +440,6 @@ public final class MapCanvas extends ResizableCanvas {
                         followingEntity.set(false);
                         followedEntity = null;
                         untrackEntityStats();
-                        MainController.getController().getTabPane()
-                                .getSelectionModel().selectFirst();
-                        MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
                     }
                 }
             }
@@ -459,7 +462,13 @@ public final class MapCanvas extends ResizableCanvas {
                     continue;
                 }
 
-                simulation.forEachGridEntities(x, y, this::drawEntity);
+                simulation.forEachGridEntities(x, y, entity -> {
+                    try {
+                        drawEntity(entity);
+                    } catch (EvosimException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }
     }
@@ -489,19 +498,23 @@ public final class MapCanvas extends ResizableCanvas {
 
         simulation.forEachGridEntities(chunkX, chunkY, entity -> {
             Point entityCenter = entity.getBodyCenter();
-            if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
-                    abs.getX(), abs.getY())
-                    <= Configuration.getConfiguration().getEntityRadius() * 2
-            ) {
+            try {
+                if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
+                        abs.getX(), abs.getY())
+                        <= Configuration.getConfiguration().getEntityRadius() * 2
+                ) {
 
-                if (!followingEntity.get() && !camera.isZooming()) {
-                    this.followEntity(entity);
-                    followingEntity.set(true);
-                    followedEntity = entity;
-                    trackEntityStats();
-                    MainController.getController().getNeuralNetworkTab()
-                            .setNeuralNetwork(entity.getBrain());
+                    if (!followingEntity.get() && !camera.isZooming()) {
+                        this.followEntity(entity);
+                        followingEntity.set(true);
+                        followedEntity = entity;
+                        trackEntityStats();
+                        MainController.getController().getNeuralNetworkTab()
+                                .setNeuralNetwork(entity.getBrain());
+                    }
                 }
+            } catch (EvosimException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }
