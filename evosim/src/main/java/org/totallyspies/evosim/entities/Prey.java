@@ -3,6 +3,8 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
@@ -23,6 +25,13 @@ import org.totallyspies.evosim.utils.EvosimException;
 public final class Prey extends Entity {
 
     /**
+     * The paint colour of the entity's body.
+     */
+    @Getter
+    @Setter
+    private static Color bodyColour = Color.GREEN;
+
+    /**
      * Constructs a new prey.
      *
      * @param newSimulation    Simulation for the entity to be created in.
@@ -35,8 +44,7 @@ public final class Prey extends Entity {
         final Point position,
         final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
-            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians,
-            Color.GREEN);
+            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
 
     }
 
@@ -74,7 +82,6 @@ public final class Prey extends Entity {
                 speed,
                 fovAngleInDegrees,
                 directionAngleInRadians,
-                Color.GREEN,
                 sensors,
                 sensorsData,
                 body,

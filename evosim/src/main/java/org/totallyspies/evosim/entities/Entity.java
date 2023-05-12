@@ -3,7 +3,6 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import javafx.scene.paint.Color;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -98,12 +97,6 @@ public abstract class Entity {
     private final double fovAngleInRadians;
 
     /**
-     * The color of the entity.
-     */
-    @JsonIgnore
-    private final Color color;
-
-    /**
      * The birth time of the entity.
      */
     @JsonIgnore
@@ -178,14 +171,12 @@ public abstract class Entity {
      * @param entityPosition   The position of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param newCol            The color of the entity.
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
         final Point entityPosition, final double newViewAngle,
-        final double newRotationAngle, final Color newCol) throws EvosimException {
+        final double newRotationAngle) throws EvosimException {
         this.simulation = newSimulation;
         this.birthTime = 0L;
-        this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
         this.splitEnergy = 0d;
@@ -222,7 +213,6 @@ public abstract class Entity {
      * @param newSpeed                     The speed of entity.
      * @param newFovAngleInRadians         The angle in degrees of entity.
      * @param newDirectionAngleInRadians   The direction angle in radians of entity.
-     * @param newColor                     The color of entity.
      * @param newSensors                   The sensors of entity.
      * @param newInputs                    The sensors data of entity.
      * @param newBody                      The body of entity.
@@ -237,7 +227,6 @@ public abstract class Entity {
             final double newSpeed,
             final double newFovAngleInRadians,
             final double newDirectionAngleInRadians,
-            final Color newColor,
             final Line[] newSensors,
             final double[] newInputs,
             final Circle newBody,
@@ -249,7 +238,6 @@ public abstract class Entity {
             final int newChildCount) {
         this.birthTime = 0L;
         this.simulation = null;
-        this.color = newColor;
         this.speed = newSpeed;
         this.directionAngleInRadians = newDirectionAngleInRadians;
         this.fovAngleInRadians = newFovAngleInRadians;

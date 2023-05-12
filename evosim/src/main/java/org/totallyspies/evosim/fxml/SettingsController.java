@@ -12,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.totallyspies.evosim.entities.Predator;
+import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import org.totallyspies.evosim.utils.Configuration;
@@ -147,6 +149,8 @@ public final class SettingsController {
         this.cbChild.setSelected(childCountVisible);
         this.cbTimer.setSelected(timerVisible);
         this.cpMap.setValue(MapCanvas.getMapColor());
+        this.cpPred.setValue(Predator.getBodyColour());
+        this.cpPrey.setValue(Prey.getBodyColour());
         this.themeSelector.setValue(theme);
 
         populateThemes();
@@ -154,6 +158,8 @@ public final class SettingsController {
         fileChooser = FileSelector.getFileChooserImage();
 
         cpMap.valueProperty().addListener((o, ov, nv) -> MapCanvas.setMapColor(nv));
+        cpPred.valueProperty().addListener((o, ov, nv) -> Predator.setBodyColour(nv));
+        cpPrey.valueProperty().addListener((o, ov, nv) -> Prey.setBodyColour(nv));
         themeSelector.valueProperty().addListener((o, ov, nv) -> {
             this.changeTheme(nv);
             theme = nv;
