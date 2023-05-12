@@ -462,8 +462,17 @@ public final class Simulation {
             }
             final Coordinate center = this.pointToGridCoord(entity.getBodyCenter());
 
-            for (int x = center.getX() - 1; x <= center.getX() + 1; ++x) {
-                for (int y = center.getY() - 1; y <= center.getY() + 1; ++y) {
+            final int delta;
+            try {
+                delta = (int) (
+                        Configuration.getConfiguration().getEntitySensorsLength() / this.gridSize
+                );
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (int x = center.getX() - delta; x <= center.getX() + delta; ++x) {
+                for (int y = center.getY() - delta; y <= center.getY() + delta; ++y) {
                     if (!isCoordValid(x, y)) {
                         continue;
                     }
