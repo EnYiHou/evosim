@@ -218,6 +218,8 @@ public final class WelcomeController {
     @FXML
     private void pressOnLatestBtn(final ActionEvent event) throws EvosimException {
         Configuration.getConfiguration().loadLastFile();
+        boolean isLatest = true;
+        EvosimApplication.getApplication().getStage().setUserData(isLatest);
         WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
                 this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
                 "");
