@@ -59,15 +59,21 @@ public class NeuralNetworkView extends Tab {
 
     private void generateNeuralNetworkStructure() {
         this.neuronStructure.clear();
+
         for (int layer = 0; layer < this.neuralNetwork.getNeuronLayers().size(); layer++) {
             ArrayList<NeuronView> neuronLayer = new ArrayList<>();
             ArrayList<ArrayList<Line>> weightLayer = new ArrayList<>();
-            for (int neuron = 0; neuron < this.neuralNetwork.getNeuronLayers()
-                    .get(layer).size(); neuron++) {
+
+            for (
+                int neuron = 0;
+                neuron < this.neuralNetwork.getNeuronLayers().get(layer).size();
+                neuron++
+            ) {
                 Neuron sNeuron = this.neuralNetwork.getNeuronLayers().get(layer).get(neuron);
                 ArrayList<Line> specificNeuron = new ArrayList<>();
                 NeuronView neuronView = new NeuronView(sNeuron);
                 neuronLayer.add(neuronView);
+
                 if (layer != 0) {
                     for (int weight = 0; weight < sNeuron.getWeights().length; weight++) {
                         Line specificWeight = new Line();
@@ -91,6 +97,7 @@ public class NeuralNetworkView extends Tab {
 
                 weightLayer.add(specificNeuron);
             }
+
             this.neuronStructure.add(neuronLayer);
             this.weightsStructure.add(weightLayer);
         }

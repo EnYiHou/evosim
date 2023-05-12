@@ -122,21 +122,25 @@ public final class Neuron {
       throw new ArrayIndexOutOfBoundsException();
     }
 
-    return this.feedUnchecked(inputs);
+    return this.feedUnchecked(inputs, 0);
   }
 
   /**
    * Feeds the input forward without checking the input size.
    *
    * @param inputs outputs from the previous layer or root inputs of the network
+   * @param fromIndex starts at index
    * @return dot product of activated inputs and weights
    */
-  public double feedUnchecked(final double[] inputs) {
+  public double feedUnchecked(final double[] inputs, final int fromIndex) {
     double sum = this.bias;
+
     for (int i = 0; i < this.weights.length; ++i) {
-      sum += inputs[i] * this.weights[i];
+      sum += inputs[fromIndex + i] * this.weights[i];
     }
+
     this.value = sum;
+
     return Formulas.logistic(sum);
   }
 
