@@ -23,15 +23,16 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '19'
-        distribution: 'temurin'
-        java-package: 'jdk'
+        distribution: 'zulu'
+        java-package: 'jdk+fx'
+        cache: 'gradle'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: assemble
+        arguments: jlink
         build-root-directory: evosim
     - name: Upload build artifact
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: dist-${{ matrix.os }}
-        path: evosim/build/distributions/*.zip
+        name: evosim-${{ matrix.os }}
+        path: evosim/build/image
