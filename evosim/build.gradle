@@ -1,3 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    ext {
+        junitVersion = '5.9.2'
+        lombokVersion = '1.18.26'
+        ikonliVersion = '12.3.1'
+    }
+}
+
 plugins {
     id 'java'
     id 'application'
@@ -6,17 +18,13 @@ plugins {
     id 'org.beryx.jlink' version '2.26.0'
 }
 
-group 'org.totallyspies'
-version '1.0.0'
-
 repositories {
     mavenCentral()
 }
 
-ext {
-    junitVersion = '5.9.2'
-    lombokVersion = '1.18.26'
-}
+project.description = "Evosim evolution simulator"
+project.ext.buildDate = new Date()
+project.version = "0.9"
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
@@ -28,6 +36,10 @@ tasks.withType(JavaCompile) {
 application {
     mainModule = 'org.totallyspies.evosim'
     mainClass = 'org.totallyspies.evosim.ui.EvosimApplication'
+}
+
+run {
+    jvmArgs = ['-Djdk.gtk.version=2']
 }
 
 javafx {
@@ -51,9 +63,9 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.0'
 
-    implementation 'org.kordamp.ikonli:ikonli-swing:12.3.1'
-    implementation 'org.kordamp.ikonli:ikonli-javafx:12.3.1'
-    implementation 'org.kordamp.ikonli:ikonli-materialdesign2-pack:12.3.1'
+    implementation "org.kordamp.ikonli:ikonli-swing:${ikonliVersion}"
+    implementation "org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}"
+    implementation "org.kordamp.ikonli:ikonli-materialdesign2-pack:${ikonliVersion}"
 
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 }
@@ -66,6 +78,8 @@ jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
 
     launcher {
-        name = 'Evosim'
+        name = 'evosimRun'
+        jvmArgs = ['-Djdk.gtk.version=2']
+        noConsole = true
     }
 }
