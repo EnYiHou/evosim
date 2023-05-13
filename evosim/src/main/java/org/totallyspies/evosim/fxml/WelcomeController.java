@@ -54,6 +54,11 @@ public final class WelcomeController {
     private Accordion options;
 
     /**
+     * Saving the safe sliders that should be used in the welcome.fxml.
+     */
+    private List<SafeSlider> layersSafeSliders;
+
+    /**
      * Constructs the WelcomeController to have an empty arraylist of submission callbacks.
      */
     public WelcomeController() {
@@ -64,7 +69,9 @@ public final class WelcomeController {
      * Initializes the {@code welcome.fxml} by setting {@link #splitPane}'s background image as
      * well as adding all prompts dynamically.
      */
-    public void initialize() {
+    @SuppressWarnings("checkstyle:MethodLength")
+    public void initialize() throws EvosimException {
+        this.layersSafeSliders = new ArrayList<>();
         this.splitPane.setBackground(new Background(new BackgroundImage(
             new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toString()),
             BackgroundRepeat.NO_REPEAT,
@@ -76,50 +83,58 @@ public final class WelcomeController {
         Configuration config = Configuration.getConfiguration();
 
         TitledPane generalDropdown = new TitledPane("General", new VBox(
-            this.createSliderDefault("Map Size X", config::setMapSizeX, Defaults.MAP_SIZE_X),
-            this.createSliderDefault("Map Size Y", config::setMapSizeY, Defaults.MAP_SIZE_Y),
-            this.createSliderDefault("Grid Tile Size", config::setGridSize, Defaults.GRID_SIZE)
+            this.createSliderDefault("Map size X", config::setMapSizeX, 0, Defaults.MAP_SIZE_X),
+            this.createSliderDefault("Map size Y", config::setMapSizeY, 0, Defaults.MAP_SIZE_Y),
+            this.createSliderDefault("Grid size", config::setGridSize, 0, Defaults.GRID_SIZE)
         ));
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(
                 "Max Rotation Speed",
                 config::setEntityMaxRotationSpeed,
+                0d,
                 Defaults.ENTITY_MAX_ROTATION_SPEED
             ),
             this.createSliderDefault(
                 "Sensor Count",
                 config::setEntitySensorsCount,
+                0,
                 Defaults.ENTITY_SENSORS_COUNT
             ),
             this.createSliderDefault(
                 "Length of Sensors",
                 config::setEntitySensorsLength,
+                0d,
                 Defaults.ENTITY_SENSORS_LENGTH
             ),
             this.createSliderDefault(
                 "Body Radius",
                 config::setEntityRadius,
+                0d,
                 Defaults.ENTITY_RADIUS
             ),
             this.createSliderDefault(
                 "Maximum Speed",
                 config::setEntityMaxSpeed,
+                0d,
                 Defaults.ENTITY_MAX_SPEED
             ),
             this.createSliderDefault(
                 "Minimum Speed",
                 config::setEntityMinSpeed,
+                0d,
                 Defaults.ENTITY_MIN_SPEED
             ),
             this.createSliderDefault(
                 "Speed mutation Rate",
                 config::setEntitySpeedMutationRate,
+                0d,
                 Defaults.ENTITY_SPEED_MUTATION_RATE
             ),
             this.createSliderDefault(
                 "Energy Drain Rate",
                 config::setEntityEnergyDrainRate,
+                0d,
                 Defaults.ENTITY_ENERGY_DRAIN_RATE
             )
         ));
@@ -128,31 +143,37 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Energy Fill Speed",
                 config::setPredatorEnergyFillingSpeed,
+                0d,
                 Defaults.PREDATOR_ENERGY_FILLING_SPEED
             ),
             this.createSliderDefault(
                 "Energy Base Drain Speed",
                 config::setPredatorEnergyBaseDrainingSpeed,
+                0d,
                 Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED
             ),
             this.createSliderDefault(
                 "Maximum Population",
                 config::setPredatorMaxNumber,
+                0,
                 Defaults.PREDATOR_MAX_NUMBER
             ),
             this.createSliderDefault(
                 "Initial Population",
                 config::setPredatorInitialPopulation,
+                0,
                 Defaults.PREDATOR_INITIAL_POPULATION
             ),
             this.createSliderDefault(
                 "View Cone Angle",
                 config::setPredatorViewAngle,
+                0d,
                 Defaults.PREDATOR_VIEW_ANGLE
             ),
             this.createSliderDefault(
                 "Split Energy Fill Speed",
                 config::setPredatorSplitEnergyFillingSpeed,
+                0d,
                 Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED
             )
         ));
@@ -162,37 +183,62 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Energy Fill Speed",
                 config::setPreyEnergyFillingSpeed,
+                0d,
                 Defaults.PREY_ENERGY_FILLING_SPEED
             ),
             this.createSliderDefault(
                 "Maximum Population",
                 config::setPreyMaxNumber,
+                0,
                 Defaults.PREY_MAX_NUMBER
             ),
             this.createSliderDefault(
                 "Initial Population",
                 config::setPreyInitialPopulation,
+                0,
                 Defaults.PREY_INITIAL_POPULATION
             ),
             this.createSliderDefault(
                 "View Cone Angle",
                 config::setPreyViewAngle,
+                0d,
                 Defaults.PREY_VIEW_ANGLE
             ),
             this.createSliderDefault(
                 "Split Energy Fill Speed",
                 config::setPreySplitEnergyFillingSpeed,
+                0d,
                 Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED
             )
         ));
 
-        TitledPane neuralNetworkDropdown = new TitledPane("Neural network", new VBox(
-            this.createSliderDefault(
-                "Number of Layers",
-                config::setNeuralNetworkLayersNumber,
+        SafeSlider sliderLayer = this.createSliderDefault(
+                "Neural network layers",
+                null,
+                2,
                 Defaults.NEURAL_NETWORK_LAYERS_NUMBER
-            )
-        ));
+                );
+        VBox neuralNetworksSliders = new VBox(sliderLayer);
+
+        addLayersSliders();
+        neuralNetworksSliders.getChildren().addAll(this.layersSafeSliders);
+        sliderLayer.valueProperty().addListener(event -> {
+            try {
+                config.setNeuralNetworkLayersNumber((Integer) sliderLayer.getValue());
+                neuralNetworksSliders.getChildren().removeAll(this.layersSafeSliders);
+                addLayersSliders();
+                neuralNetworksSliders.getChildren().addAll(this.layersSafeSliders);
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        this.submissionCallbacks.add(this::setLayersSizeMiddle);
+
+        TitledPane neuralNetworkDropdown = new TitledPane(
+                "Neural network",
+                neuralNetworksSliders
+        );
 
         this.options.getPanes().addAll(
             generalDropdown, entityDropdown, predatorDropdown, preyDropdown, neuralNetworkDropdown
@@ -264,12 +310,16 @@ public final class WelcomeController {
 
     private <T extends Number> SafeSlider createSliderDefault(final String name,
                                                               final Consumer<T> setter,
+                                                              final T minValue,
                                                               final T defaultValue
     ) {
         return createSlider(
                 name,
                 setter,
-                (T) (Integer.valueOf(0)),
+                (isNumberFloatingPoint(minValue)
+                        ? (T) Double.valueOf(minValue.doubleValue())
+                        : (T) Integer.valueOf(minValue.intValue())
+                ),
                 true,
                 (isNumberFloatingPoint(defaultValue)
                         ? (T) Double.valueOf(defaultValue.doubleValue() * 2)
@@ -287,6 +337,28 @@ public final class WelcomeController {
             final T max, final boolean hardMax,
             final T defaultValue
     ) {
+        final SafeSlider slider = createSlider(
+                name,
+                min, hardMin,
+                max, hardMax,
+                defaultValue
+        );
+
+        if (setter != null) {
+            this.submissionCallbacks.add(
+                    () -> setter.accept((T) slider.getValue())
+            );
+        }
+
+        return slider;
+    }
+
+    private <T extends Number> SafeSlider createSlider(
+            final String name,
+            final T min, final boolean hardMin,
+            final T max, final boolean hardMax,
+            final Number defaultValue
+    ) {
         final SafeSlider slider = new SafeSlider();
         slider.setFloatingPoint(isNumberFloatingPoint(defaultValue));
         slider.setMin(min);
@@ -295,11 +367,6 @@ public final class WelcomeController {
         slider.setHardMax(hardMax);
         slider.setName(name);
         slider.setValue(defaultValue);
-
-        this.submissionCallbacks.add(
-                () -> setter.accept((T) slider.getValue())
-        );
-
         return slider;
     }
 
@@ -320,5 +387,36 @@ public final class WelcomeController {
         WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
                 this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
                 "");
+    }
+
+    private void setLayersSizeMiddle() {
+        try {
+            List<Integer> slidersValue =
+                    this.layersSafeSliders
+                            .stream()
+                            .map(safeSlider -> safeSlider.getValue().intValue())
+                            .toList();
+
+            Configuration.getConfiguration().setLayerSizeMiddle(slidersValue);
+        } catch (EvosimException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addLayersSliders() throws EvosimException {
+        int layersNumber = Configuration.getConfiguration().getNeuralNetworkLayersNumber();
+
+        int listSize = this.layersSafeSliders.size();
+        if (layersNumber - 2 > listSize) {
+            this.layersSafeSliders.add(this.createSliderDefault(
+                    "Neural Network middle layer #" + (listSize + 1),
+                    null,
+                    1,
+                    Defaults.NODES_PER_LAYER
+            ));
+        }
+        if (layersNumber - 2 < listSize) {
+            this.layersSafeSliders.remove(listSize - 1);
+        }
     }
 }
