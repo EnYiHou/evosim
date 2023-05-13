@@ -65,7 +65,7 @@ public final class WelcomeController {
      * well as adding all prompts dynamically.
      */
     public void initialize() {
-        Image img = new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toExternalForm());
+        Image img = new Image(this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME));
         if (img.getException() != null) {
             img.getException().printStackTrace();
         }
