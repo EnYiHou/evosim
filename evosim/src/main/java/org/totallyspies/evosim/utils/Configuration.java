@@ -170,6 +170,10 @@ public final class Configuration {
          */
         public static final String COLOR_MAP = Color.LIGHTSKYBLUE.toString();
 
+        public static final String COLOR_PREY = Color.GREEN.toString();
+
+        public static final String COLOR_PREDATOR = Color.RED.toString();
+
         /**
          * The default nodes of the layers at the middle.
          */
@@ -272,7 +276,8 @@ public final class Configuration {
         this.defaultObjectVariables.put("backgroundImageBase64", Defaults.IMAGE_BASE_64);
         this.defaultObjectVariables.put("colorMap", Defaults.COLOR_MAP);
         this.defaultObjectVariables.put("layerSizeMiddle", Defaults.LAYER_SIZE_MIDDLE);
-
+        this.defaultObjectVariables.put("colorPrey", Defaults.COLOR_PREY);
+        this.defaultObjectVariables.put("colorPredator", Defaults.COLOR_PREDATOR);
 
         this.mapper = new ObjectMapper();
         restoreToDefaults();
@@ -418,8 +423,8 @@ public final class Configuration {
      * Restore to default configuration values.
      */
     public void restoreToDefaults() {
-        this.numberVariables = this.defaultsNumberVariables;
-        this.objectVariables = this.defaultObjectVariables;
+        this.numberVariables = new HashMap<>(this.defaultsNumberVariables);
+        this.objectVariables = new HashMap<>(this.defaultObjectVariables);
     }
 
     /**
@@ -483,6 +488,22 @@ public final class Configuration {
 
     public void setColorMap(final Color newColorMap) {
         this.objectVariables.replace("colorMap", newColorMap.toString());
+    }
+
+    public Color getColorPrey() throws EvosimException {
+        return Color.web(getObjectValue("colorPrey"));
+    }
+
+    public void setColorPrey(final Color newColorMap) {
+        this.objectVariables.replace("colorPrey", newColorMap.toString());
+    }
+
+    public Color getColorPredator() throws EvosimException {
+        return Color.web(getObjectValue("colorPredator"));
+    }
+
+    public void setColorPredator(final Color newColorMap) {
+        this.objectVariables.replace("colorPredator", newColorMap.toString());
     }
 
     public Duration getDuration() throws EvosimException {

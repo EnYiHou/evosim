@@ -27,8 +27,7 @@ public final class Prey extends Entity {
      * The paint colour of the entity's body.
      */
     @Getter
-    @Setter
-    private static Color bodyColour = Color.GREEN;
+    private static Color bodyColour;
 
     /**
      * Constructs a new prey.
@@ -44,7 +43,7 @@ public final class Prey extends Entity {
         final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
             Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
-
+        Prey.bodyColour = Configuration.getConfiguration().getColorPrey();
     }
 
     /**
@@ -139,5 +138,10 @@ public final class Prey extends Entity {
     @Override
     protected void onCollideHandler(final Entity other) {
         this.setDead(true);
+    }
+
+    public static void setBodyColour(Color newColor) {
+        Configuration.getConfiguration().setColorPrey(newColor);
+        Prey.bodyColour = newColor;
     }
 }

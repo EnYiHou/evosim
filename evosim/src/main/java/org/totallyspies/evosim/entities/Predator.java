@@ -27,8 +27,7 @@ public final class Predator extends Entity {
      * The paint colour of the entity's body.
      */
     @Getter
-    @Setter
-    private static Color bodyColour = Color.RED;
+    private static Color bodyColour;
 
     /**
      * Constructs a new predator.
@@ -44,6 +43,7 @@ public final class Predator extends Entity {
                     final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
             Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
+        Predator.bodyColour = Configuration.getConfiguration().getColorPredator();
     }
 
     /**
@@ -143,5 +143,10 @@ public final class Predator extends Entity {
                 + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
         this.setEnergy(Math.min(1, this.getEnergy()
                 + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
+    }
+
+    public static void setBodyColour(Color newColor) {
+        Configuration.getConfiguration().setColorPredator(newColor);
+        Predator.bodyColour = newColor;
     }
 }
