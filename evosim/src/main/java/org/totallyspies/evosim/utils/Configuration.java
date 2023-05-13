@@ -138,7 +138,7 @@ public final class Configuration {
         /**
          * The number of layers the neural network will contain.
          */
-        public static final int NEURAL_NETWORK_LAYERS_NUMBER = 2;
+        public static final int NEURAL_NETWORK_LAYERS_NUMBER = 3;
 
         /**
          * Number of grids in the horizontal axis.
@@ -158,17 +158,27 @@ public final class Configuration {
         /**
          * The default timer duration.
          */
-        public static final Duration DEFAULT_DURATION = Duration.ZERO;
+        public static final Duration DURATION = Duration.ZERO;
 
         /**
          * The default encoded image from Base64.
          */
-        public static final String DEFAULT_IMAGE_BASE_64 = "";
+        public static final String IMAGE_BASE_64 = "";
 
         /**
          * The default Color of the map.
          */
-        public static final String DEFAULT_COLOR_MAP = Color.LIGHTSKYBLUE.toString();
+        public static final String COLOR_MAP = Color.LIGHTSKYBLUE.toString();
+
+        /**
+         * The default nodes of the layers at the middle.
+         */
+        public static final List<Integer> LAYER_SIZE_MIDDLE = List.of(10);
+
+        /**
+         * Middle layers default number of nodes.
+         */
+        public static final int NODES_PER_LAYER = 10;
     }
 
     /**
@@ -258,9 +268,10 @@ public final class Configuration {
         this.defaultsNumberVariables.put("mapSizeY", Defaults.MAP_SIZE_Y);
         this.defaultsNumberVariables.put("gridSize", Defaults.GRID_SIZE);
 
-        this.defaultObjectVariables.put("duration", Defaults.DEFAULT_DURATION);
-        this.defaultObjectVariables.put("backgroundImageBase64", Defaults.DEFAULT_IMAGE_BASE_64);
-        this.defaultObjectVariables.put("colorMap", Defaults.DEFAULT_COLOR_MAP);
+        this.defaultObjectVariables.put("duration", Defaults.DURATION);
+        this.defaultObjectVariables.put("backgroundImageBase64", Defaults.IMAGE_BASE_64);
+        this.defaultObjectVariables.put("colorMap", Defaults.COLOR_MAP);
+        this.defaultObjectVariables.put("layerSizeMiddle", Defaults.LAYER_SIZE_MIDDLE);
 
 
         this.mapper = new ObjectMapper();
@@ -418,6 +429,20 @@ public final class Configuration {
      */
     public static Configuration getConfiguration() {
         return Configuration.CONFIGURATION;
+    }
+
+    public List<Integer> getLayerSizeMiddle() throws EvosimException {
+        Object oList = getObjectValue("layerSizeMiddle");
+
+        if (oList instanceof JSONArray) {
+            oList = ((JSONArray) oList).toList();
+        }
+
+        return new ArrayList<>(((List) oList).stream().map(x -> (Integer) x).toList());
+    }
+
+    public void setLayerSizeMiddle(final List<Integer> newLayerSizeMiddle) throws EvosimException {
+        this.objectVariables.replace("layerSizeMiddle", newLayerSizeMiddle);
     }
 
     public Image getBackgroundImage() throws EvosimException {

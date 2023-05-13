@@ -335,7 +335,7 @@ public final class MainController {
         ));
         configuration.setDuration(java.time.Duration.ZERO);
         configuration.setBackgroundImage(null);
-        configuration.setColorMap(Color.web(Configuration.Defaults.DEFAULT_COLOR_MAP));
+        configuration.setColorMap(Color.web(Configuration.Defaults.COLOR_MAP));
 
         MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());

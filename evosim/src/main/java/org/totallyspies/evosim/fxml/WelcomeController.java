@@ -54,6 +54,11 @@ public final class WelcomeController {
     private Accordion options;
 
     /**
+     * Saving the safe sliders that should be used in the welcome.fxml.
+     */
+    private List<SafeSlider> layersSafeSliders;
+
+    /**
      * Constructs the WelcomeController to have an empty arraylist of submission callbacks.
      */
     public WelcomeController() {
@@ -64,7 +69,9 @@ public final class WelcomeController {
      * Initializes the {@code welcome.fxml} by setting {@link #splitPane}'s background image as
      * well as adding all prompts dynamically.
      */
-    public void initialize() {
+    @SuppressWarnings("checkstyle:MethodLength")
+    public void initialize() throws EvosimException {
+        this.layersSafeSliders = new ArrayList<>();
         this.splitPane.setBackground(new Background(new BackgroundImage(
             new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toString()),
             BackgroundRepeat.NO_REPEAT,
@@ -186,13 +193,32 @@ public final class WelcomeController {
             )
         ));
 
-        TitledPane neuralNetworkDropdown = new TitledPane("Neural network", new VBox(
-            this.createSliderDefault(
+        SafeSlider sliderLayer = this.createSliderDefault(
                 "Neural network layers",
-                config::setNeuralNetworkLayersNumber,
-                Defaults.NEURAL_NETWORK_LAYERS_NUMBER
-            )
-        ));
+                Defaults.NEURAL_NETWORK_LAYERS_NUMBER,
+                2,
+                true);
+        VBox neuralNetworksSliders = new VBox(sliderLayer);
+
+        addLayersSliders();
+        neuralNetworksSliders.getChildren().addAll(this.layersSafeSliders);
+        sliderLayer.valueProperty().addListener(event -> {
+            try {
+                config.setNeuralNetworkLayersNumber((Integer) sliderLayer.getValue());
+                neuralNetworksSliders.getChildren().removeAll(this.layersSafeSliders);
+                addLayersSliders();
+                neuralNetworksSliders.getChildren().addAll(this.layersSafeSliders);
+            } catch (EvosimException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        this.submissionCallbacks.add(this::setLayersSizeMiddle);
+
+        TitledPane neuralNetworkDropdown = new TitledPane(
+                "Neural network",
+                neuralNetworksSliders
+        );
 
         this.options.getPanes().addAll(
             generalDropdown, entityDropdown, predatorDropdown, preyDropdown, neuralNetworkDropdown
@@ -280,6 +306,24 @@ public final class WelcomeController {
         );
     }
 
+    private <T extends Number> SafeSlider createSliderDefault(final String name,
+                                                              final T defaultValue,
+                                                              final int minValue,
+                                                              final boolean withoutConsumer
+    ) {
+        return createSlider(
+                name,
+                (Integer.valueOf(minValue)),
+                true,
+                (isNumberFloatingPoint(defaultValue)
+                        ? (T) Double.valueOf(defaultValue.doubleValue() * 2)
+                        : (T) Integer.valueOf(defaultValue.intValue() * 2)
+                ),
+                false,
+                defaultValue
+        );
+    }
+
     private <T extends Number> SafeSlider createSlider(
             final String name,
             final Consumer<T> setter,
@@ -303,6 +347,23 @@ public final class WelcomeController {
         return slider;
     }
 
+    private SafeSlider createSlider(
+            final String name,
+            final Number min, final boolean hardMin,
+            final Number max, final boolean hardMax,
+            final Number defaultValue
+    ) {
+        final SafeSlider slider = new SafeSlider();
+        slider.setFloatingPoint(isNumberFloatingPoint(defaultValue));
+        slider.setMin(min);
+        slider.setHardMin(hardMin);
+        slider.setMax(max);
+        slider.setHardMax(hardMax);
+        slider.setName(name);
+        slider.setValue(defaultValue);
+        return slider;
+    }
+
     @FXML
     private void onNext() {
         try {
@@ -320,5 +381,34 @@ public final class WelcomeController {
         WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
                 this.getClass().getResource(ResourceManager.FXML_MAIN_VIEW),
                 "");
+    }
+
+    private void setLayersSizeMiddle() {
+        try {
+            List<Integer> slidersValue =
+                    this.layersSafeSliders
+                            .stream()
+                            .map(safeSlider -> safeSlider.getValue().intValue())
+                            .toList();
+
+            Configuration.getConfiguration().setLayerSizeMiddle(slidersValue);
+        } catch (EvosimException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addLayersSliders() throws EvosimException {
+        int layersNumber = Configuration.getConfiguration().getNeuralNetworkLayersNumber();
+
+        int listSize = this.layersSafeSliders.size();
+        if (layersNumber - 2 > listSize) {
+            this.layersSafeSliders.add(this.createSliderDefault(
+                    "Neural Network middle layer #" + (listSize + 1),
+                    Defaults.NODES_PER_LAYER, 1, true
+            ));
+        }
+        if (layersNumber - 2 < listSize) {
+            this.layersSafeSliders.remove(listSize - 1);
+        }
     }
 }

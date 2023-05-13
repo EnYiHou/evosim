@@ -18,6 +18,7 @@ import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,14 +44,9 @@ import java.util.List;
 public abstract class Entity {
 
     /**
-     * Number of nodes on the second layer.
-     */
-    private static final int SECOND_LAYER_NODES_NUMBER = 10;
-
-    /**
      * Number of nodes on the third layer.
      */
-    private static final int THIRD_LAYER_NODES_NUMBER = 2;
+    private static final int LAST_LAYER_NODES_NUMBER = 2;
 
     /**
      * In order to convert MILLISECONDS_TO_SECONDS.
@@ -202,17 +198,21 @@ public abstract class Entity {
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInRadians = Math.toRadians(newViewAngle);
 
-        this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
+        Configuration config = Configuration.getConfiguration();
 
-        this.sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
+        this.body = new Circle(entityPosition, config.getEntityRadius());
+        this.sensorCount = config.getEntitySensorsCount();
 
         // Inputs with distances from each side
         final int inputCount = this.sensorCount + 4;
 
         // initialize neural network
-        //TODO: List of layers
-        this.brain = new NeuralNetwork(
-                List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
+        List<Integer> layers = new ArrayList<>(List.of(inputCount));
+        List<Integer> middleLayer = Configuration.getConfiguration().getLayerSizeMiddle();
+        middleLayer.forEach(layer -> layers.add(layer));
+        layers.add(LAST_LAYER_NODES_NUMBER);
+
+        this.brain = new NeuralNetwork(layers);
 
         this.inputs = new double[inputCount];
     }
