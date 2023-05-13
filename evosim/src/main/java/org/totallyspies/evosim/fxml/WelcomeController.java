@@ -1,5 +1,7 @@
 package org.totallyspies.evosim.fxml;
 
+import java.io.IOException;
+import java.io.InputStream;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -65,13 +67,17 @@ public final class WelcomeController {
      * well as adding all prompts dynamically.
      */
     public void initialize() {
-        Image img = new Image(this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME));
-        if (img.getException() != null) {
-            img.getException().printStackTrace();
-        }
+        final InputStream proxied = this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME);
+
+        InputStream proxy = new InputStream() {
+            @Override
+            public int read() throws IOException {
+                return proxied.read();
+            }
+        };
 
         this.splitPane.setBackground(new Background(new BackgroundImage(
-            img, //new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toExternalForm()),
+            new Image(proxy),
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,
