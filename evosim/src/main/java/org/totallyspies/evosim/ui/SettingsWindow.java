@@ -29,7 +29,7 @@ public final class SettingsWindow {
      */
     public SettingsWindow(final Stage parent) {
         this.settingsStage = new Stage();
-        settingsStage.setTitle("SETTINGS Evosim");
+        settingsStage.setTitle("EVOSIM Settings");
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.initOwner(parent);
         settingsStage.setResizable(false);

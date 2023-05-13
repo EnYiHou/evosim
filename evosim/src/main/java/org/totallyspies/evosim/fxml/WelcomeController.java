@@ -90,49 +90,49 @@ public final class WelcomeController {
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(
-                "Entity max rotation speed",
+                "Max Rotation Speed",
                 config::setEntityMaxRotationSpeed,
                 0d,
                 Defaults.ENTITY_MAX_ROTATION_SPEED
             ),
             this.createSliderDefault(
-                "Entity sensor count",
+                "Sensor Count",
                 config::setEntitySensorsCount,
                 0,
                 Defaults.ENTITY_SENSORS_COUNT
             ),
             this.createSliderDefault(
-                "Entity radius",
-                config::setEntityRadius,
-                0d,
-                Defaults.ENTITY_RADIUS
-            ),
-            this.createSliderDefault(
-                "Entity sensors length",
+                "Length of Sensors",
                 config::setEntitySensorsLength,
                 0d,
                 Defaults.ENTITY_SENSORS_LENGTH
             ),
             this.createSliderDefault(
-                "Entity max speed",
+                "Body Radius",
+                config::setEntityRadius,
+                0d,
+                Defaults.ENTITY_RADIUS
+            ),
+            this.createSliderDefault(
+                "Maximum Speed",
                 config::setEntityMaxSpeed,
                 0d,
                 Defaults.ENTITY_MAX_SPEED
             ),
             this.createSliderDefault(
-                "Entity minimum speed",
+                "Minimum Speed",
                 config::setEntityMinSpeed,
                 0d,
                 Defaults.ENTITY_MIN_SPEED
             ),
             this.createSliderDefault(
-                "Entity speed mutation rate",
+                "Speed mutation Rate",
                 config::setEntitySpeedMutationRate,
                 0d,
                 Defaults.ENTITY_SPEED_MUTATION_RATE
             ),
             this.createSliderDefault(
-                "Entity energy drain rate",
+                "Energy Drain Rate",
                 config::setEntityEnergyDrainRate,
                 0d,
                 Defaults.ENTITY_ENERGY_DRAIN_RATE
@@ -141,37 +141,37 @@ public final class WelcomeController {
 
         TitledPane predatorDropdown = new TitledPane("Predators", new VBox(
             this.createSliderDefault(
-                "Predator energy filling speed",
+                "Energy Fill Speed",
                 config::setPredatorEnergyFillingSpeed,
                 0d,
                 Defaults.PREDATOR_ENERGY_FILLING_SPEED
             ),
             this.createSliderDefault(
-                "Predator energy base draining speed",
+                "Energy Base Drain Speed",
                 config::setPredatorEnergyBaseDrainingSpeed,
                 0d,
                 Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED
             ),
             this.createSliderDefault(
-                "Predator max number",
+                "Maximum Population",
                 config::setPredatorMaxNumber,
                 0,
                 Defaults.PREDATOR_MAX_NUMBER
             ),
             this.createSliderDefault(
-                "Predator initial population",
+                "Initial Population",
                 config::setPredatorInitialPopulation,
                 0,
                 Defaults.PREDATOR_INITIAL_POPULATION
             ),
             this.createSliderDefault(
-                "Predator view angle",
+                "View Cone Angle",
                 config::setPredatorViewAngle,
                 0d,
                 Defaults.PREDATOR_VIEW_ANGLE
             ),
             this.createSliderDefault(
-                "Predator split energy filling speed",
+                "Split Energy Fill Speed",
                 config::setPredatorSplitEnergyFillingSpeed,
                 0d,
                 Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED
@@ -181,31 +181,31 @@ public final class WelcomeController {
 
         TitledPane preyDropdown = new TitledPane("Preys", new VBox(
             this.createSliderDefault(
-                "Prey energy filling speed",
+                "Energy Fill Speed",
                 config::setPreyEnergyFillingSpeed,
                 0d,
                 Defaults.PREY_ENERGY_FILLING_SPEED
             ),
             this.createSliderDefault(
-                "Prey max number",
+                "Maximum Population",
                 config::setPreyMaxNumber,
                 0,
                 Defaults.PREY_MAX_NUMBER
             ),
             this.createSliderDefault(
-                "Prey initial population",
+                "Initial Population",
                 config::setPreyInitialPopulation,
                 0,
                 Defaults.PREY_INITIAL_POPULATION
             ),
             this.createSliderDefault(
-                "Prey view angle",
+                "View Cone Angle",
                 config::setPreyViewAngle,
                 0d,
                 Defaults.PREY_VIEW_ANGLE
             ),
             this.createSliderDefault(
-                "Prey split energy filling speed",
+                "Split Energy Fill Speed",
                 config::setPreySplitEnergyFillingSpeed,
                 0d,
                 Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED

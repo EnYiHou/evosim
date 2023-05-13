@@ -95,7 +95,7 @@ public final class EvosimApplication extends Application {
         this.preShutdownHooks.forEach(Runnable::run);
         Alert confirmation = new Alert(
                 Alert.AlertType.CONFIRMATION,
-                "Are you sure you'd like to exit Evosim?",
+                "Are you sure you'd like to exit EVOSIM?",
                 ButtonType.YES,
                 ButtonType.NO
         );
