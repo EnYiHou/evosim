@@ -65,8 +65,13 @@ public final class WelcomeController {
      * well as adding all prompts dynamically.
      */
     public void initialize() {
+        Image img = new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toExternalForm());
+        if (img.getException() != null) {
+            img.getException().printStackTrace();
+        }
+
         this.splitPane.setBackground(new Background(new BackgroundImage(
-            new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toExternalForm()),
+            img, //new Image(this.getClass().getResource(ResourceManager.IMAGE_WELCOME).toExternalForm()),
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,

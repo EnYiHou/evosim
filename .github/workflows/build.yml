@@ -23,12 +23,12 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '19'
-        distribution: 'liberica'
+        distribution: 'zulu'
         java-package: 'jdk+fx'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: assemble
+        arguments: build assemble
         build-root-directory: evosim
     - name: Upload build artifact
       uses: actions/upload-artifact@v3.1.2
