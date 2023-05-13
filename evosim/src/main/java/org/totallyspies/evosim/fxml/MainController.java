@@ -343,7 +343,7 @@ public final class MainController {
         ));
         configuration.setDuration(java.time.Duration.ZERO);
         configuration.setBackgroundImage(null);
-        configuration.setColorMap(Color.web(Configuration.Defaults.DEFAULT_COLOR_MAP));
+        configuration.setColorMap(Color.web(Configuration.Defaults.COLOR_MAP));
 
         MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
@@ -478,7 +478,7 @@ public final class MainController {
         scene.setOnKeyPressed(event -> {
             KeyCode code = event.getCode();
             if (!MapCanvas.getPRESSED_KEYS().contains(code)
-                    && !event.isControlDown()) {
+                    && !event.isControlDown() && !event.isAltDown()) {
                 MapCanvas.getPRESSED_KEYS().push(code);
                 changeOpacityWASD(code, true);
             }
