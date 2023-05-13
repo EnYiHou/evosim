@@ -9,7 +9,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.totallyspies.evosim.fxml.AboutController">
    <top>
-      <Label alignment="CENTER" prefHeight="57.0" prefWidth="258.0" text="About Evosim" textAlignment="CENTER" BorderPane.alignment="CENTER">
+      <Label alignment="CENTER" prefHeight="57.0" prefWidth="258.0" text="About EVOSIM" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
             <Font name="System Bold" size="36.0" />
          </font>
