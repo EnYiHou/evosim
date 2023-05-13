@@ -67,22 +67,15 @@ public final class WelcomeController {
      * well as adding all prompts dynamically.
      */
     public void initialize() {
-        final InputStream proxied = this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME);
-
-        InputStream proxy = new InputStream() {
-            @Override
-            public int read() throws IOException {
-                return proxied.read();
-            }
-        };
-
-        this.splitPane.setBackground(new Background(new BackgroundImage(
-            new Image(proxy),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
-        )));
+        Platform.runLater(() -> {
+                this.splitPane.setBackground(new Background(new BackgroundImage(
+                    new Image(this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME)),
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER,
+                    new BackgroundSize(BackgroundSize.AUTO, 1, true, true, false, true)
+                )));
+        });
 
         Configuration config = Configuration.getConfiguration();
 
