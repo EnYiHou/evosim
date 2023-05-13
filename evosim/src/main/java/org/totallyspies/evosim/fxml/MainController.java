@@ -470,7 +470,7 @@ public final class MainController {
         scene.setOnKeyPressed(event -> {
             KeyCode code = event.getCode();
             if (!MapCanvas.getPRESSED_KEYS().contains(code)
-                    && !event.isControlDown()) {
+                    && !event.isControlDown() && !event.isAltDown()) {
                 MapCanvas.getPRESSED_KEYS().push(code);
                 changeOpacityWASD(code, true);
             }

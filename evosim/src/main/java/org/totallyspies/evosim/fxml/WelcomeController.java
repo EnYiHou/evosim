@@ -83,50 +83,58 @@ public final class WelcomeController {
         Configuration config = Configuration.getConfiguration();
 
         TitledPane generalDropdown = new TitledPane("General", new VBox(
-            this.createSliderDefault("Map size X", config::setMapSizeX, Defaults.MAP_SIZE_X),
-            this.createSliderDefault("Map size Y", config::setMapSizeY, Defaults.MAP_SIZE_Y),
-            this.createSliderDefault("Grid size", config::setGridSize, Defaults.GRID_SIZE)
+            this.createSliderDefault("Map size X", config::setMapSizeX, 0, Defaults.MAP_SIZE_X),
+            this.createSliderDefault("Map size Y", config::setMapSizeY, 0, Defaults.MAP_SIZE_Y),
+            this.createSliderDefault("Grid size", config::setGridSize, 0, Defaults.GRID_SIZE)
         ));
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(
                 "Entity max rotation speed",
                 config::setEntityMaxRotationSpeed,
+                0d,
                 Defaults.ENTITY_MAX_ROTATION_SPEED
             ),
             this.createSliderDefault(
                 "Entity sensor count",
                 config::setEntitySensorsCount,
+                0,
                 Defaults.ENTITY_SENSORS_COUNT
             ),
             this.createSliderDefault(
                 "Entity radius",
                 config::setEntityRadius,
+                0d,
                 Defaults.ENTITY_RADIUS
             ),
             this.createSliderDefault(
                 "Entity sensors length",
                 config::setEntitySensorsLength,
+                0d,
                 Defaults.ENTITY_SENSORS_LENGTH
             ),
             this.createSliderDefault(
                 "Entity max speed",
                 config::setEntityMaxSpeed,
+                0d,
                 Defaults.ENTITY_MAX_SPEED
             ),
             this.createSliderDefault(
                 "Entity minimum speed",
                 config::setEntityMinSpeed,
+                0d,
                 Defaults.ENTITY_MIN_SPEED
             ),
             this.createSliderDefault(
                 "Entity speed mutation rate",
                 config::setEntitySpeedMutationRate,
+                0d,
                 Defaults.ENTITY_SPEED_MUTATION_RATE
             ),
             this.createSliderDefault(
                 "Entity energy drain rate",
                 config::setEntityEnergyDrainRate,
+                0d,
                 Defaults.ENTITY_ENERGY_DRAIN_RATE
             )
         ));
@@ -135,31 +143,37 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Predator energy filling speed",
                 config::setPredatorEnergyFillingSpeed,
+                0d,
                 Defaults.PREDATOR_ENERGY_FILLING_SPEED
             ),
             this.createSliderDefault(
                 "Predator energy base draining speed",
                 config::setPredatorEnergyBaseDrainingSpeed,
+                0d,
                 Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED
             ),
             this.createSliderDefault(
                 "Predator max number",
                 config::setPredatorMaxNumber,
+                0,
                 Defaults.PREDATOR_MAX_NUMBER
             ),
             this.createSliderDefault(
                 "Predator initial population",
                 config::setPredatorInitialPopulation,
+                0,
                 Defaults.PREDATOR_INITIAL_POPULATION
             ),
             this.createSliderDefault(
                 "Predator view angle",
                 config::setPredatorViewAngle,
+                0d,
                 Defaults.PREDATOR_VIEW_ANGLE
             ),
             this.createSliderDefault(
                 "Predator split energy filling speed",
                 config::setPredatorSplitEnergyFillingSpeed,
+                0d,
                 Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED
             )
         ));
@@ -169,35 +183,41 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Prey energy filling speed",
                 config::setPreyEnergyFillingSpeed,
+                0d,
                 Defaults.PREY_ENERGY_FILLING_SPEED
             ),
             this.createSliderDefault(
                 "Prey max number",
                 config::setPreyMaxNumber,
+                0,
                 Defaults.PREY_MAX_NUMBER
             ),
             this.createSliderDefault(
                 "Prey initial population",
                 config::setPreyInitialPopulation,
+                0,
                 Defaults.PREY_INITIAL_POPULATION
             ),
             this.createSliderDefault(
                 "Prey view angle",
                 config::setPreyViewAngle,
+                0d,
                 Defaults.PREY_VIEW_ANGLE
             ),
             this.createSliderDefault(
                 "Prey split energy filling speed",
                 config::setPreySplitEnergyFillingSpeed,
+                0d,
                 Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED
             )
         ));
 
         SafeSlider sliderLayer = this.createSliderDefault(
                 "Neural network layers",
-                Defaults.NEURAL_NETWORK_LAYERS_NUMBER,
+                null,
                 2,
-                true);
+                Defaults.NEURAL_NETWORK_LAYERS_NUMBER
+                );
         VBox neuralNetworksSliders = new VBox(sliderLayer);
 
         addLayersSliders();
@@ -290,30 +310,16 @@ public final class WelcomeController {
 
     private <T extends Number> SafeSlider createSliderDefault(final String name,
                                                               final Consumer<T> setter,
+                                                              final T minValue,
                                                               final T defaultValue
     ) {
         return createSlider(
                 name,
                 setter,
-                (T) (Integer.valueOf(0)),
-                true,
-                (isNumberFloatingPoint(defaultValue)
-                        ? (T) Double.valueOf(defaultValue.doubleValue() * 2)
-                        : (T) Integer.valueOf(defaultValue.intValue() * 2)
+                (isNumberFloatingPoint(minValue)
+                        ? (T) Double.valueOf(minValue.doubleValue())
+                        : (T) Integer.valueOf(minValue.intValue())
                 ),
-                false,
-                defaultValue
-        );
-    }
-
-    private <T extends Number> SafeSlider createSliderDefault(final String name,
-                                                              final T defaultValue,
-                                                              final int minValue,
-                                                              final boolean withoutConsumer
-    ) {
-        return createSlider(
-                name,
-                (Integer.valueOf(minValue)),
                 true,
                 (isNumberFloatingPoint(defaultValue)
                         ? (T) Double.valueOf(defaultValue.doubleValue() * 2)
@@ -331,26 +337,26 @@ public final class WelcomeController {
             final T max, final boolean hardMax,
             final T defaultValue
     ) {
-        final SafeSlider slider = new SafeSlider();
-        slider.setFloatingPoint(isNumberFloatingPoint(defaultValue));
-        slider.setMin(min);
-        slider.setHardMin(hardMin);
-        slider.setMax(max);
-        slider.setHardMax(hardMax);
-        slider.setName(name);
-        slider.setValue(defaultValue);
-
-        this.submissionCallbacks.add(
-                () -> setter.accept((T) slider.getValue())
+        final SafeSlider slider = createSlider(
+                name,
+                min, hardMin,
+                max, hardMax,
+                defaultValue
         );
+
+        if (setter != null) {
+            this.submissionCallbacks.add(
+                    () -> setter.accept((T) slider.getValue())
+            );
+        }
 
         return slider;
     }
 
-    private SafeSlider createSlider(
+    private <T extends Number> SafeSlider createSlider(
             final String name,
-            final Number min, final boolean hardMin,
-            final Number max, final boolean hardMax,
+            final T min, final boolean hardMin,
+            final T max, final boolean hardMax,
             final Number defaultValue
     ) {
         final SafeSlider slider = new SafeSlider();
@@ -404,7 +410,9 @@ public final class WelcomeController {
         if (layersNumber - 2 > listSize) {
             this.layersSafeSliders.add(this.createSliderDefault(
                     "Neural Network middle layer #" + (listSize + 1),
-                    Defaults.NODES_PER_LAYER, 1, true
+                    null,
+                    1,
+                    Defaults.NODES_PER_LAYER
             ));
         }
         if (layersNumber - 2 < listSize) {
