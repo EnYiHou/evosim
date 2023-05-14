@@ -31,11 +31,11 @@ import java.util.List;
  * @author EnYi, Matthew
  */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type")
+    use = JsonTypeInfo.Id.NAME,
+    property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Prey.class, name = "prey"),
-        @JsonSubTypes.Type(value = Predator.class, name = "predator")
+    @JsonSubTypes.Type(value = Prey.class, name = "prey"),
+    @JsonSubTypes.Type(value = Predator.class, name = "predator")
 })
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -82,6 +82,12 @@ public abstract class Entity {
      * Distance from bottom.
      */
     private static final int INPUTS_BOTTOM_OFFSET = 3;
+
+
+    /**
+     * Distance from bottom.
+     */
+    private static final int INPUTS_ENERGY_OFFSET = 4;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
@@ -185,11 +191,11 @@ public abstract class Entity {
      * @param entityPosition   The position of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param newCol            The color of the entity.
+     * @param newCol           The color of the entity.
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
-        final Point entityPosition, final double newViewAngle,
-        final double newRotationAngle, final Color newCol) throws EvosimException {
+                     final Point entityPosition, final double newViewAngle,
+                     final double newRotationAngle, final Color newCol) throws EvosimException {
         this.simulation = newSimulation;
         this.birthTime = 0L;
         this.color = newCol;
@@ -208,12 +214,12 @@ public abstract class Entity {
         this.sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
 
         // Inputs with distances from each side
-        final int inputCount = this.sensorCount + 4;
+        final int inputCount = this.sensorCount + 5;
 
         // initialize neural network
         //TODO: List of layers
         this.brain = new NeuralNetwork(
-                List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
+            List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
 
         final double sensorLength = Configuration.getConfiguration().getEntitySensorsLength();
         final List<Neuron> firstLayer = this.brain.getNeuronLayers().get(0);
@@ -242,32 +248,33 @@ public abstract class Entity {
 
     /**
      * Construct a new entity from a JSON.
-     * @param newSpeed                     The speed of entity.
-     * @param newFovAngleInRadians         The angle in degrees of entity.
-     * @param newDirectionAngleInRadians   The direction angle in radians of entity.
-     * @param newColor                     The color of entity.
-     * @param newInputs                    The sensors data of entity.
-     * @param newBody                      The body of entity.
-     * @param newDead                      If dead of the entity.
-     * @param newSplit                     The split energy of entity.
-     * @param newBrain                     The brain of entity.
-     * @param newEnergy                    The energy of entity.
-     * @param newSplitEnergy               The split energy of entity.
-     * @param newChildCount                The child count of entity.
+     *
+     * @param newSpeed                   The speed of entity.
+     * @param newFovAngleInRadians       The angle in degrees of entity.
+     * @param newDirectionAngleInRadians The direction angle in radians of entity.
+     * @param newColor                   The color of entity.
+     * @param newInputs                  The sensors data of entity.
+     * @param newBody                    The body of entity.
+     * @param newDead                    If dead of the entity.
+     * @param newSplit                   The split energy of entity.
+     * @param newBrain                   The brain of entity.
+     * @param newEnergy                  The energy of entity.
+     * @param newSplitEnergy             The split energy of entity.
+     * @param newChildCount              The child count of entity.
      */
     protected Entity(
-            final double newSpeed,
-            final double newFovAngleInRadians,
-            final double newDirectionAngleInRadians,
-            final Color newColor,
-            final double[] newInputs,
-            final Circle newBody,
-            final boolean newDead,
-            final boolean newSplit,
-            final NeuralNetwork newBrain,
-            final double newEnergy,
-            final double newSplitEnergy,
-            final int newChildCount) throws EvosimException {
+        final double newSpeed,
+        final double newFovAngleInRadians,
+        final double newDirectionAngleInRadians,
+        final Color newColor,
+        final double[] newInputs,
+        final Circle newBody,
+        final boolean newDead,
+        final boolean newSplit,
+        final NeuralNetwork newBrain,
+        final double newEnergy,
+        final double newSplitEnergy,
+        final int newChildCount) throws EvosimException {
         this.birthTime = 0L;
         this.simulation = null;
         this.color = newColor;
@@ -307,22 +314,27 @@ public abstract class Entity {
      * @param movementSpeed the speed of the movement.
      */
     public void move(final double movementSpeed) throws EvosimException {
-        Point position = this.body.getCenter();
 
-        double positionX = Math.max(0,
-            Math.min(position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
-                this.simulation.getMapSizeX() * this.simulation.getGridSize()));
+        double remainingEnergy = this.energy - Configuration.getConfiguration()
+            .getEntityEnergyDrainRate() * movementSpeed;
 
-        double positionY = Math.max(0,
-            Math.min(position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
-                this.simulation.getMapSizeY() * this.simulation.getGridSize()));
+        if (remainingEnergy >= 0) {
+            Point position = this.body.getCenter();
 
-        position.setX(positionX);
-        position.setY(positionY);
+            double positionX = Math.max(0,
+                Math.min(position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
+                    this.simulation.getMapSizeX() * this.simulation.getGridSize()));
 
-        // drain energy
-        this.energy = Math.max(0,
-                this.energy - Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
+            double positionY = Math.max(0,
+                Math.min(position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
+                    this.simulation.getMapSizeY() * this.simulation.getGridSize()));
+
+            position.setX(positionX);
+            position.setY(positionY);
+
+            // drain energy
+            this.energy = Math.max(0, remainingEnergy);
+        }
     }
 
     /**
@@ -352,8 +364,10 @@ public abstract class Entity {
         this.inputs[this.sensorCount + INPUTS_BOTTOM_OFFSET] =
             this.simulation.getMapSizeY() * this.simulation.getGridSize() - yPos;
 
+        this.inputs[this.sensorCount + INPUTS_ENERGY_OFFSET] = this.energy;
+
         final double[] calculatedDecision =
-                this.brain.calcNetworkDecision(this.inputs);
+            this.brain.calcNetworkDecision(this.inputs);
 
         // Assuming the first output is the rotation
         // of the direction of the entity, and the second output is the speed.
@@ -367,11 +381,12 @@ public abstract class Entity {
 
     /**
      * Updates the relation (collision and sensors) between two entities.
+     *
      * @param a First entity to update.
      * @param b Second entity to update.
      */
     public static void updateRelation(final Entity a, final Entity b) throws EvosimException {
-        if (a instanceof Prey || b instanceof Predator || a.dead || b.dead) {
+        if (a.getClass().equals(b.getClass()) || a.dead || b.dead) {
             return;
         }
 
@@ -438,6 +453,7 @@ public abstract class Entity {
 
     /**
      * Returns an array of lines of the sensors coming out of the entity.
+     *
      * @return The lines of length of the sensors.
      */
     @JsonIgnore

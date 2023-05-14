@@ -78,17 +78,17 @@ public class NeuralNetworkView extends Tab {
                     for (int weight = 0; weight < sNeuron.getWeights().length; weight++) {
                         Line specificWeight = new Line();
                         NeuronView previousNeuron = this.neuronStructure.get(layer - 1)
-                                .get(weight);
+                            .get(weight);
                         NeuronView currentNeuron = neuronView;
                         specificWeight.setStroke(Color.BLACK);
                         specificWeight.startXProperty().bind(previousNeuron.translateXProperty()
-                                .add(previousNeuron.widthProperty().divide(2)));
+                            .add(previousNeuron.widthProperty().divide(2)));
                         specificWeight.startYProperty().bind(previousNeuron.translateYProperty()
-                                .add(previousNeuron.heightProperty().divide(2)));
+                            .add(previousNeuron.heightProperty().divide(2)));
                         specificWeight.endXProperty().bind(currentNeuron.translateXProperty()
-                                .add(currentNeuron.widthProperty().divide(2)));
+                            .add(currentNeuron.widthProperty().divide(2)));
                         specificWeight.endYProperty().bind(currentNeuron.translateYProperty()
-                                .add(currentNeuron.heightProperty().divide(2)));
+                            .add(currentNeuron.heightProperty().divide(2)));
                         specificNeuron.add(specificWeight);
                         specificWeight.toBack();
                         neuralNetworkView.getChildren().add(specificWeight);
@@ -114,14 +114,14 @@ public class NeuralNetworkView extends Tab {
                 //automatically adjust the positions of the neuronView
                 //based on the size of the neuralNetworkView
                 neuronView.translateXProperty().bind(
-                        this.neuralNetworkView.widthProperty().divide(layer + 1)
-                                .multiply(specificLayer + 1)
-                                .subtract(neuronView.widthProperty().divide(2)));
+                    this.neuralNetworkView.widthProperty().divide(layer + 1)
+                        .multiply(specificLayer + 1)
+                        .subtract(neuronView.widthProperty().divide(2)));
 
                 neuronView.translateYProperty().bind(
-                        this.neuralNetworkView.heightProperty().divide(neuronViews.size() + 1)
-                                .multiply(specificNeuron + 1)
-                                .subtract(neuronView.heightProperty().divide(2)));
+                    this.neuralNetworkView.heightProperty().divide(neuronViews.size() + 1)
+                        .multiply(specificNeuron + 1)
+                        .subtract(neuronView.heightProperty().divide(2)));
 
                 this.neuralNetworkView.getChildren().add(neuronView);
             }
@@ -138,15 +138,15 @@ public class NeuralNetworkView extends Tab {
                         neuronView.update();
                         if (layer != neuronStructure.get(0)) {
                             for (int weightIndex = 0; weightIndex < neuronView.getNeuron()
-                                    .getWeights().length; weightIndex++) {
+                                .getWeights().length; weightIndex++) {
                                 Line weight = weightsStructure.get(neuronStructure.indexOf(layer))
-                                        .get(layer.indexOf(neuronView)).get(weightIndex);
+                                    .get(layer.indexOf(neuronView)).get(weightIndex);
                                 weight.setStrokeWidth(
-                                        Formulas.logistic(neuronView.getNeuron()
-                                                .getWeights()[weightIndex]));
+                                    Math.abs(neuronView.getNeuron()
+                                        .getWeights()[weightIndex]));
                                 weight.setOpacity(
-                                        Formulas.logistic(neuronView.getNeuron()
-                                                .getWeights()[weightIndex]));
+                                    Math.abs(neuronView.getNeuron()
+                                        .getWeights()[weightIndex]));
                             }
                         }
                     }
