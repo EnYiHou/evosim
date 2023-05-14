@@ -3,7 +3,6 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import javafx.scene.paint.Color;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +17,7 @@ import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,14 +43,9 @@ import java.util.List;
 public abstract class Entity {
 
     /**
-     * Number of nodes on the second layer.
-     */
-    private static final int SECOND_LAYER_NODES_NUMBER = 10;
-
-    /**
      * Number of nodes on the third layer.
      */
-    private static final int THIRD_LAYER_NODES_NUMBER = 2;
+    private static final int LAST_LAYER_NODES_NUMBER = 2;
 
     /**
      * In order to convert MILLISECONDS_TO_SECONDS.
@@ -96,12 +91,6 @@ public abstract class Entity {
      * The angle of the field of view cone of this entity in degrees.
      */
     private final double fovAngleInRadians;
-
-    /**
-     * The color of the entity.
-     */
-    @JsonIgnore
-    private final Color color;
 
     /**
      * The birth time of the entity.
@@ -184,14 +173,12 @@ public abstract class Entity {
      * @param entityPosition   The position of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param newCol            The color of the entity.
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
         final Point entityPosition, final double newViewAngle,
-        final double newRotationAngle, final Color newCol) throws EvosimException {
+        final double newRotationAngle) throws EvosimException {
         this.simulation = newSimulation;
         this.birthTime = 0L;
-        this.color = newCol;
         // initialize entity properties
         this.energy = 1d;
         this.splitEnergy = 0d;
@@ -202,17 +189,21 @@ public abstract class Entity {
         this.directionAngleInRadians = newRotationAngle;
         this.fovAngleInRadians = Math.toRadians(newViewAngle);
 
-        this.body = new Circle(entityPosition, Configuration.getConfiguration().getEntityRadius());
+        Configuration config = Configuration.getConfiguration();
 
-        this.sensorCount = Configuration.getConfiguration().getEntitySensorsCount();
+        this.body = new Circle(entityPosition, config.getEntityRadius());
+        this.sensorCount = config.getEntitySensorsCount();
 
         // Inputs with distances from each side
         final int inputCount = this.sensorCount + 4;
 
         // initialize neural network
-        //TODO: List of layers
-        this.brain = new NeuralNetwork(
-                List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
+        List<Integer> layers = new ArrayList<>(List.of(inputCount));
+        List<Integer> middleLayer = Configuration.getConfiguration().getLayerSizeMiddle();
+        middleLayer.forEach(layer -> layers.add(layer));
+        layers.add(LAST_LAYER_NODES_NUMBER);
+
+        this.brain = new NeuralNetwork(layers);
 
         this.inputs = new double[inputCount];
     }
@@ -222,7 +213,6 @@ public abstract class Entity {
      * @param newSpeed                     The speed of entity.
      * @param newFovAngleInRadians         The angle in degrees of entity.
      * @param newDirectionAngleInRadians   The direction angle in radians of entity.
-     * @param newColor                     The color of entity.
      * @param newInputs                    The sensors data of entity.
      * @param newBody                      The body of entity.
      * @param newDead                      If dead of the entity.
@@ -236,7 +226,6 @@ public abstract class Entity {
             final double newSpeed,
             final double newFovAngleInRadians,
             final double newDirectionAngleInRadians,
-            final Color newColor,
             final double[] newInputs,
             final Circle newBody,
             final boolean newDead,
@@ -247,7 +236,6 @@ public abstract class Entity {
             final int newChildCount) throws EvosimException {
         this.birthTime = 0L;
         this.simulation = null;
-        this.color = newColor;
         this.speed = newSpeed;
         this.directionAngleInRadians = newDirectionAngleInRadians;
         this.fovAngleInRadians = newFovAngleInRadians;
@@ -299,7 +287,8 @@ public abstract class Entity {
 
         // drain energy
         this.energy = Math.max(0,
-                this.energy - Configuration.getConfiguration().getEntityEnergyDrainRate() * movementSpeed);
+                this.energy - Configuration.getConfiguration()
+                        .getEntityEnergyDrainRate() * movementSpeed);
     }
 
     /**

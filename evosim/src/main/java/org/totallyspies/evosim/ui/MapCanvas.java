@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 import org.totallyspies.evosim.entities.Entity;
+import org.totallyspies.evosim.entities.Predator;
+import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.fxml.MainController;
 import org.totallyspies.evosim.fxml.ResizableCanvas;
 import org.totallyspies.evosim.geometry.Coordinate;
@@ -262,7 +264,12 @@ public final class MapCanvas extends ResizableCanvas {
     public void drawEntity(final Entity entity) throws EvosimException {
         final double radius = Configuration.getConfiguration().getEntityRadius();
         final double zoom = camera.getZoom();
-        this.getGraphicsContext2D().setFill(entity.getColor());
+
+        if (entity instanceof Prey) {
+            this.getGraphicsContext2D().setFill(Prey.getBodyColour());
+        } else {
+            this.getGraphicsContext2D().setFill(Predator.getBodyColour());
+        }
 
         Point position = absToRelPosition(entity.getBodyCenter().getX(),
                 entity.getBodyCenter().getY());
