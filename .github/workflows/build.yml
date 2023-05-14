@@ -2,9 +2,7 @@ name: Gradle JAR Build
 
 on:
   push:
-    branches: [ "main", "fix/jar" ]
-  pull_request:
-    branches: [ "main", "fix/jar" ]
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -39,3 +37,4 @@ jobs:
       with:
         name: evosim-${{ matrix.os }}
         path: evosim/build/image
+        retention-days: 1
