@@ -408,20 +408,55 @@ public abstract class Entity {
     public Line[] getSensors() {
         final Line[] sensors = new Line[this.sensorCount];
 
-        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
-
         for (int i = 0; i < sensors.length; ++i) {
-            final double angle = baseAngle + i * (this.getFovAngleInRadians() / sensors.length);
-
-            sensors[i] = new Line(
-                this.getBodyCenter().getX(),
-                this.getBodyCenter().getY(),
-                this.getBodyCenter().getX() + this.inputs[i] * Math.cos(angle),
-                this.getBodyCenter().getY() + this.inputs[i] * Math.sin(angle)
-            );
+            sensors[i] = getSensor(i);
         }
 
         return sensors;
+    }
+
+    /**
+     * Returns line of the sensor coming out of entity at index.
+     * @param sensorIndex The index of the sensor.
+     * @return The line of the length of the sensor.
+     */
+    public Line getSensor(final int sensorIndex) {
+        final double angle = getSensorAngle(sensorIndex);
+
+        return new Line(
+            this.getBodyCenter().getX(),
+            this.getBodyCenter().getY(),
+            this.getBodyCenter().getX() + this.inputs[sensorIndex] * Math.cos(angle),
+            this.getBodyCenter().getY() + this.inputs[sensorIndex] * Math.sin(angle)
+        );
+    }
+
+    /**
+     * Gets distance for sensor.
+     * @param sensorIndex The index to get the distance from.
+     * @return The distance of the sensor.
+     */
+    public double getSensorDistance(final int sensorIndex) {
+        if (sensorIndex >= this.sensorCount) {
+            throw new IllegalArgumentException("Sensor index out of range");
+        }
+
+        return this.inputs[sensorIndex];
+    }
+
+    /**
+     * Gets angle for sensor.
+     * @param sensorIndex The index to get an angle from.
+     * @return Angle of index in radians.
+     */
+    public double getSensorAngle(final int sensorIndex) {
+        if (sensorIndex >= this.sensorCount) {
+            throw new IllegalArgumentException("Sensor index out of range");
+        }
+
+        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
+
+        return baseAngle + sensorIndex * (this.getFovAngleInRadians() / this.sensorCount);
     }
 
     /**
