@@ -4,12 +4,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.totallyspies.evosim.entities.Predator;
+import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.ui.EvosimApplication;
 import org.totallyspies.evosim.ui.MapCanvas;
 import org.totallyspies.evosim.utils.Configuration;
@@ -17,6 +21,7 @@ import org.totallyspies.evosim.utils.EvosimException;
 import org.totallyspies.evosim.utils.FileSelector;
 
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * Controller for the {@code settings.fxml} file. Dynamically adds all input fields.
@@ -88,11 +93,6 @@ public final class SettingsController {
     private static boolean timerVisible = true;
 
     /**
-     * If the stats menu should be visible when focused.
-     */
-    private static boolean statsVisible = true;
-
-    /**
      * ColorPicker to select the map's background colour.
      */
     @FXML
@@ -109,6 +109,22 @@ public final class SettingsController {
      */
     @FXML
     private ColorPicker cpPred;
+
+    /**
+     * ChoiceBox to select the theme preset.
+     */
+    @FXML
+    private ChoiceBox<String> themeSelector;
+
+    /**
+     * A map with all the default themes, where the key is the name and value is the hex code.
+     */
+    private static final HashMap<String, String> DEFAULT_THEMES = new HashMap<>();
+
+    /**
+     * The current selected theme.
+     */
+    private static String theme = "Default";
 
     /**
      * A FileChooser to select an image for the map background.
@@ -134,8 +150,21 @@ public final class SettingsController {
         this.cbTimer.setSelected(timerVisible);
 
         this.cpMap.setValue(MapCanvas.getMapColor());
+        this.cpPred.setValue(Predator.getBodyColour());
+        this.cpPrey.setValue(Prey.getBodyColour());
+        this.themeSelector.setValue(theme);
+
+        populateThemes();
 
         fileChooser = FileSelector.getFileChooserImage();
+
+        cpMap.valueProperty().addListener((o, ov, nv) -> MapCanvas.setMapColor(nv));
+        cpPred.valueProperty().addListener((o, ov, nv) -> Predator.setBodyColour(nv));
+        cpPrey.valueProperty().addListener((o, ov, nv) -> Prey.setBodyColour(nv));
+        themeSelector.valueProperty().addListener((o, ov, nv) -> {
+            this.changeTheme(nv);
+            theme = nv;
+        });
 
         cpMap.valueProperty().addListener((o, ov, nv) -> {
                 MapCanvas.setMapColor(nv);
@@ -167,7 +196,7 @@ public final class SettingsController {
         }
 
         // should the container be displayed
-        statsVisible = energyVisible || splitEnergyVisible || speedVisible
+        boolean statsVisible = energyVisible || splitEnergyVisible || speedVisible
                 || childCountVisible || timerVisible;
 
         MainController.getController().getEntityStats().setOpacity(statsVisible ? 1 : 0);
@@ -229,6 +258,52 @@ public final class SettingsController {
     private void clearImgClicked() throws EvosimException {
         configuration.setBackgroundImage(null);
         MapCanvas.setMapImage(configuration.getBackgroundImage());
+    }
+
+    /**
+     * Populates {@code #DEFAULT_THEMES} with all the default theme names and hex codes.
+     */
+    private void populateThemes() {
+        if (!DEFAULT_THEMES.isEmpty()) {
+            populateChoices();
+            return;
+        }
+
+        DEFAULT_THEMES.put("Default", "#F2F2F2");
+        DEFAULT_THEMES.put("Tropical Orange", "#FFCCB3");
+        DEFAULT_THEMES.put("Grassy Green", "#99CC99");
+        DEFAULT_THEMES.put("Floral Pink", "#FFB3B3");
+        DEFAULT_THEMES.put("Sour Lemon", "#FFFFCC");
+        DEFAULT_THEMES.put("Grey", "#B3B3B3");
+        DEFAULT_THEMES.put("Lavender", "#CCB3FF");
+        DEFAULT_THEMES.put("Cool Teal", "#80B3B3");
+        populateChoices();
+    }
+
+    /**
+     * Populates the {@code #ChoiceBox} themeSelector with the names of the new default keys.
+     */
+    private void populateChoices() {
+        DEFAULT_THEMES.forEach((k, v) -> {
+            if (k.equals("Default")) {
+                this.themeSelector.getItems().add(0, k);
+            } else {
+                this.themeSelector.getItems().add(k);
+            }
+        });
+    }
+
+    /**
+     * Switches the application theme.
+     * @param newTheme  the new theme's name
+     */
+    private void changeTheme(final String newTheme) {
+        String hexCode = DEFAULT_THEMES.get(newTheme);
+
+        EvosimApplication.getApplication().getStage().getScene().getRoot().setStyle(
+                "-fx-base: " + hexCode + ";".toUpperCase()
+        );
+        cpMap.setValue(Color.valueOf(hexCode));
     }
 
 }

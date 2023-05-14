@@ -45,7 +45,7 @@ public final class AboutWindow {
      */
     public AboutWindow(final Stage parent) {
         this.abtStage = new Stage();
-        abtStage.setTitle("ABOUT Evosim");
+        abtStage.setTitle("About EVOSIM");
         abtStage.initModality(Modality.APPLICATION_MODAL);
         abtStage.initOwner(parent);
         abtStage.setResizable(false);
