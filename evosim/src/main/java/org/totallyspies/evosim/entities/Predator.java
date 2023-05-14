@@ -42,8 +42,9 @@ public final class Predator extends Entity {
                     final double speed,
                     final Point position,
                     final double rotationAngleInRadians) throws EvosimException {
-        super(newSimulation, speed, position, Configuration.getConfiguration().getPredatorViewAngle()
-            , rotationAngleInRadians, Color.RED);
+        super(newSimulation, speed, position,
+            Configuration.getConfiguration().getPredatorViewAngle(),
+            rotationAngleInRadians, Color.RED);
     }
 
     /**
