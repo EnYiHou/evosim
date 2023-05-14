@@ -23,8 +23,8 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '19'
-        distribution: 'zulu'
-        java-package: 'jdk+fx'
+        distribution: 'oracle'
+        java-package: 'jdk'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
