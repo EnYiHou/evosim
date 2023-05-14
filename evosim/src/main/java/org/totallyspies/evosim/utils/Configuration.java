@@ -517,7 +517,7 @@ public final class Configuration {
     }
 
     public void setEntityRadius(final double newEntityRadius) {
-        this.numberVariables.replace("entityEntityRadius", newEntityRadius);
+        this.numberVariables.replace("entityRadius", newEntityRadius);
     }
 
     public double getEntitySensorsLength() throws EvosimException {

@@ -128,7 +128,6 @@ public final class MapCanvas extends ResizableCanvas {
             @Override
             public void handle(final long now) {
                 if (followedEntity != null) {
-                    drawEntitySensors(followedEntity);
                     controller.getPbEnergy().setProgress(followedEntity.getEnergy());
                     controller.getPbSplit().setProgress(followedEntity.getSplitEnergy());
                     controller.getSpeedLabel().setText(
@@ -264,6 +263,14 @@ public final class MapCanvas extends ResizableCanvas {
     public void drawEntity(final Entity entity) throws EvosimException {
         final double radius = Configuration.getConfiguration().getEntityRadius();
         final double zoom = camera.getZoom();
+        final double lookAt = entity.getDirectionAngleInRadians();
+        final double eyeAngle = Math.PI / 10;
+        final double eyeRadius = radius / 3;
+        final double pupilRadius = eyeRadius / 2;
+
+        if (entity == followedEntity) {
+            drawEntitySensors(entity);
+        }
 
         if (entity instanceof Prey) {
             this.getGraphicsContext2D().setFill(Prey.getBodyColour());
@@ -279,6 +286,114 @@ public final class MapCanvas extends ResizableCanvas {
                 position.getY() - radius * zoom,
                 radius * 2 * zoom,
                 radius * 2 * zoom);
+
+        // Eyes
+        final Point leftEyeCenter = new Point(
+            position.getX()
+                + ((radius - eyeRadius) * Math.cos(lookAt + eyeAngle)) * zoom,
+            position.getY()
+                - ((radius - eyeRadius) * Math.sin(lookAt + eyeAngle)) * zoom
+        );
+
+        final Point rightEyeCenter = new Point(
+            position.getX()
+                + ((radius - eyeRadius) * Math.cos(lookAt - eyeAngle)) * zoom,
+            position.getY()
+                - ((radius - eyeRadius) * Math.sin(lookAt - eyeAngle)) * zoom
+        );
+
+        this.getGraphicsContext2D().setFill(Color.WHITE);
+        this.getGraphicsContext2D().fillOval(
+            leftEyeCenter.getX() - eyeRadius * zoom,
+            leftEyeCenter.getY() - eyeRadius * zoom,
+            eyeRadius * 2 * zoom,
+            eyeRadius * 2 * zoom
+        );
+
+        this.getGraphicsContext2D().fillOval(
+            rightEyeCenter.getX() - eyeRadius * zoom,
+            rightEyeCenter.getY() - eyeRadius * zoom,
+            eyeRadius * 2 * zoom,
+            eyeRadius * 2 * zoom
+        );
+
+        // Pupil
+        int shortestSensor = entity.getSensorCount() / 2;
+        for (int i = 0; i < entity.getSensorCount(); ++i) {
+            if (entity.getSensorDistance(i) < entity.getSensorDistance(shortestSensor)) {
+                shortestSensor = i;
+            }
+        }
+
+        final Line shortestLine = entity.getSensor(shortestSensor);
+        final Point shortestLineEnd = absToRelPosition(
+            shortestLine.getEndPoint().getX(),
+            shortestLine.getEndPoint().getY()
+        );
+
+        final double leftAngle = Math.atan2(
+            shortestLineEnd.getY() - leftEyeCenter.getY(),
+            shortestLineEnd.getX() - leftEyeCenter.getX()
+        );
+
+        final double rightAngle = Math.atan2(
+            shortestLineEnd.getY() - rightEyeCenter.getY(),
+            shortestLineEnd.getX() - rightEyeCenter.getX()
+        );
+
+        final Point leftPupilCenter = new Point(
+            leftEyeCenter.getX() + (eyeRadius - pupilRadius) * Math.cos(leftAngle) * zoom,
+            leftEyeCenter.getY() + (eyeRadius - pupilRadius) * Math.sin(leftAngle) * zoom
+        );
+
+        final Point rightPupilCenter = new Point(
+            rightEyeCenter.getX() + (eyeRadius - pupilRadius) * Math.cos(rightAngle) * zoom,
+            rightEyeCenter.getY() + (eyeRadius - pupilRadius) * Math.sin(rightAngle) * zoom
+        );
+
+        this.getGraphicsContext2D().setFill(Color.BLACK);
+
+        this.getGraphicsContext2D().fillOval(
+            leftPupilCenter.getX() - pupilRadius * zoom,
+            leftPupilCenter.getY() - pupilRadius * zoom,
+            pupilRadius * 2 * zoom,
+            pupilRadius * 2 * zoom
+        );
+
+        this.getGraphicsContext2D().fillOval(
+            rightPupilCenter.getX() - pupilRadius * zoom,
+            rightPupilCenter.getY() - pupilRadius * zoom,
+            pupilRadius * 2 * zoom,
+            pupilRadius * 2 * zoom
+        );
+
+        if (entity instanceof Predator) {
+            // Eyebrows
+            this.getGraphicsContext2D().setFill(Predator.getBodyColour());
+
+            this.getGraphicsContext2D().beginPath();
+
+            this.getGraphicsContext2D().moveTo(
+                position.getX()
+                    + ((radius - eyeRadius) * Math.cos(lookAt)) * zoom,
+                position.getY()
+                    - ((radius - eyeRadius) * Math.sin(lookAt)) * zoom
+            );
+
+            this.getGraphicsContext2D().lineTo(
+                leftEyeCenter.getX() - eyeRadius * Math.cos(lookAt - eyeAngle) * zoom,
+                leftEyeCenter.getY() + eyeRadius * Math.sin(lookAt - eyeAngle) * zoom
+            );
+
+            this.getGraphicsContext2D().lineTo(
+                rightEyeCenter.getX() - eyeRadius * Math.cos(lookAt + eyeAngle) * zoom,
+                rightEyeCenter.getY() + eyeRadius * Math.sin(lookAt + eyeAngle) * zoom
+            );
+
+            this.getGraphicsContext2D().closePath();
+
+            this.getGraphicsContext2D().fill();
+        }
     }
 
     /**
