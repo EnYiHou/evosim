@@ -2,6 +2,7 @@ package org.totallyspies.evosim.fxml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -66,7 +67,11 @@ public final class WelcomeController {
      * Initializes the {@code welcome.fxml} by setting {@link #splitPane}'s background image as
      * well as adding all prompts dynamically.
      */
-    public void initialize() {
+    public void initialize() throws IOException {
+
+        System.out.println(Arrays.toString(
+            this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME).readNBytes(4)));
+
         Platform.runLater(() -> {
                 this.splitPane.setBackground(new Background(new BackgroundImage(
                     new Image(this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME)),
