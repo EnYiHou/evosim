@@ -90,6 +90,11 @@ public abstract class Entity {
     private static final int INPUTS_ENERGY_OFFSET = 4;
 
     /**
+     * Bias for the position and energy inputs.
+     */
+    private static final double BIAS = -0.5;
+
+    /**
      * The fixed entity speed randomly chosen at birth for an entity.
      */
     private final double speed;
@@ -217,7 +222,7 @@ public abstract class Entity {
         final int inputCount = this.sensorCount + 5;
 
         // initialize neural network
-        //TODO: List of layers
+        //TODO List of layers
         this.brain = new NeuralNetwork(
             List.of(inputCount, SECOND_LAYER_NODES_NUMBER, THIRD_LAYER_NODES_NUMBER));
 
@@ -241,7 +246,7 @@ public abstract class Entity {
             this.simulation.getGridSize() * this.simulation.getMapSizeY()
         );
 
-        firstLayer.subList(this.sensorCount, inputCount).forEach(neuron -> neuron.setBias(-0.5));
+        firstLayer.subList(this.sensorCount, inputCount).forEach(neuron -> neuron.setBias(BIAS));
 
         this.inputs = new double[inputCount];
     }
