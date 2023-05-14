@@ -36,5 +36,7 @@ jobs:
       uses: actions/upload-artifact@v3.1.2
       with:
         name: evosim-${{ matrix.os }}
-        path: evosim/build/evosim.zip
+        path: |
+          evosim/build/evosim.zip
+          README.md
         retention-days: 1
