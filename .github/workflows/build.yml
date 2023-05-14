@@ -2,7 +2,7 @@ name: Gradle JAR Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: "main"
 
 permissions:
   contents: read

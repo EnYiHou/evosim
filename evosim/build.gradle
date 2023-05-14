@@ -23,8 +23,7 @@ repositories {
 }
 
 project.description = "Evosim evolution simulator"
-project.ext.buildDate = new Date()
-project.version = "0.9"
+project.version = "1.0"
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
