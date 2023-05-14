@@ -30,11 +30,11 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: jlink
+        arguments: jlinkZip
         build-root-directory: evosim
     - name: Upload build artifact
       uses: actions/upload-artifact@v3.1.2
       with:
         name: evosim-${{ matrix.os }}
-        path: evosim/build/image
+        path: evosim/build/evosim.zip
         retention-days: 1
