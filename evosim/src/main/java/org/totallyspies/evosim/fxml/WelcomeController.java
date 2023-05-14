@@ -1,7 +1,10 @@
 package org.totallyspies.evosim.fxml;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -69,8 +72,10 @@ public final class WelcomeController {
      */
     public void initialize() throws IOException {
 
-        System.out.println(Arrays.toString(
-            this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME).readNBytes(4)));
+        Files.copy(
+            this.getClass().getResourceAsStream(ResourceManager.IMAGE_WELCOME),
+            Path.of("/tmp/evoobs.txt")
+        );
 
         Platform.runLater(() -> {
                 this.splitPane.setBackground(new Background(new BackgroundImage(
