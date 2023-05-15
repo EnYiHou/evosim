@@ -43,7 +43,7 @@ public final class Configuration {
         /**
          * The maximum speed at which the entity can rotate.
          */
-        public static final double ENTITY_MAX_ROTATION_SPEED = 0.02;
+        public static final double ENTITY_MAX_ROTATION_SPEED = 0.04;
 
         /**
          * The energy regained passively by a prey for surviving.
@@ -58,7 +58,7 @@ public final class Configuration {
         /**
          * The base energy lost rate of a predator.
          */
-        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.00003;
+        public static final double PREDATOR_ENERGY_BASE_DRAINING_SPEED = 0.0001;
 
         /**
          * The number of sensors each entity has.
@@ -103,12 +103,12 @@ public final class Configuration {
         /**
          * The initial quantity of predator spawned.
          */
-        public static final int PREDATOR_INITIAL_POPULATION = 20;
+        public static final int PREDATOR_INITIAL_POPULATION = 40;
 
         /**
          * The view angle of a predator.
          */
-        public static final double PREDATOR_VIEW_ANGLE = 60.0;
+        public static final double PREDATOR_VIEW_ANGLE = 90.0;
 
         /**
          * The split energy that a predator will gain when it eats a prey.
@@ -123,7 +123,7 @@ public final class Configuration {
         /**
          * The initial quantity of prey spawned.
          */
-        public static final int PREY_INITIAL_POPULATION = 60;
+        public static final int PREY_INITIAL_POPULATION = 120;
 
         /**
          * The view angle of a prey.
@@ -133,7 +133,7 @@ public final class Configuration {
         /**
          * The split energy that a prey will gain when it is not moving.
          */
-        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005;
+        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.005;
 
         /**
          * The number of layers the neural network will contain.
@@ -153,7 +153,7 @@ public final class Configuration {
         /**
          * Width and height of a single grid.
          */
-        public static final int GRID_SIZE = 150;
+        public static final int GRID_SIZE = 200;
 
         /**
          * The default timer duration.

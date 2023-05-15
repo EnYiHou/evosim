@@ -190,7 +190,7 @@ public abstract class Entity {
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
                      final Point entityPosition, final double newViewAngle,
-                     final double newRotationAngle, final Color newCol) throws EvosimException {
+                     final double newRotationAngle) throws EvosimException {
 
         this.simulation = newSimulation;
         this.birthTime = 0L;
@@ -266,7 +266,6 @@ public abstract class Entity {
         final double newSpeed,
         final double newFovAngleInRadians,
         final double newDirectionAngleInRadians,
-        final Color newColor,
         final double[] newInputs,
         final Circle newBody,
         final boolean newDead,

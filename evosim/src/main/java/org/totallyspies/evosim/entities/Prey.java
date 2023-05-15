@@ -43,7 +43,7 @@ public final class Prey extends Entity {
                 final Point position,
                 final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position, Configuration.getConfiguration().getPreyViewAngle(),
-            rotationAngleInRadians, Color.GREEN);
+            rotationAngleInRadians);
 
     }
 
@@ -80,7 +80,6 @@ public final class Prey extends Entity {
             speed,
             fovAngleInDegrees,
             directionAngleInRadians,
-            Color.GREEN,
             sensorsData,
             body,
             dead,
