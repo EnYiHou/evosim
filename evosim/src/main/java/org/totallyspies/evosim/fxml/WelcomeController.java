@@ -92,7 +92,7 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Max Rotation Speed",
                 config::setEntityMaxRotationSpeed,
-                0.0005d,
+                Defaults.Minimum.ENTITY_MAX_ROTATION_SPEED_MINIMUM,
                 Defaults.ENTITY_MAX_ROTATION_SPEED
             ),
             this.createSliderDefault(
@@ -104,25 +104,25 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Length of Sensors",
                 config::setEntitySensorsLength,
-                0.005d,
+                Defaults.Minimum.ENTITY_SENSORS_LENGTH_MINIMUM,
                 Defaults.ENTITY_SENSORS_LENGTH
             ),
             this.createSliderDefault(
                 "Body Radius",
                 config::setEntityRadius,
-                0.005d,
+                Defaults.Minimum.ENTITY_RADIUS_MINIMUM,
                 Defaults.ENTITY_RADIUS
             ),
             this.createSliderDefault(
                 "Maximum Speed",
                 config::setEntityMaxSpeed,
-                0.1d,
+                Defaults.Minimum.ENTITY_MAX_SPEED_MINIMUM,
                 Defaults.ENTITY_MAX_SPEED
             ),
             this.createSliderDefault(
                 "Minimum Speed",
                 config::setEntityMinSpeed,
-                0.01d,
+                Defaults.Minimum.ENTITY_MIN_SPEED_MINIMUM,
                 Defaults.ENTITY_MIN_SPEED
             ),
             this.createSliderDefault(

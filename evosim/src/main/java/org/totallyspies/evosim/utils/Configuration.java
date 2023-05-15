@@ -39,6 +39,33 @@ public final class Configuration {
      * Defaults values for each variable.
      */
     public static class Defaults {
+        public static class Minimum {
+            /**
+             * The minimum value for the max rotation speed of the entities.
+             */
+            public static final double ENTITY_MAX_ROTATION_SPEED_MINIMUM = 0.0005d;
+
+            /**
+             * The minimum value for the sensor length of the entities.
+             */
+            public static final double ENTITY_SENSORS_LENGTH_MINIMUM = 0.005d;
+
+            /**
+             * The minimum value for the radius of the entities.
+             */
+            public static final double ENTITY_RADIUS_MINIMUM = 0.005d;
+
+            /**
+             * The minimum value for the maximum speed of the entities.
+             */
+            public static final double ENTITY_MAX_SPEED_MINIMUM = 0.1d;
+
+            /**
+             * The minimum value for the minimum speed of the entities.
+             */
+            public static final double ENTITY_MIN_SPEED_MINIMUM = 0.01d;
+
+        }
 
         /**
          * The maximum speed at which the entity can rotate.
