@@ -43,17 +43,17 @@ public final class Configuration {
         /**
          * The maximum speed at which the entity can rotate.
          */
-        public static final double ENTITY_MAX_ROTATION_SPEED = 0.02;
+        public static final double ENTITY_MAX_ROTATION_SPEED = 0.04;
 
         /**
          * The energy regained passively by a prey for surviving.
          */
-        public static final double PREY_ENERGY_FILLING_SPEED = 0.0005;
+        public static final double PREY_ENERGY_FILLING_SPEED = 0.001;
 
         /**
          * The energy regained by a predator from eating prey.
          */
-        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.0005;
+        public static final double PREDATOR_ENERGY_FILLING_SPEED = 0.4;
 
         /**
          * The base energy lost rate of a predator.
@@ -63,17 +63,17 @@ public final class Configuration {
         /**
          * The number of sensors each entity has.
          */
-        public static final int ENTITY_SENSORS_COUNT = 30;
+        public static final int ENTITY_SENSORS_COUNT = 25;
+
+        /**
+         * The length of an entity's sensors.
+         */
+        public static final double ENTITY_SENSORS_LENGTH = 400.0;
 
         /**
          * The radius of an entity.
          */
         public static final double ENTITY_RADIUS = 15.0;
-
-        /**
-         * The length of an entity's sensors.
-         */
-        public static final double ENTITY_SENSORS_LENGTH = 300.0;
 
         /**
          * The maximum speed of an entity.
@@ -98,17 +98,17 @@ public final class Configuration {
         /**
          * The maximum number of predator that could be generated.
          */
-        public static final int PREDATOR_MAX_NUMBER = 100;
+        public static final int PREDATOR_MAX_NUMBER = 150;
 
         /**
          * The initial quantity of predator spawned.
          */
-        public static final int PREDATOR_INITIAL_POPULATION = 20;
+        public static final int PREDATOR_INITIAL_POPULATION = 40;
 
         /**
          * The view angle of a predator.
          */
-        public static final double PREDATOR_VIEW_ANGLE = 60.0;
+        public static final double PREDATOR_VIEW_ANGLE = 90.0;
 
         /**
          * The split energy that a predator will gain when it eats a prey.
@@ -118,12 +118,12 @@ public final class Configuration {
         /**
          * The maximum number of prey that could be generated.
          */
-        public static final int PREY_MAX_NUMBER = 100;
+        public static final int PREY_MAX_NUMBER = 300;
 
-         /**
-          * The initial quantity of prey spawned.
-          */
-         public static final int PREY_INITIAL_POPULATION = 60;
+        /**
+         * The initial quantity of prey spawned.
+         */
+        public static final int PREY_INITIAL_POPULATION = 120;
 
         /**
          * The view angle of a prey.
@@ -133,7 +133,7 @@ public final class Configuration {
         /**
          * The split energy that a prey will gain when it is not moving.
          */
-        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.0005;
+        public static final double PREY_SPLIT_ENERGY_FILLING_SPEED = 0.005;
 
         /**
          * The number of layers the neural network will contain.
@@ -153,7 +153,7 @@ public final class Configuration {
         /**
          * Width and height of a single grid.
          */
-        public static final int GRID_SIZE = 150;
+        public static final int GRID_SIZE = 200;
 
         /**
          * The default timer duration.
@@ -189,13 +189,13 @@ public final class Configuration {
      * The name of the latest configuration file.
      */
     public static final File LATEST_CONFIGURATION =
-            new File(System.getProperty("java.io.tmpdir"), "latestConfigurations.json");
+        new File(System.getProperty("java.io.tmpdir"), "latestConfigurations.json");
 
     /**
      * The name of the tmp path of an img.
      */
     public static final File TMP_IMG_PATH =
-            new File(System.getProperty("java.io.tmpdir"), "imgEvosim.png");
+        new File(System.getProperty("java.io.tmpdir"), "imgEvosim.png");
 
     /**
      * All the number variables needed for the configuration.
@@ -235,38 +235,38 @@ public final class Configuration {
         this.defaultObjectVariables = new HashMap<>();
 
         this.defaultsNumberVariables.put("entityMaxRotationSpeed",
-                Defaults.ENTITY_MAX_ROTATION_SPEED);
+            Defaults.ENTITY_MAX_ROTATION_SPEED);
         this.defaultsNumberVariables.put("entitySensorsCount", Defaults.ENTITY_SENSORS_COUNT);
         this.defaultsNumberVariables.put("entityRadius", Defaults.ENTITY_RADIUS);
         this.defaultsNumberVariables.put("entitySensorsLength", Defaults.ENTITY_SENSORS_LENGTH);
         this.defaultsNumberVariables.put("entityMaxSpeed", Defaults.ENTITY_MAX_SPEED);
         this.defaultsNumberVariables.put("entityMinSpeed", Defaults.ENTITY_MIN_SPEED);
         this.defaultsNumberVariables.put("entitySpeedMutationRate",
-                Defaults.ENTITY_SPEED_MUTATION_RATE);
+            Defaults.ENTITY_SPEED_MUTATION_RATE);
         this.defaultsNumberVariables.put("entityEnergyDrainRate",
-                Defaults.ENTITY_ENERGY_DRAIN_RATE);
+            Defaults.ENTITY_ENERGY_DRAIN_RATE);
 
         this.defaultsNumberVariables.put("predatorMaxNumber", Defaults.PREDATOR_MAX_NUMBER);
         this.defaultsNumberVariables.put("predatorViewAngle", Defaults.PREDATOR_VIEW_ANGLE);
         this.defaultsNumberVariables.put("predatorSplitEnergyFillingSpeed",
-                Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED);
+            Defaults.PREDATOR_SPLIT_ENERGY_FILLING_SPEED);
         this.defaultsNumberVariables.put("predatorEnergyBaseDrainingSpeed",
-                Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
+            Defaults.PREDATOR_ENERGY_BASE_DRAINING_SPEED);
         this.defaultsNumberVariables.put("predatorEnergyFillingSpeed",
-                Defaults.PREDATOR_ENERGY_FILLING_SPEED);
+            Defaults.PREDATOR_ENERGY_FILLING_SPEED);
         this.defaultsNumberVariables.put("predatorInitialPopulation",
-                Defaults.PREDATOR_INITIAL_POPULATION);
+            Defaults.PREDATOR_INITIAL_POPULATION);
 
         this.defaultsNumberVariables.put("preyMaxNumber", Defaults.PREY_MAX_NUMBER);
         this.defaultsNumberVariables.put("preyViewAngle", Defaults.PREY_VIEW_ANGLE);
         this.defaultsNumberVariables.put("preySplitEnergyFillingSpeed",
-                Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
+            Defaults.PREY_SPLIT_ENERGY_FILLING_SPEED);
         this.defaultsNumberVariables.put("preyEnergyFillingSpeed",
-                Defaults.PREY_ENERGY_FILLING_SPEED);
+            Defaults.PREY_ENERGY_FILLING_SPEED);
         this.defaultsNumberVariables.put("preyInitialPopulation", Defaults.PREY_INITIAL_POPULATION);
 
         this.defaultsNumberVariables.put("neuralNetworkLayersNumber",
-                Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
+            Defaults.NEURAL_NETWORK_LAYERS_NUMBER);
 
         this.defaultsNumberVariables.put("mapSizeX", Defaults.MAP_SIZE_X);
         this.defaultsNumberVariables.put("mapSizeY", Defaults.MAP_SIZE_Y);
@@ -285,6 +285,7 @@ public final class Configuration {
 
     /**
      * Saves the default files that the user didn't have time to save.
+     *
      * @param simulation The simulati
      */
     public void saveLatestConfiguration(final Simulation simulation) throws EvosimException {
@@ -294,11 +295,11 @@ public final class Configuration {
     /**
      * Saves a Configuration file in the temporary files of the user's computer.
      *
-     * @param jsonFile location of the new file place.
+     * @param jsonFile   location of the new file place.
      * @param simulation simulation used.
      */
     public void saveConfiguration(
-            final File jsonFile, final Simulation simulation) throws EvosimException {
+        final File jsonFile, final Simulation simulation) throws EvosimException {
         try {
             JSONObject jsonText = getJSONObject(simulation);
 
@@ -317,6 +318,7 @@ public final class Configuration {
     /**
      * Render the last configuration the user used before closing the
      * application.
+     *
      * @return entity list saved.
      */
     public List<Entity> loadLastFile() throws EvosimException {
@@ -343,23 +345,25 @@ public final class Configuration {
 
     /**
      * Change configuration based on the jsonObject.
+     *
      * @param jsonConfiguration
      */
     private void loadConfiguration(final JSONObject jsonConfiguration) {
         Set<String> numberKeys = this.numberVariables.keySet();
         numberKeys.forEach((key) -> this.numberVariables.replace(key,
-                jsonConfiguration.getJSONObject("numbers").getNumber(key)));
+            jsonConfiguration.getJSONObject("numbers").getNumber(key)));
 
         Set<String> objectKeys = this.objectVariables.keySet();
         objectKeys.forEach((key) -> this.objectVariables.replace(key,
-                jsonConfiguration.getJSONObject("objects").get(key)));
+            jsonConfiguration.getJSONObject("objects").get(key)));
     }
 
     private List<Entity> loadEntities(final JSONArray jsonEntities) throws EvosimException {
         List<Entity> entities;
         try {
             entities = mapper
-                    .readValue(jsonEntities.toString(), new TypeReference<>() { });
+                .readValue(jsonEntities.toString(), new TypeReference<>() {
+                });
 
             return entities;
         } catch (Exception e) {
@@ -390,7 +394,7 @@ public final class Configuration {
      * @return JSONObject with Configuration's variables.
      */
     private JSONObject getJSONObject(
-            final Simulation simulation) throws JsonProcessingException {
+        final Simulation simulation) throws JsonProcessingException {
         JSONObject jsonObjectGlobal = new JSONObject();
         jsonObjectGlobal.put("configuration", getConfigurationJson());
         jsonObjectGlobal.put("entities", getEntitiesJSON(simulation));
@@ -405,7 +409,7 @@ public final class Configuration {
     }
 
     private JSONArray getEntitiesJSON(
-            final Simulation simulation) throws JsonProcessingException {
+        final Simulation simulation) throws JsonProcessingException {
         List<Entity> allEntities = new ArrayList<>();
 
         for (int x = 0; x < simulation.getMapSizeX(); x++) {
@@ -414,7 +418,8 @@ public final class Configuration {
             }
         }
         String allEntitiesTxt = mapper
-                .writerFor(new TypeReference<List<Entity>>() { }).writeValueAsString(allEntities);
+            .writerFor(new TypeReference<List<Entity>>() {
+            }).writeValueAsString(allEntities);
 
         return new JSONArray(allEntitiesTxt);
     }
@@ -456,9 +461,9 @@ public final class Configuration {
                 return null;
             }
             byte[] decodedBytes = Base64
-                    .getDecoder()
-                    .decode((String) this.objectVariables.get("backgroundImageBase64"));
-                FileUtils.writeByteArrayToFile(TMP_IMG_PATH, decodedBytes);
+                .getDecoder()
+                .decode((String) this.objectVariables.get("backgroundImageBase64"));
+            FileUtils.writeByteArrayToFile(TMP_IMG_PATH, decodedBytes);
             return new Image(TMP_IMG_PATH.toURI().toString());
         } catch (Exception e) {
             throw new EvosimException("Couldn't load the image.", e);
@@ -538,7 +543,7 @@ public final class Configuration {
     }
 
     public void setEntityRadius(final double newEntityRadius) {
-        this.numberVariables.replace("entityEntityRadius", newEntityRadius);
+        this.numberVariables.replace("entityRadius", newEntityRadius);
     }
 
     public double getEntitySensorsLength() throws EvosimException {
@@ -602,9 +607,9 @@ public final class Configuration {
     }
 
     public void setPredatorSplitEnergyFillingSpeed(
-            final double newPredatorSplitEnergyFillingSpeed) {
+        final double newPredatorSplitEnergyFillingSpeed) {
         this.numberVariables.replace(
-                "predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
+            "predatorSplitEnergyFillingSpeed", newPredatorSplitEnergyFillingSpeed);
     }
 
     public double getPredatorEnergyFillingSpeed() throws EvosimException {
@@ -620,9 +625,9 @@ public final class Configuration {
     }
 
     public void setPredatorEnergyBaseDrainingSpeed(
-            final double newPredatorEnergyBaseDrainingSpeed) {
+        final double newPredatorEnergyBaseDrainingSpeed) {
         this.numberVariables.replace(
-                "predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
+            "predatorEnergyBaseDrainingSpeed", newPredatorEnergyBaseDrainingSpeed);
     }
 
     public int getPredatorInitialPopulation() throws EvosimException {

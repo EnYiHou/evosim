@@ -8,6 +8,7 @@ module org.totallyspies.evosim {
     requires com.fasterxml.jackson.databind;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.materialdesign2;
     requires org.apache.commons.io;
     requires static lombok;
 

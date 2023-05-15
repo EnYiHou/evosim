@@ -1,0 +1,42 @@
+name: Gradle JAR Build
+
+on:
+  push:
+    branches: "main"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        lfs: true
+    - name: Checkout LFS objects
+      run: git lfs checkout
+    - name: Set up JDK 19
+      uses: actions/setup-java@v3
+      with:
+        java-version: '19'
+        distribution: 'zulu'
+        java-package: 'jdk+fx'
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: jlinkZip
+        build-root-directory: evosim
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: evosim-${{ matrix.os }}
+        path: |
+          evosim/build/evosim.zip
+          README.md
+        retention-days: 1

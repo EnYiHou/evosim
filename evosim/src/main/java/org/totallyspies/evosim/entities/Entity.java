@@ -3,16 +3,13 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
 import org.totallyspies.evosim.math.Formulas;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
+import org.totallyspies.evosim.neuralnetwork.Neuron;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.utils.Configuration;
 import org.totallyspies.evosim.utils.EvosimException;
@@ -30,11 +27,11 @@ import java.util.List;
  * @author EnYi, Matthew
  */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type")
+    use = JsonTypeInfo.Id.NAME,
+    property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Prey.class, name = "prey"),
-        @JsonSubTypes.Type(value = Predator.class, name = "predator")
+    @JsonSubTypes.Type(value = Prey.class, name = "prey"),
+    @JsonSubTypes.Type(value = Predator.class, name = "predator")
 })
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -76,6 +73,17 @@ public abstract class Entity {
      * Distance from bottom.
      */
     private static final int INPUTS_BOTTOM_OFFSET = 3;
+
+
+    /**
+     * Distance from bottom.
+     */
+    private static final int INPUTS_ENERGY_OFFSET = 4;
+
+    /**
+     * Bias for the position and energy inputs.
+     */
+    private static final double BIAS = -0.5;
 
     /**
      * The fixed entity speed randomly chosen at birth for an entity.
@@ -175,8 +183,9 @@ public abstract class Entity {
      * @param newRotationAngle The rotation angle of the entity.
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
-        final Point entityPosition, final double newViewAngle,
-        final double newRotationAngle) throws EvosimException {
+                     final Point entityPosition, final double newViewAngle,
+                     final double newRotationAngle) throws EvosimException {
+
         this.simulation = newSimulation;
         this.birthTime = 0L;
         // initialize entity properties
@@ -195,9 +204,10 @@ public abstract class Entity {
         this.sensorCount = config.getEntitySensorsCount();
 
         // Inputs with distances from each side
-        final int inputCount = this.sensorCount + 4;
+        final int inputCount = this.sensorCount + 5;
 
         // initialize neural network
+
         List<Integer> layers = new ArrayList<>(List.of(inputCount));
         List<Integer> middleLayer = Configuration.getConfiguration().getLayerSizeMiddle();
         middleLayer.forEach(layer -> layers.add(layer));
@@ -205,35 +215,59 @@ public abstract class Entity {
 
         this.brain = new NeuralNetwork(layers);
 
+        final double sensorLength = Configuration.getConfiguration().getEntitySensorsLength();
+        final List<Neuron> firstLayer = this.brain.getNeuronLayers().get(0);
+        firstLayer.subList(0, this.sensorCount).forEach(neuron -> {
+            neuron.setClamp(sensorLength);
+            neuron.setBias(-1);
+        });
+
+        firstLayer.get(this.sensorCount + INPUTS_LEFT_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeX()
+        );
+        firstLayer.get(this.sensorCount + INPUTS_RIGHT_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeX()
+        );
+        firstLayer.get(this.sensorCount + INPUTS_TOP_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeY()
+        );
+        firstLayer.get(this.sensorCount + INPUTS_BOTTOM_OFFSET).setClamp(
+            this.simulation.getGridSize() * this.simulation.getMapSizeY()
+        );
+
+        firstLayer.subList(this.sensorCount, inputCount).forEach(neuron -> neuron.setBias(BIAS));
+
         this.inputs = new double[inputCount];
     }
 
     /**
      * Construct a new entity from a JSON.
-     * @param newSpeed                     The speed of entity.
-     * @param newFovAngleInRadians         The angle in degrees of entity.
-     * @param newDirectionAngleInRadians   The direction angle in radians of entity.
-     * @param newInputs                    The sensors data of entity.
-     * @param newBody                      The body of entity.
-     * @param newDead                      If dead of the entity.
-     * @param newSplit                     The split energy of entity.
-     * @param newBrain                     The brain of entity.
-     * @param newEnergy                    The energy of entity.
-     * @param newSplitEnergy               The split energy of entity.
-     * @param newChildCount                The child count of entity.
+     *
+     * @param newSpeed                   The speed of entity.
+     * @param newFovAngleInRadians       The angle in degrees of entity.
+     * @param newDirectionAngleInRadians The direction angle in radians of entity.
+     * @param newInputs                  The sensors data of entity.
+     * @param newBody                    The body of entity.
+     * @param newDead                    If dead of the entity.
+     * @param newSplit                   The split energy of entity.
+     * @param newBrain                   The brain of entity.
+     * @param newEnergy                  The energy of entity.
+     * @param newSplitEnergy             The split energy of entity.
+     * @param newChildCount              The child count of entity.
      */
     protected Entity(
-            final double newSpeed,
-            final double newFovAngleInRadians,
-            final double newDirectionAngleInRadians,
-            final double[] newInputs,
-            final Circle newBody,
-            final boolean newDead,
-            final boolean newSplit,
-            final NeuralNetwork newBrain,
-            final double newEnergy,
-            final double newSplitEnergy,
-            final int newChildCount) throws EvosimException {
+        final double newSpeed,
+        final double newFovAngleInRadians,
+        final double newDirectionAngleInRadians,
+        final double[] newInputs,
+        final Circle newBody,
+        final boolean newDead,
+        final boolean newSplit,
+        final NeuralNetwork newBrain,
+        final double newEnergy,
+        final double newSplitEnergy,
+        final int newChildCount) throws EvosimException {
+
         this.birthTime = 0L;
         this.simulation = null;
         this.speed = newSpeed;
@@ -272,23 +306,27 @@ public abstract class Entity {
      * @param movementSpeed the speed of the movement.
      */
     public void move(final double movementSpeed) throws EvosimException {
-        Point position = this.body.getCenter();
 
-        double positionX = Math.max(0,
-            Math.min(position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
-                this.simulation.getMapSizeX() * this.simulation.getGridSize()));
+        double remainingEnergy = this.energy - Configuration.getConfiguration()
+            .getEntityEnergyDrainRate() * movementSpeed;
 
-        double positionY = Math.max(0,
-            Math.min(position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
-                this.simulation.getMapSizeY() * this.simulation.getGridSize()));
+        if (remainingEnergy >= 0) {
+            Point position = this.body.getCenter();
 
-        position.setX(positionX);
-        position.setY(positionY);
+            double positionX = Math.max(0,
+                Math.min(position.getX() + Math.cos(this.directionAngleInRadians) * movementSpeed,
+                    this.simulation.getMapSizeX() * this.simulation.getGridSize()));
 
-        // drain energy
-        this.energy = Math.max(0,
-                this.energy - Configuration.getConfiguration()
-                        .getEntityEnergyDrainRate() * movementSpeed);
+            double positionY = Math.max(0,
+                Math.min(position.getY() + Math.sin(this.directionAngleInRadians) * movementSpeed,
+                    this.simulation.getMapSizeY() * this.simulation.getGridSize()));
+
+            position.setX(positionX);
+            position.setY(positionY);
+
+            // drain energy
+            this.energy = Math.max(0, remainingEnergy);
+        }
     }
 
     /**
@@ -318,24 +356,25 @@ public abstract class Entity {
         this.inputs[this.sensorCount + INPUTS_BOTTOM_OFFSET] =
             this.simulation.getMapSizeY() * this.simulation.getGridSize() - yPos;
 
+        this.inputs[this.sensorCount + INPUTS_ENERGY_OFFSET] = this.energy;
+
         final double[] calculatedDecision =
-                this.brain.calcNetworkDecision(this.inputs);
+            this.brain.calcNetworkDecision(this.inputs);
 
-        // Assuming the first output is the rotation
-        // of the direction of the entity, and the second output is the speed.
         this.directionAngleInRadians += Configuration.getConfiguration()
-                .getEntityMaxRotationSpeed() * (calculatedDecision[0] * 2 - 1);
+            .getEntityMaxRotationSpeed() * (calculatedDecision[0]);
 
-        this.move(this.speed * calculatedDecision[1]);
+        this.move(this.speed * Math.abs(calculatedDecision[1]));
     }
 
     /**
      * Updates the relation (collision and sensors) between two entities.
+     *
      * @param a First entity to update.
      * @param b Second entity to update.
      */
     public static void updateRelation(final Entity a, final Entity b) throws EvosimException {
-        if (a instanceof Prey || b instanceof Predator || a.dead || b.dead) {
+        if (a.getClass().equals(b.getClass()) || a.dead || b.dead) {
             return;
         }
 
@@ -402,26 +441,62 @@ public abstract class Entity {
 
     /**
      * Returns an array of lines of the sensors coming out of the entity.
+     *
      * @return The lines of length of the sensors.
      */
     @JsonIgnore
     public Line[] getSensors() {
         final Line[] sensors = new Line[this.sensorCount];
 
-        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
-
         for (int i = 0; i < sensors.length; ++i) {
-            final double angle = baseAngle + i * (this.getFovAngleInRadians() / sensors.length);
-
-            sensors[i] = new Line(
-                this.getBodyCenter().getX(),
-                this.getBodyCenter().getY(),
-                this.getBodyCenter().getX() + this.inputs[i] * Math.cos(angle),
-                this.getBodyCenter().getY() + this.inputs[i] * Math.sin(angle)
-            );
+            sensors[i] = getSensor(i);
         }
 
         return sensors;
+    }
+
+    /**
+     * Returns line of the sensor coming out of entity at index.
+     * @param sensorIndex The index of the sensor.
+     * @return The line of the length of the sensor.
+     */
+    public Line getSensor(final int sensorIndex) {
+        final double angle = getSensorAngle(sensorIndex);
+
+        return new Line(
+            this.getBodyCenter().getX(),
+            this.getBodyCenter().getY(),
+            this.getBodyCenter().getX() + this.inputs[sensorIndex] * Math.cos(angle),
+            this.getBodyCenter().getY() + this.inputs[sensorIndex] * Math.sin(angle)
+        );
+    }
+
+    /**
+     * Gets distance for sensor.
+     * @param sensorIndex The index to get the distance from.
+     * @return The distance of the sensor.
+     */
+    public double getSensorDistance(final int sensorIndex) {
+        if (sensorIndex >= this.sensorCount) {
+            throw new IllegalArgumentException("Sensor index out of range");
+        }
+
+        return this.inputs[sensorIndex];
+    }
+
+    /**
+     * Gets angle for sensor.
+     * @param sensorIndex The index to get an angle from.
+     * @return Angle of index in radians.
+     */
+    public double getSensorAngle(final int sensorIndex) {
+        if (sensorIndex >= this.sensorCount) {
+            throw new IllegalArgumentException("Sensor index out of range");
+        }
+
+        final double baseAngle = this.getDirectionAngleInRadians() - (this.fovAngleInRadians / 2);
+
+        return baseAngle + sensorIndex * (this.getFovAngleInRadians() / this.sensorCount);
     }
 
     /**

@@ -128,16 +128,15 @@ public final class MapCanvas extends ResizableCanvas {
             @Override
             public void handle(final long now) {
                 if (followedEntity != null) {
-                    drawEntitySensors(followedEntity);
                     controller.getPbEnergy().setProgress(followedEntity.getEnergy());
                     controller.getPbSplit().setProgress(followedEntity.getSplitEnergy());
                     controller.getSpeedLabel().setText(
-                            String.format("Base Speed: %.2f", followedEntity.getSpeed()));
+                        String.format("Base Speed: %.2f", followedEntity.getSpeed()));
                     controller.getChildCountLabel().setText(
-                            "Child Count: " + followedEntity.getChildCount());
+                        "Child Count: " + followedEntity.getChildCount());
 
                     int livingTime = followedEntity.getLivingTime(
-                            controller.getTimerProperty().getValue().getSeconds());
+                        controller.getTimerProperty().getValue().getSeconds());
                     controller.getLivingTimeLabel().setText(
                         String.format(
                             "Time Alive: %dm : %02ds",
@@ -165,11 +164,11 @@ public final class MapCanvas extends ResizableCanvas {
 
         if (mouseEvent.getEventType() == MouseEvent.MOUSE_DRAGGED) {
             this.camera.translateX(
-            (mouseEvent.getX() - dragAnchor.getX()) * -Camera.CAMERA_TRANSLATE_SPEED / 2
+                (mouseEvent.getX() - dragAnchor.getX()) * -Camera.CAMERA_TRANSLATE_SPEED / 2
             );
 
             this.camera.translateY(
-            (mouseEvent.getY() - dragAnchor.getY()) * Camera.CAMERA_TRANSLATE_SPEED / 2
+                (mouseEvent.getY() - dragAnchor.getY()) * Camera.CAMERA_TRANSLATE_SPEED / 2
             );
         }
 
@@ -180,8 +179,8 @@ public final class MapCanvas extends ResizableCanvas {
     private void onScroll(final ScrollEvent scrollEvent) {
         this.camera.zoom(
             Camera.CAMERA_ZOOM_INCREMENT
-            * 2
-            * (scrollEvent.getDeltaY() / scrollEvent.getMultiplierY())
+                * 2
+                * (scrollEvent.getDeltaY() / scrollEvent.getMultiplierY())
         );
     }
 
@@ -193,34 +192,34 @@ public final class MapCanvas extends ResizableCanvas {
 
         for (int i = 0; i <= this.simulation.getMapSizeX(); i++) {
             Point verticalStartingPoint = absToRelPosition(
-                    i * this.simulation.getGridSize(), 0
+                i * this.simulation.getGridSize(), 0
             );
 
             Point verticalEndingPoint = absToRelPosition(
-                    i * this.simulation.getGridSize(),
-                    this.simulation.getGridSize() * this.simulation.getMapSizeY()
+                i * this.simulation.getGridSize(),
+                this.simulation.getGridSize() * this.simulation.getMapSizeY()
             );
 
             // draw vertical grids lines
             this.getGraphicsContext2D().strokeLine(
-                    verticalStartingPoint.getX(), verticalStartingPoint.getY(),
-                    verticalEndingPoint.getX(), verticalEndingPoint.getY());
+                verticalStartingPoint.getX(), verticalStartingPoint.getY(),
+                verticalEndingPoint.getX(), verticalEndingPoint.getY());
         }
 
         for (int i = 0; i <= this.simulation.getMapSizeY(); i++) {
             Point horizontalStartingPoint = absToRelPosition(
-                    0, i * this.simulation.getGridSize()
+                0, i * this.simulation.getGridSize()
             );
 
             Point horizontalEndingPoint = absToRelPosition(
-                    this.simulation.getGridSize() * this.simulation.getMapSizeX(),
-                    i * this.simulation.getGridSize()
+                this.simulation.getGridSize() * this.simulation.getMapSizeX(),
+                i * this.simulation.getGridSize()
             );
 
             // draw horizontal grids lines
             this.getGraphicsContext2D().strokeLine(
-                    horizontalStartingPoint.getX(), horizontalStartingPoint.getY(),
-                    horizontalEndingPoint.getX(), horizontalEndingPoint.getY());
+                horizontalStartingPoint.getX(), horizontalStartingPoint.getY(),
+                horizontalEndingPoint.getX(), horizontalEndingPoint.getY());
         }
     }
 
@@ -264,6 +263,14 @@ public final class MapCanvas extends ResizableCanvas {
     public void drawEntity(final Entity entity) throws EvosimException {
         final double radius = Configuration.getConfiguration().getEntityRadius();
         final double zoom = camera.getZoom();
+        final double lookAt = entity.getDirectionAngleInRadians();
+        final double eyeAngle = Math.PI / 10;
+        final double eyeRadius = radius / 3;
+        final double pupilRadius = eyeRadius / 2;
+
+        if (entity == followedEntity) {
+            drawEntitySensors(entity);
+        }
 
         if (entity instanceof Prey) {
             this.getGraphicsContext2D().setFill(Prey.getBodyColour());
@@ -272,13 +279,121 @@ public final class MapCanvas extends ResizableCanvas {
         }
 
         Point position = absToRelPosition(entity.getBodyCenter().getX(),
-                entity.getBodyCenter().getY());
+            entity.getBodyCenter().getY());
 
         this.getGraphicsContext2D().fillOval(
                 position.getX() - radius * zoom,
                 position.getY() - radius * zoom,
                 radius * 2 * zoom,
                 radius * 2 * zoom);
+
+        // Eyes
+        final Point leftEyeCenter = new Point(
+            position.getX()
+                + ((radius - eyeRadius) * Math.cos(lookAt + eyeAngle)) * zoom,
+            position.getY()
+                - ((radius - eyeRadius) * Math.sin(lookAt + eyeAngle)) * zoom
+        );
+
+        final Point rightEyeCenter = new Point(
+            position.getX()
+                + ((radius - eyeRadius) * Math.cos(lookAt - eyeAngle)) * zoom,
+            position.getY()
+                - ((radius - eyeRadius) * Math.sin(lookAt - eyeAngle)) * zoom
+        );
+
+        this.getGraphicsContext2D().setFill(Color.WHITE);
+        this.getGraphicsContext2D().fillOval(
+            leftEyeCenter.getX() - eyeRadius * zoom,
+            leftEyeCenter.getY() - eyeRadius * zoom,
+            eyeRadius * 2 * zoom,
+            eyeRadius * 2 * zoom
+        );
+
+        this.getGraphicsContext2D().fillOval(
+            rightEyeCenter.getX() - eyeRadius * zoom,
+            rightEyeCenter.getY() - eyeRadius * zoom,
+            eyeRadius * 2 * zoom,
+            eyeRadius * 2 * zoom
+        );
+
+        // Pupil
+        int shortestSensor = entity.getSensorCount() / 2;
+        for (int i = 0; i < entity.getSensorCount(); ++i) {
+            if (entity.getSensorDistance(i) < entity.getSensorDistance(shortestSensor)) {
+                shortestSensor = i;
+            }
+        }
+
+        final Line shortestLine = entity.getSensor(shortestSensor);
+        final Point shortestLineEnd = absToRelPosition(
+            shortestLine.getEndPoint().getX(),
+            shortestLine.getEndPoint().getY()
+        );
+
+        final double leftAngle = Math.atan2(
+            shortestLineEnd.getY() - leftEyeCenter.getY(),
+            shortestLineEnd.getX() - leftEyeCenter.getX()
+        );
+
+        final double rightAngle = Math.atan2(
+            shortestLineEnd.getY() - rightEyeCenter.getY(),
+            shortestLineEnd.getX() - rightEyeCenter.getX()
+        );
+
+        final Point leftPupilCenter = new Point(
+            leftEyeCenter.getX() + (eyeRadius - pupilRadius) * Math.cos(leftAngle) * zoom,
+            leftEyeCenter.getY() + (eyeRadius - pupilRadius) * Math.sin(leftAngle) * zoom
+        );
+
+        final Point rightPupilCenter = new Point(
+            rightEyeCenter.getX() + (eyeRadius - pupilRadius) * Math.cos(rightAngle) * zoom,
+            rightEyeCenter.getY() + (eyeRadius - pupilRadius) * Math.sin(rightAngle) * zoom
+        );
+
+        this.getGraphicsContext2D().setFill(Color.BLACK);
+
+        this.getGraphicsContext2D().fillOval(
+            leftPupilCenter.getX() - pupilRadius * zoom,
+            leftPupilCenter.getY() - pupilRadius * zoom,
+            pupilRadius * 2 * zoom,
+            pupilRadius * 2 * zoom
+        );
+
+        this.getGraphicsContext2D().fillOval(
+            rightPupilCenter.getX() - pupilRadius * zoom,
+            rightPupilCenter.getY() - pupilRadius * zoom,
+            pupilRadius * 2 * zoom,
+            pupilRadius * 2 * zoom
+        );
+
+        if (entity instanceof Predator) {
+            // Eyebrows
+            this.getGraphicsContext2D().setFill(Predator.getBodyColour());
+
+            this.getGraphicsContext2D().beginPath();
+
+            this.getGraphicsContext2D().moveTo(
+                position.getX()
+                    + ((radius - eyeRadius) * Math.cos(lookAt)) * zoom,
+                position.getY()
+                    - ((radius - eyeRadius) * Math.sin(lookAt)) * zoom
+            );
+
+            this.getGraphicsContext2D().lineTo(
+                leftEyeCenter.getX() - eyeRadius * Math.cos(lookAt - eyeAngle) * zoom,
+                leftEyeCenter.getY() + eyeRadius * Math.sin(lookAt - eyeAngle) * zoom
+            );
+
+            this.getGraphicsContext2D().lineTo(
+                rightEyeCenter.getX() - eyeRadius * Math.cos(lookAt + eyeAngle) * zoom,
+                rightEyeCenter.getY() + eyeRadius * Math.sin(lookAt + eyeAngle) * zoom
+            );
+
+            this.getGraphicsContext2D().closePath();
+
+            this.getGraphicsContext2D().fill();
+        }
     }
 
     /**
@@ -292,14 +407,14 @@ public final class MapCanvas extends ResizableCanvas {
         for (Line sensor : entity.getSensors()) {
 
             Point startPoint = absToRelPosition(sensor.getStartPoint().getX(),
-                    sensor.getStartPoint().getY());
+                sensor.getStartPoint().getY());
 
             Point endPoint = absToRelPosition(sensor.getEndPoint().getX(),
-                    sensor.getEndPoint().getY());
+                sensor.getEndPoint().getY());
 
             this.getGraphicsContext2D().strokeLine(
-                    startPoint.getX(), startPoint.getY(),
-                    endPoint.getX(), endPoint.getY());
+                startPoint.getX(), startPoint.getY(),
+                endPoint.getX(), endPoint.getY());
         }
     }
 
@@ -313,7 +428,7 @@ public final class MapCanvas extends ResizableCanvas {
         this.camera.setPoint(entity.getBodyCenter());
         autoZoom(ENTITY_FOLLOWING_ZOOM);
         MainController.getController().getTabPane()
-                .getSelectionModel().selectLast();
+            .getSelectionModel().selectLast();
     }
 
     /**
@@ -323,10 +438,10 @@ public final class MapCanvas extends ResizableCanvas {
      */
     public void unfollowEntity(final Entity entity) {
         this.camera.setPoint(new Point(entity.getBodyCenter().getX(),
-                entity.getBodyCenter().getY()));
+            entity.getBodyCenter().getY()));
         autoZoom(ENTITY_UNFOLLOWING_ZOOM);
         MainController.getController().getTabPane()
-                .getSelectionModel().selectFirst();
+            .getSelectionModel().selectFirst();
         MainController.getController().getNeuralNetworkTab().setNeuralNetwork(null);
     }
 
@@ -341,11 +456,11 @@ public final class MapCanvas extends ResizableCanvas {
         camera.setZooming(true);
         Thread thread = new Thread(() -> {
             double minIncrement = Math.signum(
-                    value - this.camera.getZoom()) * Camera.DEFAULT_ZOOMING_SPEED;
+                value - this.camera.getZoom()) * Camera.DEFAULT_ZOOMING_SPEED;
             while (!Assert.assertEquals(this.camera.getZoom(), value, DELTA_ZOOM)) {
 
                 this.camera.zoom(
-                        minIncrement);
+                    minIncrement);
 
                 try {
                     Thread.sleep(1);
@@ -366,7 +481,7 @@ public final class MapCanvas extends ResizableCanvas {
     public void clearMap() {
         this.getGraphicsContext2D().setFill(MapCanvas.mapColor);
         this.getGraphicsContext2D().fillRect(
-                0d, 0d, this.getWidth(), this.getHeight());
+            0d, 0d, this.getWidth(), this.getHeight());
     }
 
     /**
@@ -408,12 +523,14 @@ public final class MapCanvas extends ResizableCanvas {
         clearMap();
         if (mapImage != null) {
             this.getGraphicsContext2D().drawImage(mapImage, 0, 0,
-                    this.getWidth(), this.getHeight());
+                this.getWidth(), this.getHeight());
         }
         drawGrids();
 
         if (this.followingEntity.get() && this.followedEntity.isDead()) {
-            this.unfollowEntity(followedEntity);
+            if (!camera.isZooming()) {
+                this.unfollowEntity(followedEntity);
+            }
             followingEntity.set(false);
             followedEntity = null;
             untrackEntityStats();
@@ -457,15 +574,15 @@ public final class MapCanvas extends ResizableCanvas {
 
         // only render entities if they're within the visible square radius
         int radiusX = (int) Math.ceil(
-                this.getWidth() / (this.simulation.getGridSize() * this.camera.getZoom())) / 2 + 1;
+            this.getWidth() / (this.simulation.getGridSize() * this.camera.getZoom())) / 2 + 1;
         int radiusY = (int) Math.ceil(
-                this.getHeight() / (this.simulation.getGridSize() * this.camera.getZoom())) / 2 + 1;
+            this.getHeight() / (this.simulation.getGridSize() * this.camera.getZoom())) / 2 + 1;
 
         for (int x = camChunk.getX() - radiusX; x <= camChunk.getX() + radiusX; ++x) {
             for (int y = camChunk.getY() - radiusY; y <= camChunk.getY() + radiusY; ++y) {
                 if (
                     x < 0 || x >= this.simulation.getMapSizeX()
-                    || y < 0 || y >= this.simulation.getMapSizeY()
+                        || y < 0 || y >= this.simulation.getMapSizeY()
                 ) {
                     continue;
                 }
@@ -500,31 +617,44 @@ public final class MapCanvas extends ResizableCanvas {
         int chunkY = (int) abs.getY() / this.simulation.getGridSize();
 
         if (chunkX < 0 || chunkX >= this.simulation.getMapSizeX()
-                || chunkY < 0 || chunkY >= this.simulation.getMapSizeY()) {
+            || chunkY < 0 || chunkY >= this.simulation.getMapSizeY()) {
             return;
         }
 
-        simulation.forEachGridEntities(chunkX, chunkY, entity -> {
-            Point entityCenter = entity.getBodyCenter();
-            try {
-                if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
-                        abs.getX(), abs.getY())
-                        <= Configuration.getConfiguration().getEntityRadius() * 2
+        // check in this grid and nearby grids
+        int radius = 1;
+        for (int x1 = chunkX - radius; x1 <= chunkX + radius; ++x1) {
+            for (int y1 = chunkY - radius; y1 <= chunkY + radius; ++y1) {
+                if (
+                    x1 < 0 || x1 >= this.simulation.getMapSizeX()
+                        || y1 < 0 || y1 >= this.simulation.getMapSizeY()
                 ) {
-
-                    if (!followingEntity.get() && !camera.isZooming()) {
-                        this.followEntity(entity);
-                        followingEntity.set(true);
-                        followedEntity = entity;
-                        trackEntityStats();
-                        MainController.getController().getNeuralNetworkTab()
-                                .setNeuralNetwork(entity.getBrain());
-                    }
+                    continue;
                 }
-            } catch (EvosimException ex) {
-                throw new RuntimeException(ex);
+
+                simulation.forEachGridEntities(x1, y1, entity -> {
+                    Point entityCenter = entity.getBodyCenter();
+                    try {
+                        if (Formulas.distance(entityCenter.getX(), entityCenter.getY(),
+                            abs.getX(), abs.getY())
+                            <= Configuration.getConfiguration().getEntityRadius() * 2
+                        ) {
+
+                            if (!followingEntity.get() && !camera.isZooming()) {
+                                this.followEntity(entity);
+                                followingEntity.set(true);
+                                followedEntity = entity;
+                                trackEntityStats();
+                                MainController.getController().getNeuralNetworkTab()
+                                    .setNeuralNetwork(entity.getBrain());
+                            }
+                        }
+                    } catch (EvosimException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
             }
-        });
+        }
     }
 
     /**
@@ -545,6 +675,7 @@ public final class MapCanvas extends ResizableCanvas {
 
     /**
      * Setting the map color.
+     *
      * @param newColor
      */
     public static void setMapColor(final Color newColor) {
