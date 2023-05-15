@@ -198,8 +198,9 @@ public final class SafeSlider extends VBox {
         this.slider.minProperty().bindBidirectional(this.min);
         this.slider.maxProperty().bindBidirectional(this.max);
         this.slider.valueProperty().bindBidirectional(this.value);
+
         this.textField.textProperty().bindBidirectional(
-                this.value, new NumberStringConverter()
+                this.value, new NumberStringConverter("#.######")
         );
     }
 
@@ -232,7 +233,7 @@ public final class SafeSlider extends VBox {
 
         final String rangeText = this.isFloatingPoint()
                 ? String.format(
-                "%.02f to %.02f",
+                "%.04f to %.04f",
                 this.getMin().doubleValue(),
                 this.getMax().doubleValue()
         )
