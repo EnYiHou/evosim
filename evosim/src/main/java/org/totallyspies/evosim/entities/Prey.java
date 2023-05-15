@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
 import lombok.Getter;
-import lombok.Setter;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -141,7 +140,11 @@ public final class Prey extends Entity {
         this.setDead(true);
     }
 
-    public static void setBodyColour(Color newColor) {
+    /**
+     * Set a new color for the preys.
+     * @param newColor
+     */
+    public static void setBodyColour(final Color newColor) {
         Configuration.getConfiguration().setColorPrey(newColor);
         Prey.bodyColour = newColor;
     }

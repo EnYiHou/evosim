@@ -170,8 +170,14 @@ public final class Configuration {
          */
         public static final String COLOR_MAP = Color.LIGHTSKYBLUE.toString();
 
+        /**
+         * The default color of preys.
+         */
         public static final String COLOR_PREY = Color.GREEN.toString();
 
+        /**
+         * The default color of predator.
+         */
         public static final String COLOR_PREDATOR = Color.RED.toString();
 
         /**
