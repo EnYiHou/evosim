@@ -3,12 +3,7 @@ package org.totallyspies.evosim.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import javafx.scene.paint.Color;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.geometry.Line;
 import org.totallyspies.evosim.geometry.Point;
@@ -186,7 +181,6 @@ public abstract class Entity {
      * @param entityPosition   The position of the entity.
      * @param newViewAngle     The view angle of the entity.
      * @param newRotationAngle The rotation angle of the entity.
-     * @param newCol           The color of the entity.
      */
     protected Entity(final Simulation newSimulation, final double entitySpeed,
                      final Point entityPosition, final double newViewAngle,
@@ -252,7 +246,6 @@ public abstract class Entity {
      * @param newSpeed                   The speed of entity.
      * @param newFovAngleInRadians       The angle in degrees of entity.
      * @param newDirectionAngleInRadians The direction angle in radians of entity.
-     * @param newColor                   The color of entity.
      * @param newInputs                  The sensors data of entity.
      * @param newBody                    The body of entity.
      * @param newDead                    If dead of the entity.
