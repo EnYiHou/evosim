@@ -98,7 +98,7 @@ public final class Configuration {
         /**
          * The maximum number of predator that could be generated.
          */
-        public static final int PREDATOR_MAX_NUMBER = 100;
+        public static final int PREDATOR_MAX_NUMBER = 150;
 
         /**
          * The initial quantity of predator spawned.
@@ -118,7 +118,7 @@ public final class Configuration {
         /**
          * The maximum number of prey that could be generated.
          */
-        public static final int PREY_MAX_NUMBER = 100;
+        public static final int PREY_MAX_NUMBER = 300;
 
         /**
          * The initial quantity of prey spawned.
