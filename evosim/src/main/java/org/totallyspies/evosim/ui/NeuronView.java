@@ -13,7 +13,7 @@ public final class NeuronView extends StackPane {
     /**
      * The radius of a neuron in the view.
      */
-    private static final double NEURON_RADIUS = 12;
+    private static final double NEURON_RADIUS = 15;
 
     /**
      * The neuron that this view is displaying.
@@ -35,7 +35,11 @@ public final class NeuronView extends StackPane {
         this.neuron = newNeuron;
         this.valueLabel = new Label();
         this.valueLabel.setText(String.valueOf(this.neuron.getValue()));
-        this.getChildren().add(new Circle(NEURON_RADIUS, Color.LIGHTBLUE));
+        Circle neuronCircle = new Circle(NEURON_RADIUS, Color.LIGHTBLUE);
+        neuronCircle.setStrokeWidth(2);
+        neuronCircle.setStroke(Color.BLACK);
+        neuronCircle.setStrokeDashOffset(2);
+        this.getChildren().add(neuronCircle);
         this.getChildren().add(this.valueLabel);
     }
 
@@ -44,6 +48,6 @@ public final class NeuronView extends StackPane {
      */
     public void update() {
         //Integer value
-        this.valueLabel.setText(String.valueOf((int) this.neuron.getValue()));
+        this.valueLabel.setText(String.format("%.01f", this.neuron.getValue()));
     }
 }
