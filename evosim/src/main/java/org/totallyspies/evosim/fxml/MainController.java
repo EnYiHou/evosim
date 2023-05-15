@@ -330,12 +330,7 @@ public final class MainController {
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
 
-        MapCanvas.setMapColor(configuration.getColorMap());
-        MapCanvas.setMapImage(configuration.getBackgroundImage());
-
-        Predator.setBodyColour(configuration.getColorPredator());
-        Prey.setBodyColour(configuration.getColorPrey());
-        this.timerProperty.set(configuration.getDuration());
+        configurationParameters();
     }
 
     private void newDefaultSimulation() throws EvosimException {
@@ -346,6 +341,10 @@ public final class MainController {
             true
         ));
 
+        configurationParameters();
+    }
+
+    private void configurationParameters() throws EvosimException {
         MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
 
