@@ -83,34 +83,34 @@ public final class WelcomeController {
         Configuration config = Configuration.getConfiguration();
 
         TitledPane generalDropdown = new TitledPane("General", new VBox(
-            this.createSliderDefault("Map size X", config::setMapSizeX, 0, Defaults.MAP_SIZE_X),
-            this.createSliderDefault("Map size Y", config::setMapSizeY, 0, Defaults.MAP_SIZE_Y),
-            this.createSliderDefault("Grid size", config::setGridSize, 0, Defaults.GRID_SIZE)
+            this.createSliderDefault("Map size X", config::setMapSizeX, 1, Defaults.MAP_SIZE_X),
+            this.createSliderDefault("Map size Y", config::setMapSizeY, 1, Defaults.MAP_SIZE_Y),
+            this.createSliderDefault("Grid size", config::setGridSize, 1, Defaults.GRID_SIZE)
         ));
 
         TitledPane entityDropdown = new TitledPane("Entities", new VBox(
             this.createSliderDefault(
                 "Max Rotation Speed",
                 config::setEntityMaxRotationSpeed,
-                0d,
+                0.0005d,
                 Defaults.ENTITY_MAX_ROTATION_SPEED
             ),
             this.createSliderDefault(
                 "Sensor Count",
                 config::setEntitySensorsCount,
-                0,
+                1,
                 Defaults.ENTITY_SENSORS_COUNT
             ),
             this.createSliderDefault(
                 "Length of Sensors",
                 config::setEntitySensorsLength,
-                0d,
+                0.005d,
                 Defaults.ENTITY_SENSORS_LENGTH
             ),
             this.createSliderDefault(
                 "Body Radius",
                 config::setEntityRadius,
-                0d,
+                0.005d,
                 Defaults.ENTITY_RADIUS
             ),
             this.createSliderDefault(
@@ -167,7 +167,7 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "View Cone Angle",
                 config::setPredatorViewAngle,
-                0d,
+                1d,
                 Defaults.PREDATOR_VIEW_ANGLE
             ),
             this.createSliderDefault(
@@ -201,7 +201,7 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "View Cone Angle",
                 config::setPreyViewAngle,
-                0d,
+                1d,
                 Defaults.PREY_VIEW_ANGLE
             ),
             this.createSliderDefault(
