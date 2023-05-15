@@ -72,7 +72,7 @@ public final class MainController {
      * Max chart points.
      */
     private static final int MAX_CHART_POINTS
-            = (int) (30 * ONE_SECOND_IN_MILLISECONDS / ONE_DECISECOND_IN_MILLISECONDS);
+            = (int) (120 * ONE_SECOND_IN_MILLISECONDS / ONE_DECISECOND_IN_MILLISECONDS);
 
     /**
      * Maximum opacity of WASD keys.
