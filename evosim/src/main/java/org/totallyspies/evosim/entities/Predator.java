@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
 import lombok.Getter;
-import lombok.Setter;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -27,8 +26,7 @@ public final class Predator extends Entity {
      * The paint colour of the entity's body.
      */
     @Getter
-    @Setter
-    private static Color bodyColour = Color.RED;
+    private static Color bodyColour;
 
     /**
      * Constructs a new predator.
@@ -43,8 +41,8 @@ public final class Predator extends Entity {
                     final Point position,
                     final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
-            Configuration.getConfiguration().getPredatorViewAngle(),
-            rotationAngleInRadians);
+            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
+        Predator.bodyColour = Configuration.getConfiguration().getColorPredator();
     }
 
     /**
@@ -145,5 +143,14 @@ public final class Predator extends Entity {
             + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
         this.setEnergy(Math.min(1, this.getEnergy()
             + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
+    }
+
+    /**
+     * Set body color of the predators.
+     * @param newColor
+     */
+    public static void setBodyColour(final Color newColor) {
+        Configuration.getConfiguration().setColorPredator(newColor);
+        Predator.bodyColour = newColor;
     }
 }

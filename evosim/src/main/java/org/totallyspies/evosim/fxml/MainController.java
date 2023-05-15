@@ -14,7 +14,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -26,6 +25,8 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.totallyspies.evosim.entities.Entity;
+import org.totallyspies.evosim.entities.Predator;
+import org.totallyspies.evosim.entities.Prey;
 import org.totallyspies.evosim.simulation.Simulation;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -329,9 +330,7 @@ public final class MainController {
         entityList.forEach(simulation::addEntity);
         mapCanvas.attach(simulation);
 
-        MapCanvas.setMapColor(configuration.getColorMap());
-        MapCanvas.setMapImage(configuration.getBackgroundImage());
-        this.timerProperty.set(configuration.getDuration());
+        configurationParameters();
     }
 
     private void newDefaultSimulation() throws EvosimException {
@@ -341,12 +340,16 @@ public final class MainController {
             Configuration.getConfiguration().getGridSize(),
             true
         ));
-        configuration.setDuration(java.time.Duration.ZERO);
-        configuration.setBackgroundImage(null);
-        configuration.setColorMap(Color.web(Configuration.Defaults.COLOR_MAP));
 
+        configurationParameters();
+    }
+
+    private void configurationParameters() throws EvosimException {
         MapCanvas.setMapColor(configuration.getColorMap());
         MapCanvas.setMapImage(configuration.getBackgroundImage());
+
+        Predator.setBodyColour(configuration.getColorPredator());
+        Prey.setBodyColour(configuration.getColorPrey());
         this.timerProperty.set(configuration.getDuration());
     }
 
@@ -440,6 +443,7 @@ public final class MainController {
     private void clickOnLoadDefault(final ActionEvent event) throws EvosimException {
         pauseAnimation();
         configuration.restoreToDefaults();
+
         this.newDefaultSimulation();
     }
 
@@ -644,6 +648,7 @@ public final class MainController {
             confirmation.close();
         } else {
             mapCanvas.getSimulation().shutdown();
+            configuration.restoreToDefaults();
             WindowUtils.setSceneRoot(EvosimApplication.getApplication().getStage(),
                     this.getClass().getResource(ResourceManager.FXML_WELCOME_VIEW),
                     this.getClass().getResource(ResourceManager.CSS_GLOBAL).toExternalForm());

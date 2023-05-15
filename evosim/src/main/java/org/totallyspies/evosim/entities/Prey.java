@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.paint.Color;
 import lombok.Getter;
-import lombok.Setter;
 import org.totallyspies.evosim.simulation.Simulation;
 import org.totallyspies.evosim.geometry.Circle;
 import org.totallyspies.evosim.neuralnetwork.NeuralNetwork;
@@ -27,8 +26,7 @@ public final class Prey extends Entity {
      * The paint colour of the entity's body.
      */
     @Getter
-    @Setter
-    private static Color bodyColour = Color.GREEN;
+    private static Color bodyColour;
 
     /**
      * Constructs a new prey.
@@ -39,12 +37,12 @@ public final class Prey extends Entity {
      * @param rotationAngleInRadians the rotation angle of the prey
      */
     public Prey(final Simulation newSimulation,
-                final double speed,
-                final Point position,
-                final double rotationAngleInRadians) throws EvosimException {
-        super(newSimulation, speed, position, Configuration.getConfiguration().getPreyViewAngle(),
-            rotationAngleInRadians);
-
+        final double speed,
+        final Point position,
+        final double rotationAngleInRadians) throws EvosimException {
+        super(newSimulation, speed, position,
+            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
+        Prey.bodyColour = Configuration.getConfiguration().getColorPrey();
     }
 
     /**
@@ -140,5 +138,14 @@ public final class Prey extends Entity {
     @Override
     protected void onCollideHandler(final Entity other) {
         this.setDead(true);
+    }
+
+    /**
+     * Set a new color for the preys.
+     * @param newColor
+     */
+    public static void setBodyColour(final Color newColor) {
+        Configuration.getConfiguration().setColorPrey(newColor);
+        Prey.bodyColour = newColor;
     }
 }

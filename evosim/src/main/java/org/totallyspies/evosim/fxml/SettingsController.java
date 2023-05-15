@@ -158,22 +158,22 @@ public final class SettingsController {
 
         fileChooser = FileSelector.getFileChooserImage();
 
-        cpMap.valueProperty().addListener((o, ov, nv) -> MapCanvas.setMapColor(nv));
-        cpPred.valueProperty().addListener((o, ov, nv) -> Predator.setBodyColour(nv));
-        cpPrey.valueProperty().addListener((o, ov, nv) -> Prey.setBodyColour(nv));
         themeSelector.valueProperty().addListener((o, ov, nv) -> {
             this.changeTheme(nv);
             theme = nv;
         });
 
         cpMap.valueProperty().addListener((o, ov, nv) -> {
-                MapCanvas.setMapColor(nv);
             try {
+                MapCanvas.setMapColor(nv);
                 configuration.setBackgroundImage(null);
             } catch (EvosimException e) {
                 throw new RuntimeException(e);
             }
         });
+
+        cpPred.valueProperty().addListener((o, ov, nv) -> Predator.setBodyColour(nv));
+        cpPrey.valueProperty().addListener((o, ov, nv) -> Prey.setBodyColour(nv));
     }
 
     /**
