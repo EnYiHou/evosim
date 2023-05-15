@@ -116,13 +116,13 @@ public final class WelcomeController {
             this.createSliderDefault(
                 "Maximum Speed",
                 config::setEntityMaxSpeed,
-                0d,
+                0.1d,
                 Defaults.ENTITY_MAX_SPEED
             ),
             this.createSliderDefault(
                 "Minimum Speed",
                 config::setEntityMinSpeed,
-                0d,
+                0.01d,
                 Defaults.ENTITY_MIN_SPEED
             ),
             this.createSliderDefault(

@@ -317,6 +317,7 @@ public final class MainController {
         } else {
             this.newDefaultSimulation();
         }
+        EvosimApplication.getApplication().getStage().setUserData(null);
     }
 
     private void newSimulation(final List<Entity> entityList) throws EvosimException {
