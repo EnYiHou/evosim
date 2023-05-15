@@ -33,60 +33,61 @@ public final class Prey extends Entity {
     /**
      * Constructs a new prey.
      *
-     * @param newSimulation    Simulation for the entity to be created in.
+     * @param newSimulation          Simulation for the entity to be created in.
      * @param speed                  the speed of the prey
      * @param position               the position of the prey
      * @param rotationAngleInRadians the rotation angle of the prey
      */
     public Prey(final Simulation newSimulation,
-        final double speed,
-        final Point position,
-        final double rotationAngleInRadians) throws EvosimException {
-        super(newSimulation, speed, position,
-            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
+                final double speed,
+                final Point position,
+                final double rotationAngleInRadians) throws EvosimException {
+        super(newSimulation, speed, position, Configuration.getConfiguration().getPreyViewAngle(),
+            rotationAngleInRadians);
 
     }
 
     /**
      * Construct a Prey from a JSON.
-     * @param sensorsData               the sensors data of the prey.
-     * @param speed                     the speed of the prey.
-     * @param body                      the body of the prey.
-     * @param fovAngleInDegrees         the fov angle in degrees of the prey.
-     * @param dead                      if dead of the prey.
-     * @param split                     the split of the prey.
-     * @param brain                     the brain of the prey.
-     * @param energy                    the energy of the prey.
-     * @param splitEnergy               the split energy of the prey.
-     * @param directionAngleInRadians   the direction angle in radians of the prey.
-     * @param childCount                the child count of the prey.
+     *
+     * @param sensorsData             the sensors data of the prey.
+     * @param speed                   the speed of the prey.
+     * @param body                    the body of the prey.
+     * @param fovAngleInDegrees       the fov angle in degrees of the prey.
+     * @param dead                    if dead of the prey.
+     * @param split                   the split of the prey.
+     * @param brain                   the brain of the prey.
+     * @param energy                  the energy of the prey.
+     * @param splitEnergy             the split energy of the prey.
+     * @param directionAngleInRadians the direction angle in radians of the prey.
+     * @param childCount              the child count of the prey.
      */
     @JsonCreator
     public Prey(
-            @JsonProperty("sensorsData") final double[] sensorsData,
-            @JsonProperty("speed") final double speed,
-            @JsonProperty("body") final Circle body,
-            @JsonProperty("fovAngleInDegrees") final double fovAngleInDegrees,
-            @JsonProperty("dead") final boolean dead,
-            @JsonProperty("split") final boolean split,
-            @JsonProperty("brain") final NeuralNetwork brain,
-            @JsonProperty("energy") final double energy,
-            @JsonProperty("splitEnergy") final double splitEnergy,
-            @JsonProperty("directionAngleInRadians") final double directionAngleInRadians,
-            @JsonProperty("childCount") final int childCount
+        @JsonProperty("sensorsData") final double[] sensorsData,
+        @JsonProperty("speed") final double speed,
+        @JsonProperty("body") final Circle body,
+        @JsonProperty("fovAngleInDegrees") final double fovAngleInDegrees,
+        @JsonProperty("dead") final boolean dead,
+        @JsonProperty("split") final boolean split,
+        @JsonProperty("brain") final NeuralNetwork brain,
+        @JsonProperty("energy") final double energy,
+        @JsonProperty("splitEnergy") final double splitEnergy,
+        @JsonProperty("directionAngleInRadians") final double directionAngleInRadians,
+        @JsonProperty("childCount") final int childCount
     ) throws EvosimException {
         super(
-                speed,
-                fovAngleInDegrees,
-                directionAngleInRadians,
-                sensorsData,
-                body,
-                dead,
-                split,
-                brain,
-                energy,
-                splitEnergy,
-                childCount
+            speed,
+            fovAngleInDegrees,
+            directionAngleInRadians,
+            sensorsData,
+            body,
+            dead,
+            split,
+            brain,
+            energy,
+            splitEnergy,
+            childCount
         );
     }
 
@@ -101,9 +102,9 @@ public final class Prey extends Entity {
     public void onUpdate() throws EvosimException {
         // passively gain energy
         this.setSplitEnergy(this.getSplitEnergy()
-                + Configuration.getConfiguration().getPreySplitEnergyFillingSpeed());
+            + Configuration.getConfiguration().getPreySplitEnergyFillingSpeed());
         this.setEnergy(Math.min(this.getEnergy()
-                + Configuration.getConfiguration().getPreyEnergyFillingSpeed(), 1));
+            + Configuration.getConfiguration().getPreyEnergyFillingSpeed(), 1));
 
     }
 
@@ -118,13 +119,13 @@ public final class Prey extends Entity {
         Prey prey = null;
         try {
             prey = new Prey(
-                    this.getSimulation(),
-                    (Math.random()
-                            < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                            ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
-                            : this.getSpeed(),
-                    new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                    this.getDirectionAngleInRadians());
+                this.getSimulation(),
+                (Math.random()
+                    < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                    ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
+                    : this.getSpeed(),
+                new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
+                this.getDirectionAngleInRadians());
         } catch (EvosimException e) {
             throw new RuntimeException(e);
         }

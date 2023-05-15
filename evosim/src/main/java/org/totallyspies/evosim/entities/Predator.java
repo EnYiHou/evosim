@@ -33,7 +33,7 @@ public final class Predator extends Entity {
     /**
      * Constructs a new predator.
      *
-     * @param newSimulation    Simulation for the entity to be created in.
+     * @param newSimulation          Simulation for the entity to be created in.
      * @param speed                  the speed of the predator
      * @param position               the position of the predator
      * @param rotationAngleInRadians the rotation angle of the predator
@@ -43,49 +43,51 @@ public final class Predator extends Entity {
                     final Point position,
                     final double rotationAngleInRadians) throws EvosimException {
         super(newSimulation, speed, position,
-            Configuration.getConfiguration().getPredatorViewAngle(), rotationAngleInRadians);
+            Configuration.getConfiguration().getPredatorViewAngle(),
+            rotationAngleInRadians);
     }
 
     /**
      * Construct an Predator from a JSON.
-     * @param inputs                    the sensors data of the predator.
-     * @param speed                     the speed of the predator.
-     * @param body                      the body of the predator.
-     * @param fovAngleInRadians         the fov angle in radians of the predator.
-     * @param dead                      if dead of the predator.
-     * @param split                     the split of the predator.
-     * @param brain                     the brain of the predator.
-     * @param energy                    the energy of the predator.
-     * @param splitEnergy               the split energy of the predator.
-     * @param directionAngleInRadians   the direction angle in radians of the predator.
-     * @param childCount                the child count of the predator.
+     *
+     * @param inputs                  the sensors data of the predator.
+     * @param speed                   the speed of the predator.
+     * @param body                    the body of the predator.
+     * @param fovAngleInRadians       the fov angle in radians of the predator.
+     * @param dead                    if dead of the predator.
+     * @param split                   the split of the predator.
+     * @param brain                   the brain of the predator.
+     * @param energy                  the energy of the predator.
+     * @param splitEnergy             the split energy of the predator.
+     * @param directionAngleInRadians the direction angle in radians of the predator.
+     * @param childCount              the child count of the predator.
      */
     @JsonCreator
     public Predator(
-            @JsonProperty("inputs") final double[] inputs,
-            @JsonProperty("speed") final double speed,
-            @JsonProperty("body") final Circle body,
-            @JsonProperty("fovAngleInRadians") final double fovAngleInRadians,
-            @JsonProperty("dead") final boolean dead,
-            @JsonProperty("split") final boolean split,
-            @JsonProperty("brain") final NeuralNetwork brain,
-            @JsonProperty("energy") final double energy,
-            @JsonProperty("splitEnergy") final double splitEnergy,
-            @JsonProperty("directionAngleInRadians") final double directionAngleInRadians,
-            @JsonProperty("childCount") final int childCount
+        @JsonProperty("inputs") final double[] inputs,
+        @JsonProperty("speed") final double speed,
+        @JsonProperty("body") final Circle body,
+        @JsonProperty("fovAngleInRadians") final double fovAngleInRadians,
+        @JsonProperty("dead") final boolean dead,
+        @JsonProperty("split") final boolean split,
+        @JsonProperty("brain") final NeuralNetwork brain,
+        @JsonProperty("energy") final double energy,
+        @JsonProperty("splitEnergy") final double splitEnergy,
+        @JsonProperty("directionAngleInRadians") final double directionAngleInRadians,
+        @JsonProperty("childCount") final int childCount
     ) throws EvosimException {
         super(
-                speed,
-                fovAngleInRadians,
-                directionAngleInRadians,
-                inputs,
-                body,
-                dead,
-                split,
-                brain,
-                energy,
-                splitEnergy,
-                childCount
+            speed,
+            fovAngleInRadians,
+            directionAngleInRadians,
+            inputs,
+            body,
+            dead,
+            split,
+            brain,
+            energy,
+            splitEnergy,
+            childCount
         );
     }
 
@@ -99,7 +101,7 @@ public final class Predator extends Entity {
     @Override
     public void onUpdate() throws EvosimException {
         this.setEnergy(this.getEnergy() - Configuration.getConfiguration()
-                .getPredatorEnergyBaseDrainingSpeed());
+            .getPredatorEnergyBaseDrainingSpeed());
 
         if (this.getEnergy() <= 0) {
             this.setDead(true);
@@ -117,14 +119,14 @@ public final class Predator extends Entity {
         Predator predator = null;
         try {
             predator = new Predator(
-                    this.getSimulation(),
-                    (Math.random()
-                            < Configuration.getConfiguration().getEntitySpeedMutationRate())
-                            ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
-                            : this.getSpeed(),
+                this.getSimulation(),
+                (Math.random()
+                    < Configuration.getConfiguration().getEntitySpeedMutationRate())
+                    ? Math.random() * Configuration.getConfiguration().getEntityMaxSpeed()
+                    : this.getSpeed(),
 
-                    new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
-                    this.getDirectionAngleInRadians());
+                new Point(this.getBodyCenter().getX(), this.getBodyCenter().getY()),
+                this.getDirectionAngleInRadians());
         } catch (EvosimException e) {
             throw new RuntimeException(e);
         }
@@ -140,8 +142,8 @@ public final class Predator extends Entity {
     @Override
     protected void onCollideHandler(final Entity other) throws EvosimException {
         this.setSplitEnergy(this.getSplitEnergy()
-                + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
+            + Configuration.getConfiguration().getPredatorSplitEnergyFillingSpeed());
         this.setEnergy(Math.min(1, this.getEnergy()
-                + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
+            + Configuration.getConfiguration().getPredatorEnergyFillingSpeed()));
     }
 }

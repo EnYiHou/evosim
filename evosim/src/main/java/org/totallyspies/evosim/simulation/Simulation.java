@@ -229,12 +229,6 @@ public final class Simulation {
 
                         final Coordinate oldCoord = pointToGridCoord(entity.getBodyCenter());
 
-                        try {
-                            entity.update();
-                        } catch (EvosimException e) {
-                            throw new RuntimeException(e);
-                        }
-
                         if (entity.isDead()) {
                             if (entity instanceof Prey) {
                                 --this.preyCount;
@@ -293,9 +287,15 @@ public final class Simulation {
                             }
                         }
 
+                        try {
+                            entity.update();
+                        } catch (EvosimException e) {
+                            throw new RuntimeException(e);
+                        }
+
                         final Coordinate curCoord = pointToGridCoord(entity.getBodyCenter());
 
-                        if (!curCoord.equals(oldCoord)) {
+                        if (!curCoord.equals(oldCoord) && !entity.isDead()) {
                             final ReadWriteLockedItem<List<Entity>> chkFrom =
                                 this.updateToRemove[oldCoord.getX()][oldCoord.getY()];
 
