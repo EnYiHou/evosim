@@ -361,10 +361,6 @@ public abstract class Entity {
         final double[] calculatedDecision =
             this.brain.calcNetworkDecision(this.inputs);
 
-        // Assuming the first output is the rotation
-        // of the direction of the entity, and the second output is the speed.
-//        this.directionAngleInRadians += Configuration.getConfiguration()
-//            .getEntityMaxRotationSpeed() * (calculatedDecision[0] * 2 - 1);
         this.directionAngleInRadians += Configuration.getConfiguration()
             .getEntityMaxRotationSpeed() * (calculatedDecision[0]);
 
