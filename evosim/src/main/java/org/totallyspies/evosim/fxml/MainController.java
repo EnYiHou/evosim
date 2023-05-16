@@ -385,9 +385,9 @@ public final class MainController {
             this.fileChooser.setTitle("Save Configuration");
             configurationFile = fileChooser
                     .showSaveDialog(EvosimApplication.getApplication().getStage());
-            if (configurationFile != null) {
-                configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
-            }
+        }
+        if (configurationFile != null) {
+            configuration.saveConfiguration(configurationFile, mapCanvas.getSimulation());
         }
     }
 
