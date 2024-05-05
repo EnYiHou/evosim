@@ -12,7 +12,7 @@ The custom configurations provide a customizable simulation each run, allowing t
 
 ## Usage
 
-For specific instructions or a detailed list of features , consult the app's [user guide](https://github.com/mattlep11/evosim/blob/main/user-guide.pdf).
+For specific instructions or a detailed list of features , consult the app's [user guide](https://github.com/EnYiHou/evosim/blob/main/user-guide.pdf).
 
 ### Basic Overview
 
